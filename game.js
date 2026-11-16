@@ -6,6 +6,8 @@
 'use strict';
 const C = window.GAME_CONFIG;
 const FONT = C.fontFamily;
+// 可独立移除音频模块；界面改版只需复用相同 API。
+const AUD = window.ShenhuaAudio || { unlock(){}, play(){}, setMode(){}, pause(){}, resume(){} };
 const DPR = Math.min(window.devicePixelRatio || 1, C.maxPixelRatio || 2);
 const ROLE_LABEL = { tank: '肉盾', melee: '近战输出', ranged: '远程输出', healer: '治疗' };
 const PM = Phaser.Math;
@@ -35,7 +37,8 @@ function autoTeam(playerKey) {
 class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
-    ['hero_nezha', 'hero_erlang', 'hero_change', 'mob_zheng', 'mob_gudiao', 'mob_imp', 'boss_jiuying'].forEach(k => this.load.image(k, 'assets/sprites/' + k + '.png'));
+    window.CombatArt.preload(this);
+    ['mob_zheng', 'mob_gudiao', 'mob_imp', 'boss_jiuying'].forEach(k => this.load.image(k, 'assets/sprites/' + k + '.png'));
     this.load.image('ground', 'assets/sprites/ground.jpg');
     const W = this.scale.width, H = this.scale.height, u = U(this);
     const bar = this.add.graphics();
@@ -43,6 +46,8 @@ class Boot extends Phaser.Scene {
     this.load.on('progress', p => { bar.clear(); bar.fillStyle(0xc0392b, 1).fillRect(W * 0.3, H / 2, W * 0.4 * p, 8 * u); });
   }
   create() {
+    const missing = window.CombatArt.validate(this);
+    if (missing.length) { this.children.removeAll(true); window.__artBlocked = missing; txt(this, this.scale.width/2, this.scale.height/2, '定稿战斗素材尚未齐备，未使用旧图替代。\n缺失或待核对 ' + missing.length + ' 项；素材齐备后再开放试玩。', 18*U(this), '#efe3c8', {wordWrap:{width:this.scale.width*.8}}).setOrigin(.5); return; }
     const g = this.make.graphics({ x: 0, y: 0, add: false });
     g.clear(); g.lineStyle(4, 0x1a1210).lineBetween(2, 8, 40, 8); g.fillStyle(0xe8dcc0).fillTriangle(40, 2, 52, 8, 40, 14); g.lineStyle(2, 0x1a1210).strokeTriangle(40, 2, 52, 8, 40, 14);
     g.fillStyle(0xc0392b).fillTriangle(0, 3, 10, 8, 0, 13); g.generateTexture('arrow', 54, 16);
@@ -93,14 +98,14 @@ class Select extends Phaser.Scene {
     for (let i = 0; i < n; i++) {
       const x = sx + i * (sw + gap);
       const bg = this.add.rectangle(x, sy, sw, sw, 0x1d1512, 0.9).setStrokeStyle(4 * u, i === 0 ? 0xf5c542 : 0x5a4a3a);
-      const img = this.add.image(x, sy, 'hero_nezha').setVisible(false);
+      const img = this.add.image(x, sy, 'select_nezha').setVisible(false);
       const lab = txt(this, x, sy + sw / 2 + 13 * u, i === 0 ? '你' : 'AI', 15 * u, i === 0 ? '#f5c542' : '#9c8c74').setOrigin(0.5);
       const q = txt(this, x, sy, i === 0 ? '' : '?', 30 * u, '#5a4a3a').setOrigin(0.5);
       this.slotObjs.push({ bg, img, lab, q, x, y: sy, sw });
     }
     // 中间大立绘
     this.splash = this.add.graphics();
-    this.portrait = this.add.image(W * 0.3, H * 0.5, C.heroes[this.sel].sprite);
+    this.portrait = this.add.image(W * 0.3, H * 0.5, 'select_'+this.sel);
     // 右侧信息面板
     const px = W * 0.55, py = H * 0.2, pw = W * 0.42;
     this.add.rectangle(px - 18 * u, py - 14 * u, pw, 430 * u, 0x140e0c, 0.75).setOrigin(0).setStrokeStyle(3 * u, 0x3d2f25);
@@ -123,7 +128,7 @@ class Select extends Phaser.Scene {
     this.keys.forEach((k, i) => {
       const c = this.add.container(cw / 2 + 6 * u + i * (cw + 16 * u), 0);
       const bg = this.add.rectangle(0, 0, cw, ch, 0x241a15).setStrokeStyle(4 * u, 0x5a4a3a);
-      const im = this.add.image(0, -10 * u, C.heroes[k].sprite); im.setScale((ch * 0.72) / im.height);
+      const im = this.add.image(0, -10 * u, 'select_'+k); im.setScale((ch * 0.72) / im.height);
       const nm = txt(this, 0, ch / 2 - 17 * u, C.heroes[k].name, 18 * u, '#efe3c8', { stroke: '#000', strokeThickness: 4 * u }).setOrigin(0.5);
       c.add([bg, im, nm]); c.bg = bg;
       this.strip.add(c); this.cards[k] = c;
@@ -169,7 +174,7 @@ class Select extends Phaser.Scene {
       this.tweens.add({ targets: c, scale: on ? 1.1 : 1, duration: 180, ease: 'Back.Out' });
     }
     const cx = W * 0.3, cy = H * 0.5;
-    this.portrait.setTexture(h.sprite);
+    this.portrait.setTexture('select_'+k);
     const target = (H * 0.56) / this.portrait.height;
     this.tweens.killTweensOf(this.portrait);
     this.portrait.setScale(target * 0.8).setAlpha(0.2).setPosition(cx, cy);
@@ -190,7 +195,7 @@ class Select extends Phaser.Scene {
       I.tags.add([r, tt]); tx += tt.width + 34 * u;
     });
     I.talent.setText('【被动天赋 · ' + h.talent.name + '】\n' + h.talent.desc);
-    I.weapon.setText('【初始武器 · ' + w.name + '】\n普攻 / ' + w.skill1.name + ' / ' + w.skill2.name + '\n波次间会掉落新武器，拾取即可改变定位');
+    I.weapon.setText('【初始武器 · ' + w.name + '】\n普攻 / ' + w.skill1.name + '\n波次间会掉落新武器，拾取即可改变定位');
     I.stats.clear(); I.statsTxt.forEach(t => t.destroy()); I.statsTxt = [];
     [['生命', h.hp / 1000], ['移速', h.speed / 280], ['减伤', h.armor / 0.3], ['输出', h.damageMul * (1 + h.critChance) / 1.6]].forEach((s, i) => {
       const y = I.py + 362 * u + Math.floor(i / 2) * 30 * u, x = I.px + (i % 2) * (I.pw / 2 - 10 * u), bw = I.pw / 2 - 100 * u;
@@ -202,11 +207,13 @@ class Select extends Phaser.Scene {
   }
   setSlot(i, k) {
     const s = this.slotObjs[i]; if (!s) return;
-    if (k) { s.img.setTexture(C.heroes[k].sprite).setVisible(true); s.img.setScale((s.sw * 0.9) / s.img.height); s.q.setText(''); }
+    if (k) { s.img.setTexture('select_'+k).setVisible(true); s.img.setScale((s.sw * 0.9) / s.img.height); s.q.setText(''); }
     else { s.img.setVisible(false); s.q.setText(i === 0 ? '' : '虚位').setFontSize(Math.round(18 * this.u)); }
   }
   confirm() {
     if (this.locked) return; this.locked = true;
+    AUD.unlock(); // Safari：在确认按钮/回车的用户手势内同步解锁
+    AUD.play('pickup');
     this.registry.set('lastHero', this.sel);
     const team = autoTeam(this.sel);
     this.btnTxt.setText('AI 补位中…').setFontSize(Math.round(30 * this.u));
@@ -228,6 +235,7 @@ class Select extends Phaser.Scene {
 class Battle extends Phaser.Scene {
   constructor() { super('Battle'); }
   create(data) {
+    AUD.resume('manual'); AUD.setMode('arena');
     const A = C.arena;
     this.bus = new Phaser.Events.EventEmitter();
     this.heroKey = data.hero; this.teamKeys = data.team && data.team.length ? data.team : autoTeam(data.hero).filter(Boolean);
@@ -261,7 +269,7 @@ class Battle extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,J,K,L,Q,E,SPACE');
     this.input.keyboard.removeAllListeners();
     this.input.keyboard.on('keydown-K', () => this.ctrl.s1 = true); this.input.keyboard.on('keydown-Q', () => this.ctrl.s1 = true);
-    this.input.keyboard.on('keydown-L', () => this.ctrl.s2 = true); this.input.keyboard.on('keydown-E', () => this.ctrl.s2 = true);
+
     this.waveIdx = QS.get('wave') ? PM.Clamp(parseInt(QS.get('wave'), 10) - 2, -1, C.waves.length - 2) : -1;
     this.phase = 'break'; this.breakT = C.firstWaveDelay; this.spawnQ = []; this.spawnT = 0;
     this.scene.launch('HUD');
@@ -291,8 +299,9 @@ class Battle extends Phaser.Scene {
       moving: false, slowT: 0, slowMul: 1, flashT: 0, popT: 0, dead: false, cd: { attack: 0, skill1: 0, skill2: 0 }, tauntT: 0, tauntBy: null, shieldT: 0, target: null, retargetT: 0, kb: null };
   }
   makeHero(key, x, y, isPlayer) {
-    const h = this.makeUnit(C.heroes[key], 'hero', x, y);
+    const h = this.makeUnit(Object.assign({}, C.heroes[key], {sprite:'v6_'+key+'_front'}), 'hero', x, y);
     h.key = key; h.isPlayer = isPlayer; h.weapon = C.heroes[key].weapon;   // 攻击方式完全来自武器
+    h.art = new window.CombatArt(this,h);
     return h;
   }
   makeEnemy(key, x, y) {
@@ -308,6 +317,7 @@ class Battle extends Phaser.Scene {
     b.key = 'boss'; b.isBoss = true; b.r = C.boss.size * 0.32; b.phase = 1;
     b.cdBreath = 2.5; b.cdSweep = 4; b.cdHowl = 3; b.cdBite = 0; b.casting = 0; b.element = 'fire';
     this.enemies.push(b); this.boss = b;
+    AUD.setMode('boss'); AUD.play('boss');
     this.cameras.main.shake(500, 0.008);
     this.bus.emit('banner', C.boss.name + '现身！', '小心红色预警区域');
   }
@@ -337,6 +347,7 @@ class Battle extends Phaser.Scene {
     if (u.shieldT > 0) u.shieldT -= dt;
     if (u.flashT > 0) u.flashT -= dt;
     if (u.popT > 0) u.popT -= dt;
+    if (u.actionT > 0) u.actionT = Math.max(0,u.actionT-dt);
     if (u.team === 'hero' && u.def.regen && u.hp < u.maxHp) u.hp = Math.min(u.maxHp, u.hp + u.def.regen * dt);
     if (u.kb) { u.x += u.kb.vx * dt; u.y += u.kb.vy * dt; u.kb.t -= dt; if (u.kb.t <= 0) u.kb = null; }
   }
@@ -360,7 +371,7 @@ class Battle extends Phaser.Scene {
     const w = this.W(h);
     if ((this.ctrl.atk || k.J.isDown || k.SPACE.isDown) && h.cd.attack <= 0) { const t = this.nearest(this.enemies, h, w.attack.range + 80); this.doAttack(h, t ? ang(h, t) : h.faceAng); }
     if (this.ctrl.s1) { this.ctrl.s1 = false; if (h.cd.skill1 <= 0) this.doSkill(h, 'skill1', null); }
-    if (this.ctrl.s2) { this.ctrl.s2 = false; if (h.cd.skill2 <= 0) this.doSkill(h, 'skill2', null); }
+    this.ctrl.s2 = false; // 单主动：不再暴露或暗中触发技能二
   }
   /* ---------- 英雄 AI：打法由当前武器定位决定 ---------- */
   updateHeroAI(h, dt) {
@@ -387,7 +398,7 @@ class Battle extends Phaser.Scene {
     const near = enemies.filter(e => dist(e, h) < 230 + e.r).length;
     if (role === 'tank' || role === 'melee') {
       if (d > A.range * 0.8) this.moveUnit(h, target.x - h.x, target.y - h.y, h.def.speed, dt);
-      for (const sk of ['skill1', 'skill2']) {
+      for (const sk of ['skill1']) {
         const s = w[sk]; if (h.cd[sk] > 0) continue;
         if (s.kind === 'dash') { if (d > 140 && d < s.distance) this.doSkill(h, sk, target); }
         else if (s.kind === 'cleave') { if (d < s.length * 0.8) this.doSkill(h, sk, target); }
@@ -398,7 +409,7 @@ class Battle extends Phaser.Scene {
       if (d < keep - 70) this.moveUnit(h, h.x - target.x, h.y - target.y, h.def.speed, dt);
       else if (d > A.range - 30) this.moveUnit(h, target.x - h.x, target.y - h.y, h.def.speed, dt);
       else if (leader && leader !== h && dist(h, leader) > 450) this.moveUnit(h, leader.x - h.x, leader.y - h.y, h.def.speed * 0.6, dt);
-      for (const sk of ['skill1', 'skill2']) {
+      for (const sk of ['skill1']) {
         const s = w[sk]; if (h.cd[sk] > 0) continue;
         if (s.kind === 'heal') { if (allies.filter(a => a.hp / a.maxHp < 0.85 && dist(a, h) < s.radius).length >= 2) this.doSkill(h, sk, target); }
         else if (s.kind === 'frost') { if (d < s.range) this.doSkill(h, sk, this.clusterTarget(enemies, s.range, h) || target); }
@@ -416,6 +427,7 @@ class Battle extends Phaser.Scene {
   }
   /* ---------- 普攻 / 技能（全部由武器定义） ---------- */
   doAttack(h, a) {
+    h.action='attack'; h.actionDuration=C.combatArt.attackDuration; h.actionT=h.actionDuration;
     const w = this.W(h), A = w.attack; h.cd.attack = A.cooldown; h.faceAng = a; h.popT = 0.12;
     if (A.kind === 'melee') {
       for (const e of this.enemies) if (!e.dead && dist(h, e) <= A.range + e.r && angDiff(ang(h, e), a) <= PM.DegToRad(A.arc / 2) + 0.2) this.hurt(e, A.damage, h);
@@ -423,7 +435,10 @@ class Battle extends Phaser.Scene {
     } else this.fire(h, a, A.tex, A.projSpeed, A.damage, A.range, {});
   }
   doSkill(h, sk, target) {
+    if(sk!=='skill1') return;
+    h.action='cast'; h.actionDuration=C.combatArt.castDuration; h.actionT=h.actionDuration;
     const w = this.W(h), S = w[sk]; h.cd[sk] = S.cooldown; h.popT = 0.2;
+    if (S.kind !== 'heal') AUD.play('skill', { ai: !h.isPlayer });
     const aimT = target || this.nearest(this.enemies, h, 700);
     const a = aimT ? ang(h, aimT) : h.faceAng;
     switch (S.kind) {
@@ -497,6 +512,7 @@ class Battle extends Phaser.Scene {
     if (t.team === 'hero') { if (this.god && t.isPlayer) amount = 0; if (t.shieldT > 0) amount *= 1 - (t.shieldReduce || 0.5); if (t.dash) amount *= 0.3; }
     amount = Math.max(0, Math.round(amount * (1 - (t.def.armor || 0))));
     t.hp -= amount; t.flashT = 0.08;
+    if (amount > 0) { if (t.isPlayer) AUD.play('hurt'); else if (t.team === 'enemy' && src && src.team === 'hero') AUD.play('hit', { ai: !src.isPlayer }); }
     if (src && src.isPlayer) this.stats.dmg += amount;
     if (opt && opt.slow) { t.slowT = opt.slowTime; t.slowMul = opt.slow; }
     if (t.team === 'enemy' && src && src.team === 'hero') t.retargetT = Math.min(t.retargetT, 0.15);
@@ -506,6 +522,7 @@ class Battle extends Phaser.Scene {
   healUnit(t, amount, src) {
     if (t.dead) return; amount = Math.round(Math.min(amount, t.maxHp - t.hp));
     t.hp += amount; if (src && src.isPlayer) this.stats.heal += amount;
+    if (amount > 0) AUD.play('heal', { ai: !(src && src.isPlayer) });
     if (amount > 0) this.floatText(t.x, t.y - t.def.size, '+' + amount, '#7dff9a', 26);
   }
   kill(t, src) {
@@ -550,7 +567,7 @@ class Battle extends Phaser.Scene {
     if (b.dead) return;
     const B = C.boss, p2 = b.phase === 2, cdm = p2 ? B.phase2CooldownMul : 1;
     if (b.phase === 1 && b.hp / b.maxHp <= B.phase2At) {
-      b.phase = 2; this.cameras.main.shake(600, 0.01);
+      b.phase = 2; AUD.play('bossPhase'); this.cameras.main.shake(600, 0.01);
       this.bus.emit('banner', '九婴暴怒！', '二阶段：九首齐啸 · 召唤小妖');
       for (let i = 0; i < B.howl.summonImps; i++) this.makeEnemy('imp', b.x + PM.Between(-200, 200), b.y + PM.Between(60, 200));
     }
@@ -618,7 +635,7 @@ class Battle extends Phaser.Scene {
   dropWeapon(key, x, y, noPickT) {
     const w = C.weapons[key];
     const ring = this.add.circle(x, y, 46, w.color, 0.25).setStrokeStyle(4, 0xf5c542).setDepth(1.6);
-    const icon = this.add.image(x, y - 30, 'w_' + key).setDepth(10 + y);
+    const icon = this.add.image(x, y - 30, 'v6_' + C.weaponArt[key] + '_weapon').setDisplaySize(80,80).setDepth(10 + y);
     const label = txt(this, x, y - 92, w.name + ' · ' + ROLE_LABEL[w.role], 22, '#ffe7a8', { stroke: '#120c0a', strokeThickness: 5 }).setOrigin(0.5).setDepth(900001).setResolution(2);
     this.tweens.add({ targets: icon, y: y - 46, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
     this.tweens.add({ targets: ring, scale: 1.2, alpha: 0.6, duration: 700, yoyo: true, repeat: -1 });
@@ -633,6 +650,7 @@ class Battle extends Phaser.Scene {
       const old = h.weapon; h.weapon = d.key; h.cd.attack = 0; h.cd.skill1 = Math.min(h.cd.skill1, 1); h.cd.skill2 = Math.min(h.cd.skill2, 1);
       d.ring.destroy(); d.icon.destroy(); d.label.destroy(); this.drops.splice(i, 1);
       this.dropWeapon(old, h.x + 70, h.y + 20, 2.5);   // 旧武器留在原地，可再换回
+      AUD.play('pickup');
       const w = C.weapons[d.key];
       this.bus.emit('banner', '拾取 ' + w.name, '定位变为：' + ROLE_LABEL[w.role]);
       this.bus.emit('weapon');
@@ -658,6 +676,7 @@ class Battle extends Phaser.Scene {
   }
   startWave(i) {
     this.waveIdx = i; const w = C.waves[i]; this.phase = 'fight';
+    if (!w.boss) AUD.play('wave');
     this.spawnQ = []; for (const k in w.spawn) for (let n = 0; n < w.spawn[k]; n++) this.spawnQ.push(k);
     shuffle(this.spawnQ); this.spawnT = w.boss ? 3 : 0.3;
     if (w.boss) this.spawnBoss(); else this.bus.emit('banner', w.name, '共 ' + this.spawnQ.length + ' 只妖物');
@@ -671,7 +690,7 @@ class Battle extends Phaser.Scene {
     if (this.waveIdx >= C.waves.length - 1) { this.finish(true); return; }
     this.phase = 'break'; this.breakT = C.waveBreak;
     const owned = new Set(this.heroes.map(h => h.weapon).concat(this.drops.map(d => d.key)));
-    let pool = Object.keys(C.weapons).filter(k => !owned.has(k)); if (!pool.length) pool = Object.keys(C.weapons).filter(k => k !== this.player.weapon);
+    let pool = C.dropWeapons.filter(k => !owned.has(k)); if (!pool.length) pool = C.dropWeapons.filter(k => k !== this.player.weapon);
     shuffle(pool);
     const n = Math.min(C.dropsPerWave, pool.length);
     for (let i = 0; i < n; i++) this.dropWeapon(pool[i], this.player.x + (i - (n - 1) / 2) * 180, PM.Clamp(this.player.y - 170, 200, C.arena.height - 200));
@@ -679,7 +698,8 @@ class Battle extends Phaser.Scene {
   }
   checkEnd() { if (!this.over && this.heroes.every(h => h.dead)) this.finish(false); }
   finish(win) {
-    this.over = true;
+    if (this.over) return;
+    this.over = true; AUD.setMode('silent'); AUD.play(win ? 'victory' : 'defeat');
     this.time.delayedCall(win ? 1500 : 1000, () => this.scene.launch('Result', { win, hero: this.heroKey, team: this.teamKeys, time: this.elapsed, wave: this.waveIdx + 1, stats: this.stats }));
     this.bus.emit('over');
   }
@@ -700,6 +720,7 @@ class Battle extends Phaser.Scene {
       }
       u.spr.setPosition(u.x, u.y - bob).setDepth(10 + u.y);
       u.shadow.setPosition(u.x, u.y);
+      if(u.art) u.art.update(dt);
       if (u.dead) { if (u.team === 'hero') u.spr.setAngle(80); continue; }
       if (!u.isBoss) {
         const w = u.team === 'hero' ? 80 : Math.max(50, u.def.size * 0.7), y = u.y - u.def.size * 1.02 - bob;
@@ -764,7 +785,6 @@ class HUD extends Phaser.Scene {
     this.btnDefs = {
       atk: { x: W - 155 * u, y: H - 155 * u, r: 86 * u },
       s1: { x: W - 340 * u, y: H - 108 * u, r: 62 * u },
-      s2: { x: W - 195 * u, y: H - 340 * u, r: 62 * u },
     };
     this.labels = {};
     for (const k in this.btnDefs) {
@@ -779,9 +799,17 @@ class HUD extends Phaser.Scene {
     this.teamUI = this.B.heroes.map((h, i) => {
       const x = 22 * u, y = 20 * u + i * 62 * u;
       this.add.rectangle(x, y, 290 * u, 54 * u, 0x120c0a, 0.7).setOrigin(0).setStrokeStyle(2 * u, h.isPlayer ? 0xf5c542 : 0x3d2f25);
-      const im = this.add.image(x + 27 * u, y + 27 * u, h.def.sprite); im.setScale((48 * u) / im.height);
+      const im = this.add.image(x + 27 * u, y + 27 * u, 'select_'+h.key); im.setScale((48 * u) / im.height);
       return { h, x, y, im, nm: txt(this, x + 58 * u, y + 5 * u, '', 15 * u, h.isPlayer ? '#f5c542' : '#efe3c8') };
     });
+    // 装备仅三槽：武器 / 衣服 / 鞋。衣鞋是当前基础装备展示，不伪装成可替换物。
+    this.equipmentSlots = ['weapon','clothes','shoes'];
+    this.equipX = W - 222*u; this.equipY = 160*u;
+    this.equipIcon = this.add.image(this.equipX, this.equipY, 'v6_'+C.weaponArt[this.B.player.weapon]+'_weapon').setDisplaySize(54*u,54*u);
+    this.equipWeapon = txt(this,this.equipX,this.equipY+40*u,'',13*u,'#efe3c8').setOrigin(.5);
+    txt(this,this.equipX+76*u,this.equipY+40*u,'衣服',13*u).setOrigin(.5);
+    txt(this,this.equipX+152*u,this.equipY+40*u,'鞋',13*u).setOrigin(.5);
+    this.hpHeart = txt(this,this.equipX-104*u,this.equipY,'',15*u,'#ffe1cc',{align:'center',fontStyle:'bold'}).setOrigin(.5);
     this.waveTxt = txt(this, W / 2, 18 * u, '', 25 * u, '#f3e2b0', { stroke: '#120c0a', strokeThickness: 6 * u, fontStyle: 'bold' }).setOrigin(0.5, 0);
     this.subTxt = txt(this, W / 2, 54 * u, '', 16 * u, '#cbb994', { stroke: '#120c0a', strokeThickness: 4 * u }).setOrigin(0.5, 0);
     this.bossTxt = txt(this, W / 2, 80 * u, '', 18 * u, '#ffcf6a', { stroke: '#120c0a', strokeThickness: 5 * u, fontStyle: 'bold' }).setOrigin(0.5, 0);
@@ -798,7 +826,8 @@ class HUD extends Phaser.Scene {
     const w = C.weapons[this.B.player.weapon];
     const two = s => s.length > 2 ? s.slice(0, Math.ceil(s.length / 2)) + '\n' + s.slice(Math.ceil(s.length / 2)) : s;
     this.labels.atk.setText(w.name.length > 3 ? two(w.name) : w.name);
-    this.labels.s1.setText(two(w.skill1.name)); this.labels.s2.setText(two(w.skill2.name));
+    this.labels.s1.setText(two(w.skill1.name));
+    if(this.equipWeapon) {this.equipWeapon.setText(w.name);const k=C.weaponArt[this.B.player.weapon];this.equipIcon.setTexture('v6_'+k+'_weapon');const im=this.equipIcon;const scale=54*this.u/Math.max(im.width,im.height);im.setScale(scale);}
   }
   banner(t, sub) {
     this.tweens.killTweensOf([this.bannerTxt, this.bannerSub]);
@@ -834,12 +863,12 @@ class HUD extends Phaser.Scene {
     const W = this.scale.width, H = this.scale.height, u = this.u;
     this.releaseAll(); this.paused = on;
     if (!on) return;
-    this.scene.pause('Battle');
+    this.scene.pause('Battle'); AUD.pause('manual');
     const L = this.add.container(0, 0);
     L.add(this.add.rectangle(0, 0, W, H, 0x000000, 0.6).setOrigin(0).setInteractive());
     L.add(txt(this, W / 2, H * 0.27, '暂停', 58 * u, '#f3e2b0', { stroke: '#120c0a', strokeThickness: 8 * u, fontStyle: 'bold' }).setOrigin(0.5));
     const mk = (y, s, fn) => { const c = this.add.container(W / 2, y); c.add([this.add.rectangle(0, 0, 320 * u, 84 * u, 0x6b2a1a).setStrokeStyle(5 * u, 0x120c0a), txt(this, 0, 0, s, 30 * u, '#fff4d6', { fontStyle: 'bold' }).setOrigin(0.5)]); c.setSize(320 * u, 84 * u).setInteractive(); c.on('pointerup', fn); L.add(c); };
-    mk(H * 0.45, '继续战斗', () => { L.destroy(); this.paused = false; this.scene.resume('Battle'); });
+    mk(H * 0.45, '继续战斗', () => { L.destroy(); this.paused = false; AUD.unlock(); AUD.resume('manual'); this.scene.resume('Battle'); });
     mk(H * 0.58, '重新开始', () => restartBattle(this, this.B.heroKey, this.B.teamKeys));
     mk(H * 0.71, '重选英雄', () => backToSelect(this));
   }
@@ -849,6 +878,15 @@ class HUD extends Phaser.Scene {
     g.fillStyle(0x120c0a, 0.45).fillCircle(j.cx, j.cy, this.joyR); g.lineStyle(5 * u, 0xcbb994, 0.6).strokeCircle(j.cx, j.cy, this.joyR);
     g.fillStyle(0xe8d9b5, j.pid !== null ? 0.95 : 0.6).fillCircle(j.cx + j.dx, j.cy + j.dy, 42 * u); g.lineStyle(5 * u, 0x120c0a).strokeCircle(j.cx + j.dx, j.cy + j.dy, 42 * u);
     const h = B.player, w = C.weapons[h.weapon];
+    const ex=this.equipX,ey=this.equipY;
+    this.hpHeart.setText(Math.ceil(Math.max(0,h.hp))+'\n/'+h.maxHp);
+    const heart=[];for(let i=0;i<=80;i++){const a=i/80*Math.PI*2;heart.push(new Phaser.Math.Vector2(ex-104*u+Math.pow(Math.sin(a),3)*46*u,ey-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))*3*u));}
+    g.fillStyle(0x351319,.9).fillPoints(heart,true);g.lineStyle(7*u,0x170e0d).strokePoints(heart,true);
+    const progress=heart.slice(0,Math.max(2,Math.ceil(81*Math.max(0,h.hp/h.maxHp))));g.lineStyle(4*u,h.hp/h.maxHp<.25?0xff594f:0xc83f42).strokePoints(progress,false);
+    for(let i=0;i<3;i++){const x=ex+i*76*u;const pts=[{x:x-32*u,y:ey-33*u},{x:x+29*u,y:ey-35*u},{x:x+34*u,y:ey+29*u},{x:x-30*u,y:ey+33*u}];g.fillStyle(0x211915,.92).fillPoints(pts,true);g.lineStyle(5*u,0x100d0c).strokePoints(pts,true);g.lineStyle(1.5*u,i===0?0xb49b62:0x786c58).strokePoints(pts,true);}
+    // 衣与鞋的原创简笔图标；三个热区不会侵占最大普攻按钮。
+    g.lineStyle(3*u,0xc4b18d);g.beginPath();g.moveTo(ex+55*u,ey-18*u);g.lineTo(ex+66*u,ey-25*u);g.lineTo(ex+76*u,ey-16*u);g.lineTo(ex+86*u,ey-25*u);g.lineTo(ex+97*u,ey-18*u);g.lineTo(ex+101*u,ey-4*u);g.lineTo(ex+90*u,ey);g.lineTo(ex+90*u,ey+21*u);g.lineTo(ex+62*u,ey+21*u);g.lineTo(ex+62*u,ey);g.lineTo(ex+51*u,ey-4*u);g.closePath();g.strokePath();
+    g.beginPath();g.moveTo(ex+143*u,ey-19*u);g.lineTo(ex+160*u,ey-19*u);g.lineTo(ex+160*u,ey+5*u);g.lineTo(ex+174*u,ey+12*u);g.lineTo(ex+174*u,ey+21*u);g.lineTo(ex+139*u,ey+21*u);g.closePath();g.strokePath();
     for (const k in this.btnDefs) {
       const b = this.btnDefs[k], pressed = this.btns[k] !== undefined, cdKey = k === 'atk' ? 'attack' : k === 's1' ? 'skill1' : 'skill2';
       const total = w[cdKey].cooldown, cd = h.cd[cdKey], r = b.r * (pressed ? 0.92 : 1);
@@ -885,7 +923,7 @@ function restartBattle(scene, hero, team) {
   const sm = scene.scene; sm.stop('Result'); sm.stop('HUD');
   sm.get('Battle').scene.restart({ hero, team });
 }
-function backToSelect(scene) { const sm = scene.scene; sm.stop('Result'); sm.stop('HUD'); sm.stop('Battle'); sm.start('Select'); }
+function backToSelect(scene) { AUD.setMode('silent'); AUD.resume('manual'); const sm = scene.scene; sm.stop('Result'); sm.stop('HUD'); sm.stop('Battle'); sm.start('Select'); }
 
 /* ======================= 结算 ======================= */
 class Result extends Phaser.Scene {

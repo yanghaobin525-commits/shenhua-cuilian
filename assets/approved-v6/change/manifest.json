@@ -1,0 +1,99 @@
+{
+  "id": "change",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "footY": 0.92,
+  "foot": {
+    "x": 0.5,
+    "y": 0.92
+  },
+  "sideFaces": "right",
+  "views": {
+    "front": {
+      "file": "front.png",
+      "handAnchor": {
+        "x": 0.24653,
+        "y": 0.65504
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "front",
+      "sourceColumn": 0,
+      "mirrored": false
+    },
+    "back": {
+      "file": "back.png",
+      "handAnchor": {
+        "x": 0.7465,
+        "y": 0.65604
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "back",
+      "sourceColumn": 1,
+      "mirrored": false
+    },
+    "side": {
+      "file": "side.png",
+      "handAnchor": {
+        "x": 0.70984,
+        "y": 0.65293
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "right",
+      "sourceColumn": 2,
+      "mirrored": true
+    }
+  },
+  "staticOnly": true,
+  "animationComplete": false,
+  "source": "/cursor/stores/user/grok-bot/agents/8c2abf7c-6843-498e-af7c-809a4b0e4047/assets/5c66bbaa79a61af219b0c579d7a6893bb81314159fd5b784871f7cdaf5e38f56.jpg",
+  "processing": [
+    "generated new three-view battle art (not scaled selection)",
+    "one targeted generation correction",
+    "piecewise lower-body shortening for chibi proportion",
+    "white-background segmentation",
+    "uniform 512 canvas and baseline"
+  ],
+  "knownIssues": [
+    "Static flattened illustrations, not bone-separated or animated. Lower torso/legs were proportionally shortened after model failed strict two-head ratio; verify small-size readability in game."
+  ],
+  "weapon": {
+    "file": "weapon.png",
+    "frameSize": {
+      "width": 512,
+      "height": 512
+    },
+    "grip": {
+      "x": 0.49332,
+      "y": 0.78138
+    },
+    "sourceAxis": {
+      "x": 0,
+      "y": -1
+    },
+    "orientation": "tip-up",
+    "rotationOffsetDegrees": 0,
+    "source": "/cursor/stores/user/grok-bot/agents/8c2abf7c-6843-498e-af7c-809a4b0e4047/assets/39db5115dc3335ee39261ff4983416ca9cdb1a53e17835985f94468a79dc0dee.jpg",
+    "description": "new original isolated round fan",
+    "renderBehindCharacter": true
+  },
+  "quality": {
+    "alphaChecked": true,
+    "checkerboardReadChecked": true,
+    "allViewsUnarmed": true,
+    "fullBodyUncropped": true,
+    "trueRearView": true,
+    "artApproval": "selection style approved; battle sheets not yet user-reviewed",
+    "productionStatus": "static integration candidate, not animation or separated rig"
+  }
+}

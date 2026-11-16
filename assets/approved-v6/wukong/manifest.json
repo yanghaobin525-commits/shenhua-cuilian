@@ -1,0 +1,100 @@
+{
+  "id": "wukong",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "footY": 0.92,
+  "foot": {
+    "x": 0.5,
+    "y": 0.92
+  },
+  "sideFaces": "right",
+  "views": {
+    "front": {
+      "file": "front.png",
+      "handAnchor": {
+        "x": 0.26178,
+        "y": 0.56822
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "front",
+      "sourceColumn": 0,
+      "mirrored": false
+    },
+    "back": {
+      "file": "back.png",
+      "handAnchor": {
+        "x": 0.73542,
+        "y": 0.57026
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "back",
+      "sourceColumn": 1,
+      "mirrored": false
+    },
+    "side": {
+      "file": "side.png",
+      "handAnchor": {
+        "x": 0.72093,
+        "y": 0.56191
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "right",
+      "sourceColumn": 2,
+      "mirrored": true
+    }
+  },
+  "staticOnly": true,
+  "animationComplete": false,
+  "source": "/cursor/stores/user/grok-bot/agents/8c2abf7c-6843-498e-af7c-809a4b0e4047/assets/340f99b48830fbae9ca1fe1717e35180614f45a9fcb69f98b2405edb007b3b80.jpg",
+  "processing": [
+    "generated new three-view battle art (not scaled selection)",
+    "one targeted generation correction",
+    "piecewise lower-body shortening for chibi proportion",
+    "white-background segmentation",
+    "uniform 512 canvas and baseline"
+  ],
+  "knownIssues": [
+    "Side uses first generated battle view to retain raised hand; fist closed rather than fully open C. Grip anchor is at fist center.",
+    "Static flattened illustrations, not bone-separated or animated. Lower torso/legs were proportionally shortened after model failed strict two-head ratio; verify small-size readability in game."
+  ],
+  "weapon": {
+    "file": "weapon.png",
+    "frameSize": {
+      "width": 512,
+      "height": 512
+    },
+    "grip": {
+      "x": 0.50806,
+      "y": 0.5081
+    },
+    "sourceAxis": {
+      "x": 0,
+      "y": -1
+    },
+    "orientation": "tip-up",
+    "rotationOffsetDegrees": 0,
+    "source": "/workspace/games/shenhua-arena/art-direction/roster-v3/weapons/wukong-default.jpg",
+    "description": "previous original independent gold-capped staff",
+    "renderBehindCharacter": true
+  },
+  "quality": {
+    "alphaChecked": true,
+    "checkerboardReadChecked": true,
+    "allViewsUnarmed": true,
+    "fullBodyUncropped": true,
+    "trueRearView": true,
+    "artApproval": "selection style approved; battle sheets not yet user-reviewed",
+    "productionStatus": "static integration candidate, not animation or separated rig"
+  }
+}

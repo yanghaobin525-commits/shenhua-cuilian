@@ -1,0 +1,94 @@
+{
+  "id": "bailong",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "footY": 0.92,
+  "foot": {
+    "x": 0.5,
+    "y": 0.92
+  },
+  "sideFaces": "left",
+  "views": {
+    "front": {
+      "file": "front.png",
+      "handAnchor": {
+        "x": 0.345703125,
+        "y": 0.408203125
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "front",
+      "sourceColumn": 0,
+      "mirrored": false
+    },
+    "back": {
+      "file": "back.png",
+      "handAnchor": {
+        "x": 0.671875,
+        "y": 0.427734375
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "back",
+      "sourceColumn": 1,
+      "mirrored": false
+    },
+    "side": {
+      "file": "side.png",
+      "handAnchor": {
+        "x": 0.3203125,
+        "y": 0.427734375
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "left",
+      "sourceColumn": 2,
+      "mirrored": false
+    }
+  },
+  "staticOnly": true,
+  "animationComplete": false,
+  "source": "/workspace/games/shenhua-arena/art-direction/battle-approved-v6/_wip/bailong-battle-r1.jpg",
+  "processing": [
+    "generated new three-view unarmed battle art from locked v6/v5 selection identity (not a scaled selection portrait)",
+    "one targeted generation correction to raise empty C-grip hands in all three views",
+    "cream-background flood key; enclosed paper pockets between the legs and ground-oval / sole-smudge removal; no extra outline filter",
+    "uniform 512 canvas with feet at y=0.92 and foot mid-x centered",
+    "Integration visual QC: hand anchors placed in actual palm openings; supplied side drawing faces left, corrected metadata rather than art."
+  ],
+  "knownIssues": [
+    "Static flattened illustrations only; anchors are measured C-grip centers, not a bone rig; animationComplete is false.",
+    "Humanoid dragon-prince with white hair/scales and deep-teal armor, not a horse. Light-blue 浅蓝浪纹 kept on front and side.",
+    "Back-view fingers remain slightly more claw-like than a tight tubular sword grip; front and side are open C-grips. No sword or scabbard on the body.",
+    "Slightly taller than the other three (long coat + horns); still a new short-body chibi, not a shrunken selection. Scale pattern stays fairly regular, as on the locked v6 portrait.",
+    "Linework is slightly cleaner than the locked v6 selection."
+  ],
+  "weapon": {
+    "file": "weapon.png",
+    "frameSize": {
+      "width": 512,
+      "height": 512
+    },
+    "grip": {
+      "x": 0.5,
+      "y": 0.76172
+    },
+    "sourceAxis": {
+      "x": 0,
+      "y": -1
+    },
+    "orientation": "tip-up",
+    "rotationOffsetDegrees": 0,
+    "rotation": 0,
+    "source": "/workspace/games/shenhua-arena/art-direction/roster-v3/weapons/bailong-longwen-jian.png",
+    "description": "reused original v3 龙纹剑, cream fringe re-keyed; not a third-party cutout"
+  }
+}

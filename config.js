@@ -13,6 +13,20 @@ window.GAME_CONFIG = {
   title: '神话·淬炼',            // 游戏名（标题画面、结算界面使用）
   fontFamily: '"Noto Sans SC","PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif',
 
+  /* ---------------- 音频（原创 Web Audio 合成，无外链音频） ----------------
+   * master / music / sfx: 0~1，音量克制；节拍 bpm 可调整。
+   * UI 可调用 ShenhuaAudio.setMuted(true)、setVolume(0.4) 等 API。
+   */
+  audio: {
+    enabled: true, master: 0.42, music: 0.48, sfx: 0.5,
+    bpm: 88, bossBpm: 104,       // 16 小节固定旋律，Boss 加快低鼓与拨弦
+    maxVoices: 64,              // 同时发声上限，命中/治疗按事件节流防止爆音
+    lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
+  },
+
+  releaseId: 'approved-v6-20261116',
+  artVersion: 'approved-v6',
+  combatArt: { canvasSize: 512, footY: 0.92, fps: 24, attackDuration: 0.36, castDuration: 0.65, handRadius: 0.043 },
   maxPixelRatio: 2,             // 渲染清晰度上限（视网膜屏=2 最清晰；老设备卡顿可改 1.5 或 1）
 
   arena: {
@@ -47,20 +61,45 @@ window.GAME_CONFIG = {
       damageMul: 1.0, critChance: 0.05, critMul: 1.6, healMul: 1.0, regen: 3,
     },
     erlang: {
-      name: '二郎神', title: '清源妙道真君', tags: ['物理输出', '远程'], sprite: 'hero_erlang', size: 112, weapon: 'bow',
+      name: '二郎神', title: '清源妙道真君', tags: ['物理输出', '近战'], sprite: 'hero_erlang', size: 112, weapon: 'blade',
       talent: { name: '天眼洞察', desc: '天眼识破弱点：伤害 +20%，暴击率 25%。' },
       hp: 620, speed: 245, armor: 0.1, threat: 1.0,
       damageMul: 1.2, critChance: 0.25, critMul: 1.8, healMul: 1.0, regen: 0,
     },
     change: {
-      name: '嫦娥', title: '广寒仙子', tags: ['治疗', '魔法'], sprite: 'hero_change', size: 112, weapon: 'staff',
+      name: '嫦娥', title: '广寒仙子', tags: ['治疗', '魔法'], sprite: 'hero_change', size: 112, weapon: 'fan',
       talent: { name: '广寒清辉', desc: '月华加持：治疗效果 +40%，每秒自动回血。' },
       hp: 560, speed: 240, armor: 0.05, threat: 0.8,
       damageMul: 1.0, critChance: 0.05, critMul: 1.6, healMul: 1.4, regen: 5,
     },
+    tangseng: {
+      name: '唐僧', title: '旃檀功德佛', tags: ['治疗', '佛法'], sprite: 'hero_tangseng', size: 112, weapon: 'monkstaff',
+      talent: { name: '佛光护佑', desc: '慈悲护持：治疗提高 30%，每秒回复生命。' },
+      hp: 700, speed: 225, armor: 0.15, threat: 0.9, damageMul: 1, critChance: 0.05, critMul: 1.6, healMul: 1.3, regen: 5,
+    },
+    wukong: {
+      name: '孙悟空', title: '齐天大圣', tags: ['近战', '暴击'], sprite: 'hero_wukong', size: 112, weapon: 'cudgel',
+      talent: { name: '火眼金睛', desc: '身法敏捷：移速较高，暴击率 25%。' },
+      hp: 720, speed: 270, armor: 0.12, threat: 1.3, damageMul: 1.15, critChance: 0.25, critMul: 1.8, healMul: 1, regen: 1,
+    },
+    bajie: {
+      name: '猪八戒', title: '净坛使者', tags: ['肉盾', '近战'], sprite: 'hero_bajie', size: 112, weapon: 'rake',
+      talent: { name: '天蓬厚甲', desc: '皮糙肉厚：高生命、减伤 20%，持续回复生命。' },
+      hp: 1100, speed: 210, armor: 0.2, threat: 2.2, damageMul: 1, critChance: 0.05, critMul: 1.6, healMul: 1, regen: 4,
+    },
+    shaseng: {
+      name: '沙僧', title: '金身罗汉', tags: ['肉盾', '近战'], sprite: 'hero_shaseng', size: 112, weapon: 'crescent',
+      talent: { name: '流沙镇守', desc: '沉稳守护：减伤 22%，较高生命与仇恨。' },
+      hp: 980, speed: 220, armor: 0.22, threat: 2.4, damageMul: 1.05, critChance: 0.05, critMul: 1.6, healMul: 1, regen: 2,
+    },
+    bailong: {
+      name: '白龙马', title: '八部天龙', tags: ['近战', '迅捷'], sprite: 'hero_bailong', size: 112, weapon: 'sword',
+      talent: { name: '龙鳞护体', desc: '龙鳞防护：减伤 18%，身手迅捷。' },
+      hp: 760, speed: 265, armor: 0.18, threat: 1.2, damageMul: 1.1, critChance: 0.15, critMul: 1.7, healMul: 1, regen: 2,
+    },
   },
 
-  /* ---------------- 武器（普攻 + 两个技能都来自武器） ----------------
+  /* ---------------- 武器（普攻 + 单主动来自武器） ----------------
    * role 决定 AI 拿到这把武器时的打法：tank 顶前拉怪 / melee 近战输出 / ranged 远程输出 / healer 治疗
    * attack.kind：melee 扇形近战（range 距离, arc 角度）/ projectile 飞行物（projSpeed 飞行速度）
    * skill.kind：
@@ -136,3 +175,16 @@ window.GAME_CONFIG = {
     followDistance: 140,         // 无敌人时跟随玩家的距离
   },
 };
+
+// 武器独立外观来源；保留旧弓/杖数值作为可选平衡模板，不进入掉落池。
+Object.assign(window.GAME_CONFIG.weapons, {
+  fan: { name:'桂月团扇', role:'healer', color:0x86b7b1, attack:{kind:'projectile',damage:26,range:420,cooldown:0.7,projSpeed:620,tex:'moon'}, skill1:{kind:'heal',name:'月光',heal:230,radius:340,cooldown:8} },
+  monkstaff: { name:'九环锡杖',role:'healer',color:0xd2aa50,attack:{kind:'projectile',damage:30,range:400,cooldown:0.75,projSpeed:600,tex:'moon'},skill1:{kind:'heal',name:'佛光',heal:210,radius:320,cooldown:8} },
+  cudgel: {name:'金箍棒',role:'melee',color:0xdcae43,attack:{kind:'melee',damage:50,range:118,arc:135,cooldown:0.56},skill1:{kind:'spin',name:'横扫千军',damage:115,radius:180,cooldown:6}},
+  rake: {name:'九齿钉耙',role:'tank',color:0x83a5a3,attack:{kind:'melee',damage:48,range:120,arc:125,cooldown:0.68},skill1:{kind:'taunt',name:'天蓬怒吼',damage:50,radius:210,tauntTime:4,shieldTime:4,shieldReduce:0.5,cooldown:10}},
+  crescent: {name:'降妖宝杖',role:'tank',color:0xa7b5c2,attack:{kind:'melee',damage:52,range:120,arc:130,cooldown:0.65},skill1:{kind:'spin',name:'流沙旋斩',damage:110,radius:175,cooldown:7}},
+  sword: {name:'龙纹剑',role:'melee',color:0xa9daee,attack:{kind:'melee',damage:44,range:110,arc:105,cooldown:0.48},skill1:{kind:'cleave',name:'破浪',damage:175,length:330,width:100,cooldown:8}}
+});
+window.GAME_CONFIG.weaponArt = {spear:'nezha',blade:'erlang',fan:'change',monkstaff:'tangseng',cudgel:'wukong',rake:'bajie',crescent:'shaseng',sword:'bailong'};
+window.GAME_CONFIG.dropWeapons = Object.keys(window.GAME_CONFIG.weaponArt);
+window.GAME_CONFIG.weaponVisualScale = { fan: 0.62 }; // 团扇小于头部；只调外观不改范围/伤害

@@ -1,0 +1,22 @@
+{
+  "name": "shenhua-arena",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/audio-system.test.cjs && node test/combat-art.test.cjs",
+    "test:v6": "python3 tools/validate-v6.py && node test/v6-browser.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "phaser": "^3.90.0",
+    "playwright-core": "^1.65.1"
+  }
+}

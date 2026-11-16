@@ -1,0 +1,37 @@
+{
+  "approvedComposite": "art-direction/roster-linework-v6/all-eight-selection.jpg",
+  "heroes": {
+    "nezha": {
+      "source": "art-direction/final-selection-review/nezha-selection-reviewed.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    },
+    "erlang": {
+      "source": "art-direction/roster-linework-v6/erlang-selection.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    },
+    "change": {
+      "source": "art-direction/roster-linework-v6/change-selection.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    },
+    "tangseng": {
+      "source": "art-direction/roster-linework-v6/tangseng-selection.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    },
+    "wukong": {
+      "source": "art-direction/roster-linework-v5/wukong-selection.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    },
+    "bajie": {
+      "source": "art-direction/roster-linework-v5/bajie-selection.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    },
+    "shaseng": {
+      "source": "art-direction/roster-linework-v6/shaseng-selection.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    },
+    "bailong": {
+      "source": "art-direction/roster-linework-v6/bailong-selection.jpg",
+      "processing": "Edge-connected paper removal only; selection retains weapon; never used as combat body."
+    }
+  }
+}

@@ -1,0 +1,8 @@
+// In-engine QA fixture, not normal gameplay: all eight mounted weapons at inspection zoom.
+const {chromium}=require('playwright-core');
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/google-chrome',args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});try{const page=await browser.newPage({viewport:{width:1180,height:820},deviceScaleFactor:2,hasTouch:true,isMobile:true});await page.goto((process.argv[2]||'http://127.0.0.1:8787/')+'?hero=nezha&god=1');await page.waitForFunction(()=>window.__hud?.sys.isActive());await page.evaluate(()=>{
+ const b=__battle;__hud.sys.setVisible(false);b.heroes.forEach(h=>{h.spr.destroy();h.shadow.destroy();h.art.weapon.destroy();h.art.hand.destroy();});b.heroes=Object.keys(GAME_CONFIG.heroes).map((k,i)=>b.makeHero(k,1000+(i%4-1.5)*180,590+Math.floor(i/4)*270,i===0));b.player=b.heroes[0];b.cameras.main.stopFollow().setZoom(3.25).centerOn(1000,700);b.phase='break';b.breakT=999;b.barG.clear();b.scene.pause();
+ b.heroes.forEach(h=>b.add.text(h.x,h.y+20,GAME_CONFIG.heroes[h.key].name,{fontFamily:GAME_CONFIG.fontFamily,fontSize:16,color:'#f4e6c8',stroke:'#100b09',strokeThickness:4}).setOrigin(.5).setDepth(999999));window.__lineup=b;
+ });
+ for(const [view,a] of [['front',Math.PI/2],['back',-Math.PI/2],['right',0],['left',Math.PI]]){await page.evaluate(a=>{for(const h of __lineup.heroes){h.faceAng=a;h.t+=.1;h.art.update(.1);}},a);await page.waitForFunction(v=>__lineup.heroes.every(h=>h.art.state?.view===(v==='right'||v==='left'?'side':v)),view);await page.screenshot({path:'screens/v6-lineup-'+view+'.png'});}
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

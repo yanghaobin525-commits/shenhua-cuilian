@@ -1,0 +1,93 @@
+{
+  "id": "tangseng",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "footY": 0.92,
+  "foot": {
+    "x": 0.5,
+    "y": 0.92
+  },
+  "sideFaces": "right",
+  "views": {
+    "front": {
+      "file": "front.png",
+      "handAnchor": {
+        "x": 0.35156,
+        "y": 0.44141
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "front",
+      "sourceColumn": 0,
+      "mirrored": false
+    },
+    "back": {
+      "file": "back.png",
+      "handAnchor": {
+        "x": 0.65625,
+        "y": 0.44141
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "back",
+      "sourceColumn": 1,
+      "mirrored": false
+    },
+    "side": {
+      "file": "side.png",
+      "handAnchor": {
+        "x": 0.62109375,
+        "y": 0.4375
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.92
+      },
+      "facing": "right",
+      "sourceColumn": 2,
+      "mirrored": false
+    }
+  },
+  "staticOnly": true,
+  "animationComplete": false,
+  "source": "/workspace/games/shenhua-arena/art-direction/battle-approved-v6/_wip/tangseng-battle-r1.jpg",
+  "processing": [
+    "generated new three-view unarmed battle art from locked v6/v5 selection identity (not a scaled selection portrait)",
+    "one targeted generation correction to raise empty C-grip hands in all three views",
+    "cream-background flood key; enclosed paper pockets between the legs and ground-oval / sole-smudge removal; no extra outline filter",
+    "uniform 512 canvas with feet at y=0.92 and foot mid-x centered",
+    "Final local art correction: right-facing side with far-shoulder kasaya and nine distinct 3+3+3 staff rings; integration moved side grip from chest beads to palm at (318,224)."
+  ],
+  "knownIssues": [
+    "Static flattened illustrations only; anchors are measured C-grip centers, not a bone rig; animationComplete is false.",
+    "Raised empty hands are open C-grips rather than tight tubular wraps. Linework is slightly cleaner than the locked v6 selection, with fewer form-following volume strokes on the kasaya.",
+    "Battle proportion is about 2.2–2.5 heads including the short body under a large skull (crown extra); this is a new drawing, not a shrunken selection portrait.",
+    "Corrected right-facing side has the kasaya on the far shoulder; faint gold-grid traces remain on the orange near sleeve."
+  ],
+  "weapon": {
+    "file": "weapon.png",
+    "frameSize": {
+      "width": 512,
+      "height": 512
+    },
+    "grip": {
+      "x": 0.5,
+      "y": 0.42969
+    },
+    "sourceAxis": {
+      "x": 0,
+      "y": -1
+    },
+    "orientation": "tip-up",
+    "rotationOffsetDegrees": 0,
+    "rotation": 0,
+    "source": "/workspace/games/shenhua-arena/art-direction/battle-approved-v6/_wip/tangseng-weapon-r1.jpg",
+    "description": "new original isolated 九环锡杖, top-frame hanging rings matching approved selection form"
+  }
+}
