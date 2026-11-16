@@ -1,0 +1,12 @@
+node_modules/
+screens/
+test/
+assets/src/
+dist/
+*.log
+.env*
+serve.sh
+build_single.py
+tools_cutout.py
+package.json
+package-lock.json
