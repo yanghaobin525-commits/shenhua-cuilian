@@ -66,7 +66,7 @@ class CombatArt {
     const m=metadata(s,h.key,this.view); if(!m.hand)return;
     const flip=this.view==='side' ? ((co<0?-1:1)*(m.sideFaces==='left'?-1:1)) : 1;
     h.spr.setScale(h.base*flip,h.base).setAngle(0).setOrigin(.5,m.foot);
-    h.spr.setPosition(foot.x,foot.y).setDepth(10+h.y);
+    h.spr.setPosition(foot.x,foot.y).setDepth(s.view?s.view.depth(h.x,h.y):10+h.y);
     const unitScale=h.def.size/512;
     const t=h.t, cfg=C.combatArt, p=h.actionT>0?1-h.actionT/h.actionDuration:0;
     const swing=h.actionT>0?Math.sin(Math.PI*p):0;
@@ -84,7 +84,7 @@ class CombatArt {
     const weaponScale=unitScale*((C.weaponVisualScale||{})[h.weapon]||1);
     const rest=Number(wm.weapon.rotation || wm.weapon.rotationRad || 0);
     const angle=rest+(h.action==='cast'?-swing*.45:swing*1.55)*sign*flip;
-    this.weapon.setTexture('v6_'+wk+'_weapon').setOrigin(grip.x,grip.y).setScale(weaponScale*flip,weaponScale).setRotation(angle).setPosition(handX,handY).setAlpha(h.spr.alpha).setVisible(true).setDepth(h.y+10+(this.view==='back'?-.1:.1));
+    this.weapon.setTexture('v6_'+wk+'_weapon').setOrigin(grip.x,grip.y).setScale(weaponScale*flip,weaponScale).setRotation(angle).setPosition(handX,handY).setAlpha(h.spr.alpha).setVisible(true).setDepth((s.view?s.view.depth(h.x,h.y):h.y+10)+(this.view==='back'?-.1:.1));
     const frame=Math.floor(t*cfg.fps);
     if(frame!==this.last){
       this.last=frame;const ctx=this.texture.getContext(),img=s.textures.get('v6_'+h.key+'_'+this.view).getSourceImage();ctx.setTransform(.5,0,0,.5,0,0);ctx.clearRect(0,0,512,512);
@@ -102,7 +102,7 @@ class CombatArt {
       this.texture.refresh();
       const pc=this.patch.getContext(), radius=512*cfg.handRadius;pc.clearRect(0,0,64,64);pc.save();pc.beginPath();pc.ellipse(32,32,radius*.72,radius,0,0,Math.PI*2);pc.clip();pc.drawImage(img,32-m.hand.x*512,32-m.hand.y*512);pc.restore();this.patch.refresh();
     }
-    this.hand.setPosition(handX,handY).setScale(unitScale*flip,unitScale).setAlpha(h.spr.alpha).setVisible(this.view!=='back').setDepth(h.y+10.2);
+    this.hand.setPosition(handX,handY).setScale(unitScale*flip,unitScale).setAlpha(h.spr.alpha).setVisible(this.view!=='back').setDepth((s.view?s.view.depth(h.x,h.y):h.y+10)+.2);
     if(h.flashT>0){this.weapon.setTint(0xff9a8a);this.hand.setTint(0xff9a8a);}else{this.weapon.clearTint();this.hand.clearTint();}
     this.state={view:this.view,mode:this.mode,flip,weapon:h.weapon,hand:{x:handX,y:handY},grip:{x:this.weapon.x,y:this.weapon.y},weaponDepth:this.weapon.depth,bodyDepth:h.spr.depth};
   }

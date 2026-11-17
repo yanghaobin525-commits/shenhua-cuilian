@@ -8,10 +8,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/audio-system.test.cjs && node test/combat-art.test.cjs && node test/projection.test.cjs && node test/combat-cycle.test.cjs && node --test test/run-system-unit.cjs",
+    "test": "node test/audio-system.test.cjs && node test/combat-art.test.cjs && node test/projection.test.cjs && node test/combat-cycle.test.cjs && node --test test/run-system-unit.cjs && node test/orbit.test.cjs",
     "test:v6": "python3 tools/validate-v6.py && node test/v8-roster.cjs",
     "test:v7": "python3 tools/validate-v6.py && node test/projection-browser.cjs && node test/v8-roster.cjs",
-    "test:v8": "python3 tools/validate-v6.py && node test/v8-browser.cjs && node test/v8-roster.cjs && node test/projection-browser.cjs"
+    "test:v8": "python3 tools/validate-v6.py && node test/v8-browser.cjs && node test/v8-roster.cjs && node test/projection-browser.cjs && node test/orbit-browser.cjs",
+    "test:orbit": "node test/orbit.test.cjs && node test/orbit-browser.cjs"
   },
   "keywords": [],
   "author": "",

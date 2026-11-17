@@ -2,7 +2,7 @@
  * 《神话·淬炼》 数值配置文件
  * 想调平衡只改这个文件即可，改完刷新页面生效。
  * 单位约定：
- *   - 距离/范围/尺寸：世界像素（竞技场默认 2000 x 1400）
+ *   - 距离/范围/尺寸：世界像素（竞技场默认 1400 x 1000）
  *   - 速度：世界像素 / 秒
  *   - 冷却 / 持续时间：秒
  *   - 伤害、治疗、血量：整数点数
@@ -24,7 +24,7 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'roguelike-v8-20261117',
+  releaseId: 'mountain-orbit-v8-20261117',
   artVersion: 'approved-v6',
   combatArt: { canvasSize: 512, footY: 0.92, fps: 24, attackDuration: 0.36, castDuration: 0.65, handRadius: 0.043 },
   maxPixelRatio: 2,             // 渲染清晰度上限（视网膜屏=2 最清晰；老设备卡顿可改 1.5 或 1）
@@ -32,10 +32,10 @@ window.GAME_CONFIG = {
   runDefaults: { enemyHpMultiplier: 1, difficulty: 1, loops: 1, endless: false },
   combatWindows: { attack: {windup:.14,active:.08,recovery:.20,moveScale:.12}, cast: {windup:.28,active:.12,recovery:.28,moveScale:.05}, lightStun:.10, heavyStun:.23, hitGuard:.32, heavyThreshold:90 },
   rescue: { radius:125, seconds:2.4, bleedOut:24, hpRatio:.35 },
-  view25d: { zoomScale:1.45, yScale: 0.55, shear: 0.28, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 210, viewWidth: 1650, viewHeight: 1150 },
+  view25d: { zoomScale:1.55, parallax:{far:.025,mid:.08,near:.13,farYaw:.03,midYaw:.08,nearYaw:.12,farOverscan:1.3,midOverscan:1.45,cloudDrift:32,cloudSpeed:.09,nearAlpha:.22}, rotateStep:Math.PI/4, rotateSmooth:.14, cliffHeight:180, yScale: 0.55, shear: 0.28, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 140, viewWidth: 1650, viewHeight: 1150 },
   arena: {
-    width: 2000,                 // 竞技场宽
-    height: 1400,                // 竞技场高
+    width: 1400,                 // 竞技场宽
+    height: 1000,                // 竞技场高
     viewWidth: 1250,             // 屏幕上大约能看到的世界宽度（越小镜头越近）
   },
 

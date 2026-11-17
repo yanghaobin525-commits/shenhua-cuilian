@@ -177,3 +177,6 @@ test('weapon capability changes affect applicable cards, but cannot invalidate a
 
 
 test('intermission regen consumes hostile debt after max-HP growth without awarding healing',()=>{const r=run();r.startEncounter();r.registerEnemy({id:'e',maxHp:10});damage(r,'wound','e','h0',100,70);r.syncHeroHP('h0',70,200);r.syncHeroHP('h0',80);const result=r.recordHeal({eventId:'heal-after-rest',sourceId:'h2',targetId:'h0',hpBefore:80,hpAfter:110});assert.equal(result.actual,30);assert.equal(result.credited,20);assert.equal(stats(r,'h2').healing,20);});
+
+
+test('final vitality reward freezes the same final max HP as the engine applies',()=>{let checked=false;for(let i=0;i<80;i++){const r=run({seed:'terminal-vitality-'+i,waves:[{boss:true,spawn:{}}]});r.startEncounter();const cards=r.clearEncounter();if(!cards.some(c=>c.id==='vitality'))continue;r.chooseReward('vitality');const settled=r.settlement();assert.equal(settled.team[0].maxHp,110);assert.equal(settled.team[0].hp,100);assert.equal(settled.build.maxHpMultiplier,1.1);checked=true;break;}assert(checked);});

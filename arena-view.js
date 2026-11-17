@@ -1,57 +1,44 @@
-/* Original 2.5D seal courtyard. World XY remains the sole simulation space;
+/* Original rotating 2.5D mountain island. World XY remains the sole simulation space;
  * ground is affine projected; Z is display-only; actors are upright billboards.
  */
 (function(root){
 'use strict';
 class ArenaView {
- constructor(config,arena){this.config=config;this.arena=arena;this.shear=config.shear;this.ys=config.yScale;this.ox=config.marginX;this.oy=config.marginY;this.width=arena.width+Math.abs(this.shear)*arena.height+this.ox*2;this.height=arena.height*this.ys+this.oy+config.bottomMargin;this.props=[];}
- project(x,y,z=0){return {x:this.ox+x+this.shear*y,y:this.oy+y*this.ys-z};}
- unproject(x,y,z=0){const wy=(y+z-this.oy)/this.ys;return {x:x-this.ox-this.shear*wy,y:wy};}
- vector(x,y){return {x:x+this.shear*y,y:y*this.ys};}
- input(x,y){return {x:x-this.shear*y/this.ys,y:y/this.ys};}
- depth(y,offset=0){return 10+y+offset;}
+ constructor(config,arena){this.config=config;this.arena=arena;this.shear=config.shear;this.ys=config.yScale;this.angle=0;this.targetAngle=0;this.props=[];const r=Math.hypot(arena.width,arena.height)/2;this.ox=config.marginX+r*Math.hypot(1,this.shear);this.oy=config.marginY+r*this.ys;this.width=this.ox*2;this.height=this.oy+r*this.ys+config.bottomMargin;}
+ rotateVector(x,y){const c=Math.cos(this.angle),s=Math.sin(this.angle);return{x:c*x-s*y,y:s*x+c*y};}
+ project(x,y,z=0){const p=this.rotateVector(x-this.arena.width/2,y-this.arena.height/2);return{x:this.ox+p.x+this.shear*p.y,y:this.oy+p.y*this.ys-z};}
+ unproject(x,y,z=0,angle=this.angle){const vy=(y+z-this.oy)/this.ys,vx=x-this.ox-this.shear*vy,c=Math.cos(angle),s=Math.sin(angle);return{x:this.arena.width/2+c*vx+s*vy,y:this.arena.height/2-s*vx+c*vy};}
+ vector(x,y){const p=this.rotateVector(x,y);return{x:p.x+this.shear*p.y,y:p.y*this.ys};}
+ input(x,y,angle=this.angle){const vy=y/this.ys,vx=x-this.shear*vy,c=Math.cos(angle),s=Math.sin(angle);return{x:c*vx+s*vy,y:-s*vx+c*vy};}
+ depth(x,y,offset=0){if(y===undefined){y=x;x=this.arena.width/2;}return 2000+this.rotateVector(x-this.arena.width/2,y-this.arena.height/2).y+(offset||0);}
+ turn(sign){this.targetAngle+=sign*(this.config.rotateStep||Math.PI/4);}
+ setAffine(container,inner,a,b,c,d){const beta=.5*Math.atan2(2*(a*b+c*d),a*a+c*c-b*b-d*d),co=Math.cos(beta),si=Math.sin(beta),u=a*co+b*si,v=c*co+d*si,s1=Math.hypot(u,v)||1,s2=(a*d-b*c)/s1;container.setRotation(Math.atan2(v,u)).setScale(s1,s2);inner.setRotation(-beta);}
  circle(x,y,rx,ry=rx,steps=48){return Array.from({length:steps},(_,i)=>{const a=i/steps*Math.PI*2;return this.project(x+Math.cos(a)*rx,y+Math.sin(a)*ry);});}
  sector(x,y,r,a,arc,steps=32){const p=[this.project(x,y)];for(let i=0;i<=steps;i++)p.push(this.project(x+Math.cos(a-arc/2+arc*i/steps)*r,y+Math.sin(a-arc/2+arc*i/steps)*r));return p;}
  groundShape(g,points,fill=true,stroke=true){if(fill)g.fillPoints(points,true);if(stroke)g.strokePoints(points,true);}
  build(scene){
-  const {width:W,height:H}=this.arena,cv=document.createElement('canvas');cv.width=Math.ceil(this.width);cv.height=Math.ceil(this.height);const c=cv.getContext('2d');
-  const rand=(()=>{let s=84371;return()=>{s=(Math.imul(s,1664525)+1013904223)|0;return(s>>>0)/4294967296;};})();
-  const poly=(p,fill,stroke='#191c1a',lw=3)=>{c.beginPath();p.forEach((v,i)=>(i?c.lineTo(v.x,v.y):c.moveTo(v.x,v.y)));c.closePath();if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.lineWidth=lw;c.strokeStyle=stroke;c.stroke();}};
-  const p=(x,y,z=0)=>this.project(x,y,z);
-  let bg=c.createLinearGradient(0,0,0,cv.height);bg.addColorStop(0,'#162327');bg.addColorStop(.6,'#25292a');bg.addColorStop(1,'#151c1c');c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
-  // Platform's visible vertical front and right faces, not a flattened picture.
-  poly([p(0,H),p(W,H),p(W,H,-70),p(0,H,-70)],'#323c3b','#101716',5);
-  poly([p(W,0),p(W,H),p(W,H,-70),p(W,0,-70)],'#253332','#101716',5);
-  for(let x=0;x<W;x+=160){c.beginPath();c.moveTo(p(x,H).x,p(x,H).y);c.lineTo(p(x,H,-70).x,p(x,H,-70).y);c.strokeStyle='#111c1c';c.lineWidth=3;c.stroke();}
-  poly([p(0,0),p(W,0),p(W,H),p(0,H)],'#62645a','#121c1b',8);
-  c.save();c.beginPath();[p(0,0),p(W,0),p(W,H),p(0,H)].forEach((v,i)=>(i?c.lineTo(v.x,v.y):c.moveTo(v.x,v.y)));c.closePath();c.clip();c.setTransform(1,0,this.shear,this.ys,this.ox,this.oy);
-  // Individually irregular stone slabs, oriented on the world plane.
-  const colors=['#676b60','#727366','#5a635c','#7b7a68','#60685f','#6c7165'];
-  for(let row=0,y=-30;y<H+80;y+=165,row++)for(let col=-1,x=(row%2)*94-170;x<W+80;x+=188,col++){
-   const j=()=>rand()*12-6;
-   const pts=[{x:x+7+j(),y:y+5+j()},{x:x+179+j(),y:y+8+j()},{x:x+184+j(),y:y+150+j()},{x:x+8+j(),y:y+158+j()}];poly(pts,colors[(rand()*colors.length)|0],'#303c36',4);
-   c.strokeStyle='#a0a18a';c.globalAlpha=.4;c.lineWidth=2;c.beginPath();c.moveTo(x+18,y+19);c.lineTo(x+159,y+21+j());c.stroke();c.globalAlpha=1;
-   if(rand()>.43){c.beginPath();c.moveTo(x+28,y+151);c.lineTo(x+60,y+107);c.lineTo(x+53,y+77);c.lineTo(x+74,y+49);c.strokeStyle='#3b4840';c.lineWidth=2;c.stroke();}
-   for(let k=0;k<3;k++){c.fillStyle='#384b3e';c.globalAlpha=.28;c.beginPath();c.ellipse(x+rand()*180,y+rand()*150,4+rand()*14,2+rand()*6,rand()*3,0,Math.PI*2);c.fill();c.globalAlpha=1;}
-  }
-  // Cinnabar binding seal with worn stone inlay; no copied commercial texture.
-  c.translate(W/2,H/2);for(const r of [370,350,300]){c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.strokeStyle=r===350?'#b39967':'#514840';c.lineWidth=r===350?7:5;c.stroke();}
-  for(let i=0;i<12;i++){const a=i*Math.PI/6;c.save();c.rotate(a);c.strokeStyle='#7b342b';c.lineWidth=7;c.beginPath();c.moveTo(309,-22);c.lineTo(334,-22);c.lineTo(334,15);c.lineTo(316,15);c.lineTo(316,3);c.lineTo(342,3);c.stroke();c.restore();}
-  c.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4-Math.PI/8;const x=Math.cos(a)*265,y=Math.sin(a)*265;i?c.lineTo(x,y):c.moveTo(x,y);}c.closePath();c.strokeStyle='#773c32';c.lineWidth=9;c.stroke();
-  c.beginPath();c.arc(0,0,138,0,Math.PI*2);c.fillStyle='#4c5951';c.fill();c.lineWidth=6;c.strokeStyle='#a38e65';c.stroke();
-  c.strokeStyle='#ad7752';c.lineWidth=8;for(let i=0;i<4;i++){c.save();c.rotate(i*Math.PI/2);c.beginPath();c.moveTo(-48,-26);c.lineTo(12,-26);c.lineTo(12,-83);c.lineTo(60,-83);c.moveTo(-48,5);c.lineTo(-48,49);c.lineTo(7,49);c.stroke();c.restore();}
-  c.restore();
-  // Edge inlay and ground shadows of the freestanding structures.
-  for(const yy of [25,H-28]){c.beginPath();c.moveTo(p(25,yy).x,p(25,yy).y);c.lineTo(p(W-25,yy).x,p(W-25,yy).y);c.strokeStyle='#ae9e77';c.lineWidth=3;c.stroke();}
-  scene.textures.addCanvas('courtyard-floor',cv);scene.add.image(0,0,'courtyard-floor').setOrigin(0).setDepth(-10000);
-  const definitions=[
-   ['gate',1000,-20,275],['column',210,0,190],['column',1790,0,190],
-   ['lamp',35,300,145],['lamp',1965,300,145],['tree',-35,720,260],['tree',2035,740,240],
-   ['broken',35,990,115],['column',1965,1050,190],['column',230,1430,205],['column',1770,1430,205],
-   ['lamp',660,1450,150],['lamp',1350,1450,150],['rock',80,1300,75],['rock',1910,1300,80]
-  ];
-  for(let i=0;i<definitions.length;i++){const [kind,x,y,h]=definitions[i];this.makeProp(scene,kind,x,y,h,i);}
-  scene.events.once('shutdown',()=>{scene.textures.remove('courtyard-floor');this.props.forEach(v=>scene.textures.remove(v.key));});
+  this.scene=scene;const W=this.arena.width,H=this.arena.height,src=scene.textures.get('mountain-top').getSourceImage();
+  this.far=scene.add.image(0,0,'mountain-far').setScrollFactor(0).setDepth(-20000).setTint(0xb8c5bf);
+  this.mid=scene.add.image(0,0,'mountain-mid').setScrollFactor(0).setDepth(-19000).setAlpha(.72);
+  const edge=this.edge=[{x:85,y:0},{x:W*.4,y:-18},{x:W-85,y:0},{x:W+10,y:100},{x:W+4,y:H*.52},{x:W,y:H-80},{x:W-90,y:H+8},{x:W*.55,y:H+18},{x:90,y:H},{x:-10,y:H-90},{x:-15,y:H*.48},{x:0,y:80}];
+  const cv=document.createElement('canvas');cv.width=W+40;cv.height=H+40;const c=cv.getContext('2d');c.translate(20,20);c.beginPath();edge.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.closePath();c.save();c.clip();c.drawImage(src,0,0,W,H);c.fillStyle='rgba(24,35,32,.21)';c.fillRect(-20,-20,W+40,H+40);c.restore();c.lineWidth=10;c.strokeStyle='#111717';c.stroke();c.lineWidth=2;c.strokeStyle='#b1ac87';c.stroke();scene.textures.addCanvas('island-top',cv);
+  this.floorRoot=scene.add.container(this.ox,this.oy).setDepth(-8000);this.floorTurn=scene.add.container();this.floorRoot.add(this.floorTurn);this.floorTurn.add(scene.add.image(0,0,'island-top').setDisplaySize(W+40,H+40));this.setAffine(this.floorRoot,this.floorTurn,1,this.shear,0,this.ys);this.floorBase=this.floorTurn.rotation;
+  const cliff=document.createElement('canvas');cliff.width=512;cliff.height=256;const cc=cliff.getContext('2d');cc.save();cc.translate(256,128);cc.rotate(Math.PI/2);cc.drawImage(src,70,80,420,600,-128,-256,256,512);cc.restore();cc.fillStyle='rgba(12,22,23,.55)';cc.fillRect(0,0,512,256);cc.strokeStyle='#0c1618';cc.lineWidth=5;for(let i=0;i<12;i++){const x=i*47;cc.beginPath();cc.moveTo(x,0);cc.lineTo(x-19,70);cc.lineTo(x+9,145);cc.lineTo(x-24,256);cc.stroke();}scene.textures.addCanvas('island-cliff',cliff);
+  this.faces=edge.map((a,i)=>{const b=edge[(i+1)%edge.length],L=Math.hypot(b.x-a.x,b.y-a.y),root=scene.add.container().setDepth(-8100),inner=scene.add.container();root.add(inner);const image=scene.add.image(0,0,'island-cliff').setOrigin(0).setDisplaySize(L,this.config.cliffHeight);inner.add(image);return{a,b,L,root,inner};});
+  const fog=document.createElement('canvas');fog.width=768;fog.height=192;const fc=fog.getContext('2d');fc.drawImage(scene.textures.get('mountain-mid').getSourceImage(),0,650,1536,214,0,0,768,192);fc.globalCompositeOperation='destination-in';const fg=fc.createLinearGradient(0,0,0,192);fg.addColorStop(0,'transparent');fg.addColorStop(.45,'#fff');fg.addColorStop(1,'#fff');fc.fillStyle=fg;fc.fillRect(0,0,768,192);const fx=fc.createLinearGradient(0,0,768,0);fx.addColorStop(0,'transparent');fx.addColorStop(.18,'#fff');fx.addColorStop(.82,'#fff');fx.addColorStop(1,'transparent');fc.fillStyle=fx;fc.fillRect(0,0,768,192);scene.textures.addCanvas('island-near-cloud',fog);this.clouds=[-1,0,1].map((i)=>scene.add.image(0,0,'island-near-cloud').setScrollFactor(0).setDepth(849999).setAlpha(this.config.parallax.nearAlpha).setFlipX(i!==0));
+  this.rim=scene.add.graphics().setDepth(-7990);this.near=scene.add.graphics().setDepth(850000).setScrollFactor(0);
+  const defs=[['column',100,H-40,155],['column',W-100,H-40,175],['lamp',W*.35,H+8,125],['lamp',W*.7,H+8,125],['tree',-20,H*.5,210],['tree',W+20,H*.48,220],['broken',60,100,110],['broken',W-70,85,110],['rock',20,H*.75,70],['rock',W-10,H*.75,75],['lamp',W*.25,-10,120],['lamp',W*.75,-10,120],['column',W*.5,-10,165],['rock',W*.14,H*.18,55],['rock',W*.88,H*.15,65]];defs.forEach(([k,x,y,h],i)=>this.makeProp(scene,k,x,y,h,i));
+  scene.events.once('shutdown',()=>{for(const k of ['island-top','island-cliff','island-near-cloud'])scene.textures.remove(k);this.props.forEach(p=>scene.textures.remove(p.key));});this.update(0);
+ }
+ update(dt){const scene=this.scene;if(!scene)return;const oldAngle=this.angle,d=this.targetAngle-this.angle;if(Math.abs(d)>.00001)this.angle+=d*Math.min(1,dt/(this.config.rotateSmooth||.14));else this.angle=this.targetAngle;this.floorTurn.rotation=this.floorBase+this.angle;if(Math.abs(this.angle-oldAngle)>1e-7){for(const em of [scene.pInk,scene.pFire,scene.pMoon,scene.pWater,scene.pTrail])em?.forEachAlive(p=>{const w=this.unproject(p.x,p.y,p.worldZ||0,oldAngle),q=this.project(w.x,w.y,p.worldZ||0),v=this.input(p.velocityX,p.velocityY,oldAngle),n=this.vector(v.x,v.y);p.x=q.x;p.y=q.y;p.velocityX=n.x;p.velocityY=n.y;});}
+  const cam=scene.cameras.main,W=scene.scale.width,H=scene.scale.height,z=cam.zoom||1,t=scene.time.now/1000,P=this.config.parallax,focus=scene.player||{x:this.arena.width/2,y:this.arena.height/2},focusView=this.vector(focus.x-this.arena.width/2,focus.y-this.arena.height/2);
+  for(const [im,factor,overscan,yaw]of [[this.far,P.far,P.farOverscan,P.farYaw],[this.mid,P.mid,P.midOverscan,P.midYaw]]){const cover=Math.max(W/im.width,H/im.height)*overscan/z,dx=Math.sin(this.angle)*W*yaw-focusView.x*factor,dy=Math.cos(this.angle)*H*yaw*.2-focusView.y*factor*.35;im.setScale(cover).setPosition(W/2+dx/z,H/2+dy/z);}
+  for(const f of this.faces){const a=this.project(f.a.x,f.a.y),b=this.project(f.b.x,f.b.y),v=this.rotateVector(f.b.y-f.a.y,-(f.b.x-f.a.x));f.root.setVisible(v.y>0);if(v.y<=0)continue;f.root.setPosition(a.x,a.y);this.setAffine(f.root,f.inner,(b.x-a.x)/f.L,0,(b.y-a.y)/f.L,1);}
+  const g=this.rim;g.clear().lineStyle(7,0x111a1b,.9);this.groundShape(g,this.edge.map(p=>this.project(p.x,p.y)),false,true);
+  for(const p of this.props){const q=this.project(p.x,p.y);p.image.setPosition(q.x,q.y).setDepth(this.depth(p.x,p.y));p.depth=p.image.depth;}
+  // Feathered mirrored reuse of the delivered mid cloud, plus independently drifting procedural mist.
+  for(let i=0;i<this.clouds.length;i++){const shift=Math.sin(this.angle)*W*P.nearYaw-focusView.x*P.near+Math.sin(t*P.cloudSpeed+i*.6)*P.cloudDrift;this.clouds[i].setDisplaySize(W*.9/z,H*.24/z).setPosition(W/2+((i-1)*W*.68+shift)/z,H/2+(H*.99-H/2-focusView.y*P.near*.35+Math.cos(this.angle)*H*P.nearYaw*.2+Math.sin(t*.12+i)*8)/z);}
+  const ng=this.near;ng.clear();for(let i=0;i<7;i++){const x=(i/6*W+Math.sin(t*.09+i)*25+Math.sin(this.angle)*W*P.nearYaw-focusView.x*P.near),y=H+16-focusView.y*P.near*.35+Math.sin(t*.13+i)*9;ng.fillStyle(0xb4c1b8,.028).fillEllipse(W/2+(x-W/2)/z,H/2+(y-H/2)/z,260/z,90/z);}const display=im=>{const w=im.displayWidth*z,h=im.displayHeight*z,x=W/2+(im.x-W/2)*z,y=H/2+(im.y-H/2)*z;return{left:x-w/2,right:x+w/2,top:y-h/2,bottom:y+h/2};};this.parallaxState={coverage:display(this.far),near:this.clouds.map(c=>({x:c.x,y:c.y})),far:{x:this.far.x,y:this.far.y},mid:{x:this.mid.x,y:this.mid.y},angle:this.angle};
  }
  makeProp(scene,kind,x,y,height,id){
   const w=kind==='gate'?480:kind==='tree'?320:210,h=kind==='gate'?380:360,cv=document.createElement('canvas');cv.width=w;cv.height=h;const c=cv.getContext('2d'),cx=w/2,base=h-35;
@@ -77,7 +64,9 @@ class ArenaView {
    // Broken edges, form-following ink chips; not random global noise.
    c.strokeStyle='#243a34';c.lineWidth=2;c.beginPath();const a=pt(-17,28,Math.min(ph,95));c.moveTo(a.x,a.y);c.lineTo(a.x+13,a.y+25);c.lineTo(a.x+7,a.y+47);c.lineTo(a.x+21,a.y+62);c.stroke();
   }
-  const key='courtyard-prop-'+id;scene.textures.addCanvas(key,cv);const foot=this.project(x,y);const image=scene.add.image(foot.x,foot.y,key).setOrigin(.5,base/h).setDepth(this.depth(y));this.props.push({kind,x,y,height,key,image,depth:this.depth(y)});
+  // Borrow stone ink as surface material, retaining the original silhouette and height.
+  const surface=scene.textures.get('mountain-top').getSourceImage(),mask=document.createElement('canvas');mask.width=w;mask.height=h;mask.getContext('2d').drawImage(cv,0,0);c.save();c.globalCompositeOperation='multiply';c.globalAlpha=.7;c.drawImage(surface,(id*67)%450,(id*93)%450,500,500,0,0,w,h);c.globalCompositeOperation='destination-in';c.globalAlpha=1;c.drawImage(mask,0,0);c.restore();
+  const key='courtyard-prop-'+id;scene.textures.addCanvas(key,cv);const foot=this.project(x,y);const image=scene.add.image(foot.x,foot.y,key).setOrigin(.5,base/h).setDepth(this.depth(x,y));this.props.push({kind,x,y,height,key,image,depth:this.depth(x,y)});
  }
 }
 root.ArenaView=ArenaView;if(typeof module!=='undefined'&&module.exports)module.exports=ArenaView;

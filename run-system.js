@@ -219,7 +219,7 @@
       cleared++; if (current.boss) bossKills++; offer = null;
       phase = !settings.endless && cleared >= settings.loops * waves.length ? 'won' : 'between';
       const response = { chosen: clone(card), build: build(), phase };
-      if (phase === 'won') { result = { outcome: 'victory', reason: 'finite-loops-cleared' }; terminalElapsed = elapsed(); }
+      if (phase === 'won') { const finalBuild=build();for(const base of inputTeam){const u=units.get(base.id);u.maxHp=Math.round(base.maxHp*finalBuild.maxHpMultiplier);u.hp=Math.min(u.hp,u.maxHp);u.healDebt=Math.min(u.healDebt,u.maxHp-u.hp);}result = { outcome: 'victory', reason: 'finite-loops-cleared' }; terminalElapsed = elapsed(); }
       return response;
     }
     function fail(reason = 'team-wipe') { open(); result = { outcome: 'defeat', reason: String(reason).slice(0, 200) }; terminalElapsed = elapsed(); phase = 'lost'; return settlement(); }

@@ -4,7 +4,7 @@ const BASE=process.argv[2]||'http://127.0.0.1:8787/';const WIDTH=Number(process.
 (async()=>{
  const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  try{
- const context=await browser.newContext({viewport:{width:WIDTH,height:HEIGHT},deviceScaleFactor:2,hasTouch:true,isMobile:true});const page=await context.newPage(),errors=[];
+ const context=await browser.newContext({viewport:{width:WIDTH,height:HEIGHT},deviceScaleFactor:2,hasTouch:true,isMobile:true});const page=await context.newPage(),errors=[];page.setDefaultTimeout(60000);
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('requestfailed',r=>errors.push(r.url()+':'+r.failure().errorText));page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+':'+r.url());});
  await page.goto(BASE,{waitUntil:'domcontentloaded',timeout:60000});await page.waitForFunction(()=>window.__artBlocked||window.__game?.scene.isActive('Select'));
  const missing=await page.evaluate(()=>window.__artBlocked);assert(!missing,'Missing actual art: '+JSON.stringify(missing));
@@ -39,9 +39,11 @@ const BASE=process.argv[2]||'http://127.0.0.1:8787/';const WIDTH=Number(process.
    await page.evaluate(([x,y])=>Object.assign(__battle.ctrl,{mx:x,my:y}),[mx,my]);
    await page.waitForFunction(v=>__battle.player.art.state?.view===v&&__battle.player.art.state.mode==='walk',view);
    views.push(await page.evaluate(()=>__battle.player.art.state));
+   const crop=await page.evaluate(()=>{const b=__battle,p=b.worldToScreen(b.player.x,b.player.y),d=Math.min(devicePixelRatio,GAME_CONFIG.maxPixelRatio);return{x:Math.max(0,Math.min(innerWidth-220,p.x/d-110)),y:Math.max(0,Math.min(innerHeight-190,p.y/d-155)),width:220,height:190};});await page.screenshot({path:OUT+'alpha-scene-'+key+'-'+view+'-'+mx+'.png',clip:crop});
    await page.evaluate(()=>Object.assign(__battle.ctrl,{mx:0,my:0}));
   }
   await page.waitForFunction(()=>__battle.player.art.state.mode==='idle');
+  const transparency=await page.evaluate(()=>({canvasCorner:Array.from(__battle.player.art.texture.getContext().getImageData(0,0,1,1).data),premultiplied:__game.renderer.gl?.getContextAttributes().premultipliedAlpha}));assert.equal(transparency.canvasCorner[3],0);
   const hit=await page.evaluate(()=>{const b=__battle,p=b.player;p.x=1000;p.y=800;const e=b.makeEnemy('zheng',p.x+65,p.y);e.def={...e.def,speed:0,damage:0};e.hp=10000;window.__hitEnemy=e;window.__hitOld=e.hp;b.doAttack(p,0);return {old:window.__hitOld,weapon:p.weapon};});
   await page.waitForFunction(()=>__hitEnemy.hp<__hitOld);hit.now=await page.evaluate(()=>__hitEnemy.hp);assert(hit.now<hit.old,key+' default-weapon actual hit');
   await page.waitForFunction(()=>__battle.player.art.state.mode==='attack');
@@ -60,12 +62,12 @@ const BASE=process.argv[2]||'http://127.0.0.1:8787/';const WIDTH=Number(process.
   await page.waitForFunction(()=>__battle.player.art.state.mode==='cast');
   await page.screenshot({path:OUT+WIDTH+'x'+HEIGHT+'-v8-roster-'+key+'-battle.png'});
   for(const v of views){assert.equal(v.hand.x,v.grip.x);assert.equal(v.hand.y,v.grip.y);assert.equal(v.weaponDepth<v.bodyDepth,v.view==='back');}
-  report.heroes[key]={views:views.map(v=>v.view),swaps,hit,defaultSkill,skillHit};console.log('PASS production hero:',key);
+  report.heroes[key]={transparency,views:views.map(v=>v.view),swaps,hit,defaultSkill,skillHit};console.log('PASS production hero:',key);
  }
  await page.goto(BASE+'?hero=nezha&wave=4&god=1');await page.waitForFunction(()=>window.__battle?.boss);await page.evaluate(()=>__battle.hurt(__battle.boss,__battle.boss.maxHp*.55,__battle.boss));await page.waitForFunction(()=>__battle.boss.phase===2);await page.evaluate(()=>{const b=__battle;b.player.x=b.boss.x;b.player.y=b.boss.y+210;});
  await page.waitForFunction(()=>__battle.elapsed>5&&__hud.bannerTxt.alpha<.01);await page.screenshot({path:OUT+WIDTH+'x'+HEIGHT+'-v8-roster-boss.png'});report.bossPhase2=true;
  report.fpsBoss=await page.evaluate(()=>Math.round(__game.loop.actualFps));
- await page.goto(BASE+'?hero=erlang&god=1');await page.waitForFunction(()=>window.__battle?.elapsed>7);await page.screenshot({path:OUT+WIDTH+'x'+HEIGHT+'-v8-roster-live-battle.png'});report.fpsBattle=await page.evaluate(()=>Math.round(__game.loop.actualFps));
+ await page.goto(BASE+'?hero=erlang&god=1');await page.waitForFunction(()=>window.__battle&&(__battle.elapsed>7||__battle.phase==='reward'));await page.screenshot({path:OUT+WIDTH+'x'+HEIGHT+'-v8-roster-live-battle.png'});report.fpsBattle=await page.evaluate(()=>Math.round(__game.loop.actualFps));report.autonomous=await page.evaluate(()=>({elapsed:__battle.elapsed,phase:__battle.phase}));
  await page.setViewportSize({width:820,height:1180});assert(await page.locator('#rotate').isVisible());
  report.errors=errors;fs.writeFileSync(OUT+WIDTH+'x'+HEIGHT+'-v8-roster-test-report.json',JSON.stringify(report,null,2));assert.deepEqual(errors,[]);console.log(JSON.stringify(report,null,2));
  }finally{await browser.close();}

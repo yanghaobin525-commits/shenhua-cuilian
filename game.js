@@ -38,7 +38,7 @@ function autoTeam(playerKey) {
 class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
-    window.CombatArt.preload(this);
+    window.CombatArt.preload(this);for(const [key,file]of [['mountain-far','far-panorama'],['mountain-mid','mid-ridge'],['mountain-top','top-stone']])this.load.image(key,'assets/scenery-mountain-v8/'+file+'.png?v='+C.releaseId);
     ['mob_zheng', 'mob_gudiao', 'mob_imp', 'boss_jiuying'].forEach(k => this.load.image(k, 'assets/sprites/' + k + '.png'));
     this.load.image('ground', 'assets/sprites/ground.jpg');
     const W = this.scale.width, H = this.scale.height, u = U(this);
@@ -242,7 +242,7 @@ class Battle extends Phaser.Scene {
     this.bus = new Phaser.Events.EventEmitter();
     this.heroKey = data.hero; this.teamKeys = data.team && data.team.length ? data.team : autoTeam(data.hero).filter(Boolean);
     this.god = QS.get('god') === '1';
-    this.heroes = []; this.enemies = []; this.projs = []; this.teles = []; this.timers = []; this.drops = []; this.floats = [];
+    this.heroes = []; this.enemies = []; this.projs = []; this.teles = []; this.timers = []; this.drops = []; this.floats = [];this.viewFx=[];
     this.boss = null; this.over = false; this.elapsed = 0;this.ledgerMismatches=0;this.absoluteWave=0;this.settlement=null;
     this.stats = { kills: 0, dmg: 0, heal: 0 };
     this.ctrl = { mx: 0, my: 0, atk: false, s1: false, s2: false, rescue: false };
@@ -252,12 +252,12 @@ class Battle extends Phaser.Scene {
     this.footG = this.add.graphics().setDepth(3);
     this.barG = this.add.graphics().setDepth(900000);
     const P = (tint, extra) => {
-      const emitter=this.add.particles(0,0,'spark',Object.assign({speed:{min:40,max:220},scale:{start:1.4,end:0},lifespan:500,tint,emitting:false,emitCallback:p=>{const v=this.view.vector(p.velocityX,p.velocityY);p.velocityX=v.x;p.velocityY=v.y;}},extra||{})).setDepth(700000);
-      const burst=emitter.explode.bind(emitter);emitter.explode=(n,x,y,z=0)=>{const p=this.view.project(x,y,z);burst(n,p.x,p.y);return emitter;};return emitter;
+      let emissionZ=0;const emitter=this.add.particles(0,0,'spark',Object.assign({speed:{min:40,max:220},scale:{start:1.4,end:0},lifespan:500,tint,emitting:false,emitCallback:p=>{p.worldZ=emissionZ;const v=this.view.vector(p.velocityX,p.velocityY);p.velocityX=v.x;p.velocityY=v.y;}},extra||{})).setDepth(700000);
+      const burst=emitter.explode.bind(emitter);emitter.explode=(n,x,y,z=0)=>{emissionZ=z;const p=this.view.project(x,y,z);burst(n,p.x,p.y);return emitter;};return emitter;
     };
     this.pInk = P(0x150f0d, { speed: { min: 60, max: 260 } });
     this.pFire = P([0xff5a1f, 0xffb43a, 0xc0392b], { blendMode: 'ADD', lifespan: 450 });
-    this.pMoon = P([0xd8e4ff, 0x9fb8ff, 0xffffff], { blendMode: 'ADD', lifespan: 700, speed: { min: 30, max: 160 } });
+    this.pMoon=P([0x9ac8c3,0x9fb8d2,0xd4dfc9],{blendMode:'ADD',lifespan:650,speed:{min:25,max:110},scale:{start:.55,end:0}});
     this.pWater = P([0x4aa3df, 0x9ad0f5]);
     this.pTrail=P([0xc8d9e8,0xf2e8c9],{lifespan:160,scale:{start:.28,end:0},speed:{min:0,max:16},blendMode:'ADD'});
     const cx = A.width / 2, cy = A.height / 2 + 120;
@@ -273,10 +273,10 @@ class Battle extends Phaser.Scene {
     this.fitCam();
     this.scale.on('resize', this.fitCam, this);
     this.events.once('shutdown', () => { this.scale.off('resize', this.fitCam, this); this.bus.removeAllListeners(); this.input.keyboard.removeAllListeners(); });
-    // 键盘（调试用）：WASD/方向键移动，J/空格 普攻，K/Q 技能一，L/E 技能二
+    // 键盘（调试用）：WASD/方向键移动，J/空格 普攻，K 主动，Q/E 左右转镜头，R 按住救助
     this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,J,K,L,Q,E,R,SPACE');
     this.input.keyboard.removeAllListeners();
-    this.input.keyboard.on('keydown-K', () => this.ctrl.s1 = true); this.input.keyboard.on('keydown-Q', () => this.ctrl.s1 = true);
+    this.input.keyboard.on('keydown-K',()=>this.ctrl.s1=true);this.input.keyboard.on('keydown-Q',()=>this.rotateCamera(-1));this.input.keyboard.on('keydown-E',()=>this.rotateCamera(1));
 
     this.settings=R.normalizeSettings(data.settings||window.RunUI.loadSettings());this.enemySequence=0;this.eventSequence=0;this.runActive=false;
     this.heroes.forEach((h,i)=>h.runId='hero-'+i);
@@ -292,6 +292,7 @@ class Battle extends Phaser.Scene {
     const cam = this.cameras.main; cam.setSize(this.scale.width, this.scale.height);
     cam.setZoom(Math.min(this.scale.width/C.view25d.viewWidth,this.scale.height/C.view25d.viewHeight)*(C.view25d.zoomScale||1));
   }
+  rotateCamera(sign){if(!this.over&&this.phase!=='reward')this.view.turn(sign);}
   screenToWorld(x,y) { const p=this.cameras.main.getWorldPoint(x,y);return this.view.unproject(p.x,p.y); }
   worldToScreen(x,y,z=0) {const p=this.view.project(x,y,z),c=this.cameras.main;const q=c.matrix.transformPoint(p.x,p.y),co=Math.cos(c.rotation),si=Math.sin(c.rotation);return {x:q.x-(c.scrollX*co-c.scrollY*si)*c.zoomX,y:q.y-(c.scrollX*si+c.scrollY*co)*c.zoomY};}
   /* ---------- 单位 ---------- */
@@ -299,7 +300,7 @@ class Battle extends Phaser.Scene {
     const tex = this.textures.get(def.sprite).getSourceImage();
     const base = def.size / tex.height;
     const foot=this.view.project(x,y);
-    const shadow=this.add.graphics().setDepth(1.5).setPosition(foot.x,foot.y);shadow.fillStyle(0x0c1512,.34).fillPoints(this.view.circle(0,0,def.size*.35,def.size*.20).map(p=>({x:p.x-this.view.ox,y:p.y-this.view.oy})),true);
+    const shadow=this.add.graphics().setDepth(1.5).setPosition(foot.x,foot.y);shadow.fillStyle(0x0c1512,.34).fillPoints(this.view.circle(0,0,def.size*.35,def.size*.35).map(p=>({x:p.x-this.view.ox,y:p.y-this.view.oy})),true);
     const spr = this.add.image(foot.x, foot.y, def.sprite).setOrigin(0.5, 0.92).setScale(base);
     return { def, team, x, y, spr, shadow, base, r: def.size * 0.3, hp: def.hp, maxHp: def.hp, faceAng: 0, native: def.nativeFacing || 1, t: Math.random() * 10,
       moving: false, slowT: 0, slowMul: 1, flashT: 0, popT: 0, dead: false, cd: { attack: 0, skill1: 0, skill2: 0 }, tauntT: 0, tauntBy: null, shieldT: 0, target: null, retargetT: 0, kb: null };
@@ -336,6 +337,7 @@ class Battle extends Phaser.Scene {
   /* ---------- 帧循环 ---------- */
   update(time, delta) {
     const dt = Math.min(delta / 1000, 0.05);
+    this.view.update(dt);
     if(this.phase==='reward')return;
     if (this.over) { this.syncVisuals(dt); return; }
     this.elapsed += dt;
@@ -487,10 +489,10 @@ class Battle extends Phaser.Scene {
       case 'cleave': {
         const ca = Math.cos(a), sa = Math.sin(a); h.faceAng = a;
         for (const e of this.alive(this.enemies)) { const dx = e.x - h.x, dy = e.y - h.y, along = dx * ca + dy * sa, side = Math.abs(-dx * sa + dy * ca); if (along > -20 && along < S.length + e.r && side < S.width / 2 + e.r) this.hurt(e, S.damage, h); }
-        const g = this.add.graphics().setDepth(3); g.fillStyle(0xf5f0e0, 0.75);
+        const g=this.add.graphics().setDepth(3),origin={x:h.x,y:h.y},draw=()=>{const h=origin;g.clear().fillStyle(0xf5f0e0,.75);
         g.fillPoints([{ x: h.x - sa * S.width / 2, y: h.y + ca * S.width / 2 }, { x: h.x + ca * S.length - sa * 12, y: h.y + sa * S.length + ca * 12 }, { x: h.x + ca * S.length + sa * 12, y: h.y + sa * S.length - ca * 12 }, { x: h.x + sa * S.width / 2, y: h.y - ca * S.width / 2 }].map(p=>this.view.project(p.x,p.y)), true);
         g.lineStyle(5, 0x120c0a, 0.9).strokePoints([{ x: h.x - sa * S.width / 2, y: h.y + ca * S.width / 2 }, { x: h.x + ca * S.length, y: h.y + sa * S.length }, { x: h.x + sa * S.width / 2, y: h.y - ca * S.width / 2 }].map(p=>this.view.project(p.x,p.y)), false);
-        this.tweens.add({ targets: g, alpha: 0, duration: 380, onComplete: () => g.destroy() }); this.cameras.main.shake(150, 0.004); break;
+        };draw();this.viewFx.push({g,draw});this.tweens.add({ targets: g, alpha: 0, duration: 380, onComplete: () => g.destroy() }); this.cameras.main.shake(150, 0.004); break;
       }
       case 'pierce': this.fire(h, a, 'blade', S.projSpeed, S.damage, S.range, { pierce: true, scale: 1.4, r: 26 }); break;
       case 'volley': for (let i = 0; i < S.arrows; i++) this.fire(h, a + PM.DegToRad(-S.spread / 2 + S.spread * i / (S.arrows - 1)), 'arrow', 820, S.damage, 520, {}); break;
@@ -514,14 +516,14 @@ class Battle extends Phaser.Scene {
   }
   fire(src, a, tex, speed, dmg, range, o) {
     const z=src.isBoss?120:Math.max(38,src.def.size*.48),p=this.view.project(src.x,src.y,z),hand=src.art?.state?.hand,v=this.view.vector(Math.cos(a),Math.sin(a));
-    const s=this.add.image(hand?hand.x:p.x,hand?hand.y:p.y,tex).setRotation(Math.atan2(v.y,v.x)).setDepth(this.view.depth(src.y,.3)).setScale(o.scale||1);
-    const ground=this.view.project(src.x,src.y),shadow=this.add.graphics().setPosition(ground.x,ground.y).setDepth(1.7);shadow.fillStyle(0x15201a,.24).fillPoints(this.view.circle(0,0,9,6).map(p=>({x:p.x-this.view.ox,y:p.y-this.view.oy})),true);
+    const s=this.add.image(hand?hand.x:p.x,hand?hand.y:p.y,tex).setRotation(Math.atan2(v.y,v.x)).setDepth(this.view.depth(src.x,src.y,.3)).setScale(o.scale||1);
+    const ground=this.view.project(src.x,src.y),shadow=this.add.graphics().setPosition(ground.x,ground.y).setDepth(1.7);shadow.fillStyle(0x15201a,.24).fillPoints(this.view.circle(0,0,9,9).map(p=>({x:p.x-this.view.ox,y:p.y-this.view.oy})),true);
     this.projs.push({s,shadow,muzzleT:.10,muzzleDX:hand?hand.x-p.x:0,muzzleDY:hand?hand.y-p.y:0,x:src.x,y:src.y,z,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,team:src.team,src,dmg,life:range/speed,pierce:!!o.pierce,hit:new Set(),r:o.r||18});
   }
   updateProjs(dt) {
     for(let i=this.projs.length-1;i>=0;i--){
       const p=this.projs[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;
-      const d=this.view.project(p.x,p.y,p.z),ground=this.view.project(p.x,p.y);p.muzzleT=Math.max(0,p.muzzleT-dt);p.s.setPosition(d.x+p.muzzleDX*p.muzzleT/.10,d.y+p.muzzleDY*p.muzzleT/.10).setDepth(this.view.depth(p.y,.3));p.shadow.setPosition(ground.x,ground.y);if((p.trailT=(p.trailT||0)-dt)<=0){p.trailT=.055;this.pTrail.explode(1,p.x,p.y,p.z);}
+      const d=this.view.project(p.x,p.y,p.z),ground=this.view.project(p.x,p.y);p.muzzleT=Math.max(0,p.muzzleT-dt);p.s.setPosition(d.x+p.muzzleDX*p.muzzleT/.10,d.y+p.muzzleDY*p.muzzleT/.10).setDepth(this.view.depth(p.x,p.y,.3));p.s.setRotation(Math.atan2(this.view.vector(p.vx,p.vy).y,this.view.vector(p.vx,p.vy).x));p.shadow.setPosition(ground.x,ground.y);if((p.trailT=(p.trailT||0)-dt)<=0){p.trailT=.055;this.pTrail.explode(1,p.x,p.y,p.z);}
       const targets=p.team==='hero'?this.enemies:this.heroes;let done=p.life<=0;
       for(const t of targets){if(done||t.dead||p.hit.has(t))continue;if(Math.hypot(t.x-p.x,t.y-p.y)<p.r+t.r){p.hit.add(t);this.hurt(t,p.dmg,p.src);if(!p.pierce)done=true;}}
       if(done){p.s.destroy();p.shadow.destroy();this.projs.splice(i,1);}
@@ -658,10 +660,10 @@ class Battle extends Phaser.Scene {
   dropWeapon(key, x, y, noPickT) {
     const w = C.weapons[key];
     const ground=this.view.project(x,y);
-    const ring=this.add.graphics().setDepth(1.6);ring.fillStyle(w.color,.25).lineStyle(4,0xf5c542);this.view.groundShape(ring,this.view.circle(x,y,46));
-    const icon = this.add.image(ground.x, ground.y - 30, 'v6_' + C.weaponArt[key] + '_weapon').setDisplaySize(80,80).setDepth(10 + y);
-    const label = txt(this, ground.x, ground.y - 92, w.name + ' · ' + ROLE_LABEL[w.role], 22, '#ffe7a8', { stroke: '#120c0a', strokeThickness: 5 }).setOrigin(0.5).setDepth(900001).setResolution(2);
-    this.tweens.add({ targets: icon, y: ground.y - 46, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+    const ring=this.add.graphics().setDepth(1.6);ring.fillStyle(w.color,.25).lineStyle(4,0xf5c542);this.view.groundShape(ring,this.view.circle(x,y,46).map(p=>({x:p.x-ground.x,y:p.y-ground.y})));ring.setPosition(ground.x,ground.y);
+    const icon = this.add.image(ground.x, ground.y - 30, 'v6_' + C.weaponArt[key] + '_weapon').setDisplaySize(80,80).setDepth(this.view.depth(x,y,.05));
+    const label = txt(this, ground.x, ground.y - 92, w.name, 16, '#ffe7a8', { stroke: '#120c0a', strokeThickness: 5 }).setOrigin(0.5).setDepth(900001).setResolution(2);
+    // Bob follows display Z in updateDrops, never a stale projected absolute Y.
     this.tweens.add({ targets: ring, alpha: 0.6, duration: 700, yoyo: true, repeat: -1 });
     this.pMoon.explode(20, x, y);
     this.drops.push({ key, x, y, ring, icon, label, noPickT: noPickT || 0 });
@@ -669,7 +671,7 @@ class Battle extends Phaser.Scene {
   updateDrops(dt) {
     const h = this.player;
     for (let i = this.drops.length - 1; i >= 0; i--) {
-      const d = this.drops[i]; d.noPickT -= dt;
+      const d = this.drops[i]; d.noPickT -= dt;const q=this.view.project(d.x,d.y);d.ring.setPosition(q.x,q.y);d.icon.setPosition(q.x,q.y-40+Math.sin(this.elapsed*3)*5).setDepth(this.view.depth(d.x,d.y,.05));d.label.setPosition(q.x,q.y-75).setDepth(this.view.depth(d.x,d.y,.1));
       if (h.dead || d.noPickT > 0 || dist(h, d) > 62) continue;
       const old = h.weapon; this.cancelAction(h);h.weapon = d.key;if(this.runActive||this.phase==='break')this.run.setCanHeal(h.runId,C.weapons[h.weapon].role==='healer'); h.cd.attack = 0; h.cd.skill1 = Math.min(h.cd.skill1, 1); h.cd.skill2 = Math.min(h.cd.skill2, 1);
       d.ring.destroy(); d.icon.destroy(); d.label.destroy(); this.drops.splice(i, 1);
@@ -733,21 +735,23 @@ class Battle extends Phaser.Scene {
         const d=this.view.vector(Math.cos(u.faceAng),Math.sin(u.faceAng)),flip=d.x<-.15?-1:d.x>.15?1:(u.lastFlip||1);u.lastFlip=flip;u.spr.setScale(u.base*sx*flip*u.native,u.base*sy);
         if(u.flashT>0){if(u.team==='enemy'&&!u.isBoss)u.spr.setTintFill(0xffffff);else u.spr.setTintFill(0xfff1d8);}else if(u.isBoss&&u.phase===2)u.spr.setTint(0xffb0a0);else if(u.slowT>0)u.spr.setTint(0xa8c8ff);else u.spr.clearTint();
       }
-      u.spr.setPosition(foot.x,foot.y-bob).setDepth(this.view.depth(u.y));u.shadow.setPosition(foot.x,foot.y);if(u.art)u.art.update(dt);
+      u.spr.setPosition(foot.x,foot.y-bob).setDepth(this.view.depth(u.x,u.y));u.shadow.setPosition(foot.x,foot.y);if(u.art)u.art.update(dt);
       if(u.dead){if(u.team==='hero')u.spr.setAngle(80);continue;}
       if(!u.isBoss){const w=u.team==='hero'?80:Math.max(50,u.def.size*.7),y=foot.y-u.def.size*1.02-bob;g.fillStyle(0x120c0a,.9).fillRect(foot.x-w/2-3,y-3,w+6,14);g.fillStyle(u.team==='hero'?(u.isPlayer?0x6ad06a:0x4aa3df):0xc0392b).fillRect(foot.x-w/2,y,w*Math.max(0,u.hp/u.maxHp),8);}
       if(u.isPlayer){ground.lineStyle(4,0xf5c542,.9);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.4,u.def.size*.22),false,true);}
       if(u.shieldT>0){ground.lineStyle(5,0xc0392b,.6);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.6),false,true);}
     }
-    // World foot-Y orders both props and units. Tall covers fade only to retain player visibility.
-    if(this.boss&&!this.boss.dead){const b=this.boss,cover=this.heroes.some(h=>!h.dead&&h.y<b.y&&Math.abs(h.x-b.x)<C.boss.size*.5&&b.y-h.y<C.boss.size*.85);b.spr.setAlpha(cover?.65:1);}
+    this.viewFx=this.viewFx.filter(f=>f.g.active);for(const f of this.viewFx)f.draw();
+    for(const t of this.floats)if(t.floatAnchor){const a=t.floatAnchor,p=this.view.project(a.x,a.y,a.z+(this.elapsed-a.start)*65);t.setPosition(p.x,p.y);}
+    // Rotated view-foot Y orders both props and units. Tall covers fade only to retain player visibility.
+    if(this.boss&&!this.boss.dead){const b=this.boss,bp=this.view.project(b.x,b.y),cover=this.heroes.some(h=>{const hp=this.view.project(h.x,h.y);return!h.dead&&this.view.depth(h.x,h.y)<this.view.depth(b.x,b.y)&&Math.abs(hp.x-bp.x)<C.boss.size*.5&&bp.y-hp.y<C.boss.size*.85;});b.spr.setAlpha(cover?.65:1);}
     const f=this.player.dead?(this.alive(this.heroes)[0]||this.player):this.player,p=this.view.project(f.x,f.y);this.camTarget.setPosition(p.x,p.y-C.view25d.cameraLift);
-    for(const prop of this.view.props){const q=this.view.project(prop.x,prop.y);prop.image.setAlpha(prop.y>f.y&&Math.abs(q.x-p.x)<90&&q.y-p.y<prop.height?.55:1);}
+    for(const prop of this.view.props){const q=this.view.project(prop.x,prop.y);prop.image.setAlpha(this.view.depth(prop.x,prop.y)>this.view.depth(f.x,f.y)&&Math.abs(q.x-p.x)<90&&q.y-p.y<prop.height?.55:1);}
   }
-  slashFx(x,y,a,r,arcDeg,color){const g=this.add.graphics().setDepth(3);g.fillStyle(color,.55).lineStyle(4,0x171c17,.85);this.view.groundShape(g,this.view.sector(x,y,r,a,PM.DegToRad(arcDeg)));this.tweens.add({targets:g,alpha:0,duration:200,onComplete:()=>g.destroy()});}
+  slashFx(x,y,a,r,arcDeg,color){const g=this.add.graphics().setDepth(3),draw=()=>{g.clear().fillStyle(color,.55).lineStyle(4,0x171c17,.85);this.view.groundShape(g,this.view.sector(x,y,r,a,PM.DegToRad(arcDeg)));};draw();this.viewFx.push({g,draw});this.tweens.add({targets:g,alpha:0,duration:200,onComplete:()=>g.destroy()});}
   healFieldFx(x,y,r){const g=this.add.graphics().setDepth(3),fade={v:1};const draw=()=>{g.clear().fillStyle(0x8ec7b4,.10*fade.v).lineStyle(3,0xc4efd6,.65*fade.v);this.view.groundShape(g,this.view.circle(x,y,r));for(let i=0;i<8;i++){const a=i*Math.PI/4,p=this.view.project(x+Math.cos(a)*r*.65,y+Math.sin(a)*r*.65);g.fillStyle(0xc4efd6,.6*fade.v).fillCircle(p.x,p.y,3*fade.v);}};draw();this.tweens.add({targets:fade,v:0,duration:1800,onUpdate:draw,onComplete:()=>g.destroy()});}
   ringFx(x,y,r,color){const g=this.add.graphics().setDepth(3),o={v:.3};const draw=()=>{g.clear().fillStyle(color,.18).lineStyle(6,color,.8);this.view.groundShape(g,this.view.circle(x,y,r*o.v));};draw();this.tweens.add({targets:o,v:1,duration:450,ease:'Cubic.Out',onUpdate:draw});this.tweens.add({targets:g,alpha:0,duration:450,onComplete:()=>g.destroy()});}
-  floatText(x,y,s,color,size,z=100){if(this.floats.length>40){const o=this.floats.shift();this.tweens.killTweensOf(o);o.destroy();}const p=this.view.project(x,y,z),t=txt(this,p.x,p.y,String(s),size||24,color,{stroke:'#120c0a',strokeThickness:5,fontStyle:'bold'}).setOrigin(.5).setDepth(950000).setResolution(2);this.floats.push(t);this.tweens.add({targets:t,y:p.y-50,alpha:0,duration:750,ease:'Cubic.Out',onComplete:()=>{const i=this.floats.indexOf(t);if(i>=0)this.floats.splice(i,1);t.destroy();}});}
+  floatText(x,y,s,color,size,z=100){if(this.floats.length>40){const o=this.floats.shift();this.tweens.killTweensOf(o);o.destroy();}const p=this.view.project(x,y,z),t=txt(this,p.x,p.y,String(s),size||24,color,{stroke:'#120c0a',strokeThickness:5,fontStyle:'bold'}).setOrigin(.5).setDepth(950000).setResolution(2);t.floatAnchor={x,y,z,start:this.elapsed};this.floats.push(t);this.tweens.add({targets:t,y:p.y-50,alpha:0,duration:750,ease:'Cubic.Out',onComplete:()=>{const i=this.floats.indexOf(t);if(i>=0)this.floats.splice(i,1);t.destroy();}});}
 
 }
 
@@ -813,6 +817,7 @@ class HUD extends Phaser.Scene {
     this.waveTxt = txt(this, W / 2, 18 * u, '', 25 * u, '#f3e2b0', { stroke: '#120c0a', strokeThickness: 6 * u, fontStyle: 'bold' }).setOrigin(0.5, 0);
     this.subTxt = txt(this, W / 2, 54 * u, '', 16 * u, '#cbb994', { stroke: '#120c0a', strokeThickness: 4 * u }).setOrigin(0.5, 0);
     this.bossTxt = txt(this, W / 2, 80 * u, '', 18 * u, '#ffcf6a', { stroke: '#120c0a', strokeThickness: 5 * u, fontStyle: 'bold' }).setOrigin(0.5, 0);
+    this.rotateButtons=[{x:W-240*u,y:52*u,r:34*u,dir:-1},{x:W-160*u,y:52*u,r:34*u,dir:1}];for(const b of this.rotateButtons){const ct=this.add.container(b.x,b.y);ct.add([this.add.circle(0,0,29*u,0x16211f,.9).setStrokeStyle(3*u,0xcbb994),txt(this,0,0,b.dir<0?'↶':'↷',29*u).setOrigin(.5)]);this.ctrlLayer.add(ct);}
     this.pauseBtn = { x: W - 60 * u, y: 52 * u, r: 44 * u };
     const pb = this.add.container(this.pauseBtn.x, this.pauseBtn.y);
     pb.add([this.add.circle(0, 0, 34 * u, 0x120c0a, 0.75).setStrokeStyle(3 * u, 0xcbb994), txt(this, 0, 0, 'Ⅱ', 26 * u, '#efe3c8', { fontStyle: 'bold' }).setOrigin(0.5)]);
@@ -840,6 +845,7 @@ class HUD extends Phaser.Scene {
   onDown(p) {
     if (this.B.over || this.paused) return;
     if (Math.hypot(p.x - this.pauseBtn.x, p.y - this.pauseBtn.y) < this.pauseBtn.r) { this.togglePause(true); return; }
+    for(const b of this.rotateButtons)if(Math.hypot(p.x-b.x,p.y-b.y)<b.r){this.B.rotateCamera(b.dir);return;}
     if(this.rescueButton.visible&&Math.abs(p.x-this.rescueZone.x)<this.rescueZone.w/2&&Math.abs(p.y-this.rescueZone.y)<this.rescueZone.h/2){this.btns.rescue=p.id;this.B.ctrl.rescue=true;return;}
     const k = this.hitBtn(p.x, p.y);
     if (k) { this.btns[k] = p.id; if (k === 'atk') this.B.ctrl.atk = true; else this.B.ctrl[k] = true; return; }
