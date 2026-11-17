@@ -24,7 +24,7 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'solo-wukong-v10.1-20261117',
+  releaseId: 'solo-wukong-v11-20261117',
   artVersion: 'approved-v6',
   presentation:{maxNumbers:24,numberRise:90,numberLifetime:700,trailInterval:.035},
   motion: { stride:84, startSmooth:.12, stopSmooth:.10, maxFootTravel:14, footLift:9, bodyBounce:1.8, torsoSway:8, attackTwist:.11 },
@@ -230,3 +230,61 @@ window.GAME_CONFIG.feel={hitstop:.05,hitstopFinisher:.09,hitstopSkill:.07,shake:
   slash:[{color:0xffffff,ghost:0xfff4cf,reach:.95,arcMul:1.0,thick:.22,sweep:55,life:140},{color:0xfff3d0,ghost:0xffd27a,reach:1.12,arcMul:1.1,thick:.36,sweep:65,life:200},{color:0xffe6a0,ghost:0xffb15a,reach:1.4,arcMul:1.0,thick:.56,sweep:85,life:300}]};
 window.GAME_CONFIG.solo.lock={range:420,meleeAssist:60,meleeCone:55,meleeSnap:.75};
 window.GAME_CONFIG.poseArt={wukong:{dir:'assets/wukong-poses-v10/',stages:['light','normal','heavy'],views:['front','back','side'],holdUntil:.7}};
+
+// ---------- v11：游丝重描姿势全集 + 新金箍棒（长度/弯曲可调）+ 打击手感 ----------
+// 姿势为原创静态关键帧（非骨骼）；跑动为4帧循环，按移动距离换帧。
+window.GAME_CONFIG.poseArtV11={wukong:{dir:'assets/wukong-poses-v11/',ext:'.webp',
+  scale:1.1662,                      // manifest gameScaleToV10：v11 头身比与 v10 屏幕尺寸对齐
+  attack:{light:'light',normal:'normal',heavy:'heavy'},
+  dodge:'dodge',
+  skills:{spin:'skill-spin',slam:'skill-slam',freeze:'skill-seal'},
+  run:{front:'run-front',side:'run-side',back:'run-back',frames:['f0','f1','f2','f3'],stride:26,minSpeed:20},
+  heavyJumpPx:90,                    // 重击起跳高度（美术单位，512框）
+  holdUntil:.7}};
+// 金箍棒：长度=基础长×段倍率；出手时伸长、收招回缩；弯曲在出手峰值最大、命中后回直。
+window.GAME_CONFIG.staff={wukong:{file:'assets/wukong-poses-v11/staff.webp',
+  baseLen:101,thick:8.5,segments:14,gripV:.5,          // 世界像素；gripV=握点距棍尾比例
+  idle:{len:1.0,gripV:.5},
+  stages:{light:{len:1.0,bend:.07,gripV:.32},normal:{len:1.3,bend:.13,gripV:.3},heavy:{len:1.7,bend:.24,gripV:.26}},
+  skills:{spin:{len:1.3,bend:.06,gripV:.5},slam:{len:1.7,bend:.0,gripV:.14},freeze:{len:1.0,bend:0,gripV:.55}},
+  extendEase:.6,       // 前摇后段伸长占比
+  bendSign:-1,         // 弯曲方向：-1 = 棍梢滞后于挥舞方向（鞭梢感）
+  rangeFromLength:true // 普攻判定距离 = 基础距离 + (len-1)×棍梢外伸长度
+}};
+// 普攻自动锁定/转向 + 每段小步前冲（重击为向前跃起一步）
+Object.assign(window.GAME_CONFIG.solo.lock,{meleeAssist:150,meleeCone:70,meleeSnap:1});
+window.GAME_CONFIG.solo.attackStep={light:{dist:14,dur:.08},normal:{dist:24,dur:.12},heavy:{dist:52,dur:.26},closeGap:60,stopShort:26};
+// 怪物受击僵直（按段）与受击抖动
+window.GAME_CONFIG.solo.hitStun={light:.18,normal:.26,heavy:.45,skill:.3,bossMul:.25,shake:6};
+// 普攻残影：保留原色的半透明副本（逐段增强）；闪避：浅白虚影（按轮廓填色、无方框）
+window.GAME_CONFIG.feel.attackGhost={light:{count:1,alpha:.24,life:150},normal:{count:2,alpha:.3,life:190},heavy:{count:3,alpha:.38,life:240}};
+window.GAME_CONFIG.feel.dodgeGhost={tint:0xeef4ff,alpha:.42,life:260};
+window.GAME_CONFIG.feel.slash.forEach(s=>s.reach=1.0); // 月牙光半径=实际棍梢距离（随棍长变化）
+// BGM 接口：选定授权曲目后填 {url,loop:true,volume,credit,license,source}；未填时使用原创合成曲。
+window.GAME_CONFIG.audio=Object.assign(window.GAME_CONFIG.audio||{},{bgm:{menu:null,arena:null,boss:null}});
+
+// v11 手感修复（t109）：闪避可随时取消普攻/技能收招；闪避后段可被普攻取消并立即接招；hitstop 缩短且闪避可打断。
+Object.assign(window.GAME_CONFIG.solo.dodge,{cooldown:.3,attackCancel:.55,resetAttackCd:true});
+window.GAME_CONFIG.combo.buffer=.3;
+window.GAME_CONFIG.combo.profiles.cudgel.forEach((p,i)=>p.hitstop=[.025,.04,.07][i]);
+Object.assign(window.GAME_CONFIG.feel,{hitstop:.03,hitstopFinisher:.06,hitstopSkill:.05,hitstopBreakOnDodge:true});
+// 死亡演出：阴影色→扭曲倒地→黑色星光飘散（Graphics 星形粒子，无贴图方框）
+window.GAME_CONFIG.feel.death={dur:.85,bossDur:1.7,shadow:0x2a2236,stars:16,bossStars:48,starColor:0x0d0a12,rewardDelay:.8};
+// 魂灵掉落：落地停顿后沿曲线飞向悟空，命中回血（基础1 + 摄魂祝福）
+window.GAME_CONFIG.soul={heal:1,bossCount:6,popTime:.32,rest:.38,fly:.5,curve:.45,color:0x9fe8ff,core:0xf4fffb,ink:0x0d0a12};
+// 授权BGM（t109 默认采用）：Samurai Nights by Majadroid，CC-BY 4.0（OpenGameArt）。
+const SN={credit:'Samurai Nights — Majadroid (Maik Hoffmann)',license:'CC-BY 4.0 / CC-BY 3.0 / OGA-BY 3.0',source:'https://opengameart.org/content/samurai-nights'},DA={credit:'Dark Ambience Loop — Iwan Gabovitch (qubodup)',license:'CC-BY 3.0',source:'https://opengameart.org/content/dark-ambience-loop'};
+window.GAME_CONFIG.audio.bgm={
+  menu:{fade:1.0,layers:[{url:'assets/audio/samurai-nights-erhu-menu-majadroid.mp3',volume:.8,...SN}]},   // 选角/开局：二胡+笛分轨
+  arena:null,                                                                                              // 普通房间：无BGM（只保留音效）
+  boss:{fade:1.6,synth:'drums',layers:[{url:'assets/audio/samurai-nights-majadroid.mp3',volume:.62,...SN},{url:'assets/audio/dark-ambience-loop-qubodup.mp3',volume:.55,...DA}]}}; // 首领：战斗曲+原创紧张鼓点+暗黑氛围
+window.GAME_CONFIG.audio.credits=[SN,DA,{credit:'挥棍/施法/命中音效、首领鼓点：原创 Web Audio 合成',license:'original',source:''}];
+Object.assign(window.GAME_CONFIG.soul,{frames:['assets/wukong-poses-v11/soul-0.png','assets/wukong-poses-v11/soul-1.png','assets/wukong-poses-v11/soul-2.png'],fps:9,size:30,z:22});
+Object.assign(window.GAME_CONFIG.poseArtV11.wukong,{spinCycle:{step:.07,sway:9,swayEase:18}}); // 横扫千军：每面停留秒数、横移幅度(屏幕px)
+// t113：金箍棒只用一张 staff 贴图；粗细/长短/弯曲全部由代码分段网格实时变形（以下参数可调）
+(()=>{const S=window.GAME_CONFIG.staff.wukong;S.taper=.12;S.idle.thick=1;S.stages.light.thick=1.0;S.stages.normal.thick=1.12;S.stages.heavy.thick=1.3;S.skills.spin.thick=1.1;S.skills.slam.thick=1.45;S.skills.freeze.thick=1;})();
+// t114：挥击锥度——握持端细、远端粗，出手峰值最强、逐段增强、收招恢复（flare=远端加粗比例）
+(()=>{const S=window.GAME_CONFIG.staff.wukong;S.taper=0;S.stages.light.flare=.35;S.stages.normal.flare=.6;S.stages.heavy.flare=1.0;S.skills.spin.flare=.4;S.skills.slam.flare=.9;S.skills.freeze.flare=0;})();
+// t115：通用纯色剪影着色层（tintFill 按贴图 alpha 着色，跟随实时贴图；无方框）。预设颜色/透明度/持续秒数可调。
+window.GAME_CONFIG.feel.silhouette={white:{color:0xffffff,alpha:.85,dur:.09},black:{color:0x0d0a12,alpha:.75,dur:.6},blue:{color:0x6fb8ff,alpha:.55,dur:.45},red:{color:0xff3b2f,alpha:.6,dur:.22},
+  use:{enemyHit:'white',heroHurt:'red',freezeCast:'blue',frozen:'blue',death:'black'}};

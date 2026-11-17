@@ -1,6 +1,6 @@
 {
   "name": "shenhua-arena",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -14,7 +14,8 @@
     "test:v8": "python3 tools/validate-v6.py && node test/v8-browser.cjs && node test/v8-roster.cjs && node test/projection-browser.cjs && node test/orbit-browser.cjs",
     "test:orbit": "node test/orbit.test.cjs && node test/orbit-browser.cjs",
     "test:v9": "python3 tools/validate-v6.py && node test/v9-browser.cjs && node test/v9-enemy-browser.cjs && node test/v9-combo-views.cjs && node test/v8-browser.cjs && node test/v8-roster.cjs && node test/projection-browser.cjs && node test/orbit-browser.cjs",
-    "test:v10": "node test/v10-solo-browser.cjs"
+    "test:v10": "node test/v10-solo-browser.cjs",
+    "test:v11": "node test/v11-dev-browser.cjs && node test/v10-solo-browser.cjs"
   },
   "keywords": [],
   "author": "",

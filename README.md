@@ -86,3 +86,9 @@ node tools/verify-deployed.cjs
 ### v7 alpha 修复
 
 40 张生产 PNG（8选角、24方向、8武器）按解剖关系清理封闭背景孔洞，并局部修复边缘 alpha 与 RGB 白纸污染；画布、脚点、握点和8份manifest保持不变。13个背景孔洞探针为透明，11组皮肤/眼白/白发/白袖/银刃等ROI保留不透明固有色。没有全局删白或整体腐蚀；少量极细浅色游丝有意保留。图片请求携带新release query，避免旧白边PNG缓存继续命中。原始备份和大尺寸QC留在本地 art-direction，不纳入发布。
+
+
+## 音乐与音效署名 (v11)
+- **Samurai Nights** — Majadroid (Maik Hoffmann) · CC-BY 4.0 / CC-BY 3.0 / OGA-BY 3.0 · https://opengameart.org/content/samurai-nights
+- **Dark Ambience Loop** — Iwan Gabovitch (qubodup) · CC-BY 3.0 · https://opengameart.org/content/dark-ambience-loop
+- 其余音效与首领鼓点为原创 Web Audio 合成。详见 `assets/audio/CREDITS.md`、`V11-RELEASE.md`。

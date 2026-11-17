@@ -25,7 +25,8 @@
     { id: 'haste', name: '御风', stat: 'speed', perStack: 0.025, op: 'addBaseMultiplier', maxStacks: 12, description: '全队移动基准倍率 +2.5%，最多12层' },
     { id: 'ward', name: '金身', stat: 'armor', perStack: 0.025, op: 'add', maxStacks: 10, description: '全队减伤 +2.5个百分点；最终减伤须限至80%' },
     { id: 'focus', name: '澄心', stat: 'cooldown', perStack: -0.04, op: 'addBaseMultiplier', maxStacks: 10, description: '武器普攻/技能基准冷却 -4%，最多10层' },
-    { id: 'keen', name: '照见', stat: 'critChance', perStack: 0.025, op: 'add', maxStacks: 10, description: '全队暴击 +2.5个百分点；最终暴击须限至95%' }
+    { id: 'keen', name: '照见', stat: 'critChance', perStack: 0.025, op: 'add', maxStacks: 10, description: '全队暴击 +2.5个百分点；最终暴击须限至95%' },
+    { id: 'soulfeast', name: '摄魂', stat: 'soulHeal', perStack: 1, op: 'add', maxStacks: 5, description: '击杀掉落的魂灵每颗回血 +1（基础1点），最多5层' }
   ]);
   let seedCounter = 0;
   function freshSeed() {
@@ -116,7 +117,7 @@
     function build() {
       return { damageMultiplier: 1 + stacks.might * .08, maxHpMultiplier: 1 + stacks.vitality * .10, healingMultiplier: 1 + stacks.mercy * .10,
         regenAdd: stacks.renewal, speedMultiplier: 1 + stacks.haste * .025, armorAdd: stacks.ward * .025,
-        cooldownMultiplier: 1 - stacks.focus * .04, critChanceAdd: stacks.keen * .025, stacks: clone(stacks) };
+        cooldownMultiplier: 1 - stacks.focus * .04, critChanceAdd: stacks.keen * .025, soulHealAdd: stacks.soulfeast || 0, stacks: clone(stacks) };
     }
     function encounterAt(index) {
       need(Number.isSafeInteger(index) && index >= 0, 'invalid encounter index');

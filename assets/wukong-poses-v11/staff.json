@@ -1,0 +1,14 @@
+{
+ "file": "staff.webp",
+ "size": [
+  85,
+  1024
+ ],
+ "axis": "vertical",
+ "gripV": 0.5,
+ "capV": [
+  0.12,
+  0.88
+ ],
+ "note": "grip anchored at shaft centre; length scaled per stage 1.0/1.3/1.7"
+}

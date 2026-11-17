@@ -77,6 +77,7 @@ class Boot extends Phaser.Scene {
 class Select extends Phaser.Scene {
   constructor() { super('Select'); }
   create() {
+    AUD.setMode('menu'); // v11：进入界面紧张二胡感BGM（原创合成；授权曲目可经 GAME_CONFIG.audio.bgm.menu 接入）
     this.keys = C.solo ? C.solo.roster.slice() : Object.keys(C.heroes);
     this.sel = this.registry.get('lastHero') || this.keys[0]; if (!this.keys.includes(this.sel)) this.sel = this.keys[0];
     this.locked = false;
@@ -94,6 +95,8 @@ class Select extends Phaser.Scene {
     this.add.image(W / 2, H / 2, 'vignette').setDisplaySize(W * 1.15, H * 1.25);
     txt(this, 28 * u, 18 * u, '《' + C.title + '》', 40 * u, '#f3e2b0', { stroke: '#1a1210', strokeThickness: 8 * u, fontStyle: 'bold' });
     txt(this, 32 * u, 76 * u, C.solo ? '单人试炼 · 当前开放孙悟空（其余英雄后续开放）' : '选择你的英雄 · 其余队友由 AI 补位', 17 * u, '#cbb994');
+    // v11 音乐署名（CC-BY 要求）：作者、曲名、许可、来源
+    if(C.audio?.credits){const lines=C.audio.credits.filter(c=>c.license!=='original').map(c=>'♪ '+c.credit+' · '+c.license+' · '+c.source.replace(/^https?:\/\//,''));this.creditTxt=txt(this, 14 * u, H - (8 + lines.length * 14) * u, lines.join('\n'), 10.5 * u, '#9c8f78',{lineSpacing:2*u});}
     // 顶部队伍槽位
     this.slotObjs = [];
     const n = C.teamSize, sw = 80 * u, gap = 14 * u, sx = W - 40 * u - n * sw - (n - 1) * gap + sw / 2, sy = 54 * u;
@@ -344,8 +347,8 @@ class Battle extends Phaser.Scene {
     this.view.update(dt);
     if(this.phase==='reward')return;
     if (this.over) { this.syncVisuals(dt); return; }
-    if (this.hitstopT > 0) { this.hitstopT -= dt; this.syncVisuals(0); return; }
-    this.elapsed += dt;
+    if (this.hitstopT > 0) { if(C.feel.hitstopBreakOnDodge&&this.ctrl.dodge&&this.player&&!this.player.dead)this.hitstopT=0; else { this.hitstopT -= dt; this.syncVisuals(0); return; } }
+    this.elapsed += dt;this.updateSouls(dt);
     this.updateDowned(dt);
     this.updatePlayer(dt);
     for (const h of this.heroes) if (!h.isPlayer) this.updateHeroAI(h, dt);
@@ -361,7 +364,7 @@ class Battle extends Phaser.Scene {
   }
   tickUnit(u, dt) {
     if (u.dead) return;
-    u.stunT=Math.max(0,(u.stunT||0)-dt);u.iframeT=Math.max(0,(u.iframeT||0)-dt);u.hitGuardT=Math.max(0,(u.hitGuardT||0)-dt);
+    u.stunT=Math.max(0,(u.stunT||0)-dt);u.hitStunT=Math.max(0,(u.hitStunT||0)-dt);u.iframeT=Math.max(0,(u.iframeT||0)-dt);u.hitGuardT=Math.max(0,(u.hitGuardT||0)-dt);
     if(u.clock&&!u.clock.done){const clock=u.clock;clock.update(dt);u.actionT=clock.remaining;u.actionPhase=clock.phase;}
     for (const k in u.cd) u.cd[k] = Math.max(0, u.cd[k] - dt);
     if (u.slowT > 0) { u.slowT -= dt; if (u.slowT <= 0) u.slowMul = 1; }
@@ -395,24 +398,59 @@ class Battle extends Phaser.Scene {
     const input=this.view.input(mx,my);mx=input.x;my=input.y;
     this.ctrl.kx = mx; this.ctrl.ky = my;
     if(this.ctrl.dodge){this.ctrl.dodge=false;this.doDodge(h,mx,my);}
-    this.updateLock(h);if(h.dodgeState){this.updateDodge(h,dt);return;}
+    this.updateLock(h);if(h.dodgeState){if(this.ctrl.atk||k.J.isDown||k.SPACE.isDown)h.combo.request(this.elapsed);const DS=h.dodgeState;if(h.combo.queued(this.elapsed)&&DS.t>=DS.dur*(C.solo.dodge.attackCancel??.55))h.dodgeState=null;else{this.updateDodge(h,dt);return;}}this.updateAttackStep(h,dt);
     if(h.stunT>0)return;
     if(!C.solo&&(this.ctrl.rescue||k.R.isDown)&&this.attemptRescue(h,this.nearestDowned(h),dt))return;
     if (h.dash) this.updateDash(h, dt);
     else if (mx || my) this.moveUnit(h, mx, my, h.def.speed, dt);
     const w = this.W(h), want=['s1','s2','s3'].find(s=>this.ctrl[s]&&w['skill'+s[1]]&&h.cd['skill'+s[1]]<=0);
     if(want){if(!(h.clock&&!h.clock.done)){this.ctrl.s1=this.ctrl.s2=this.ctrl.s3=false;const sk='skill'+want[1],R=w[sk].lockRange;this.doSkill(h,sk,R?this.lockPick(h,R,this.inputDir()??h.faceAng):null);}}
-    else{this.ctrl.s1=this.ctrl.s2=this.ctrl.s3=false;if(this.ctrl.atk||k.J.isDown||k.SPACE.isDown)h.combo.request(this.elapsed);if(h.combo.queued(this.elapsed)&&h.cd.attack<=0){const dir=this.inputDir()??h.faceAng,A=w.attack,t=A.kind==='melee'?this.lockPick(h,A.range+(C.solo?.lock?.meleeAssist??60),dir,PM.DegToRad(C.solo?.lock?.meleeCone??55)):this.lockPick(h,A.range,dir);let a=dir;if(t){const ta=ang(h,t);a=A.kind==='melee'?dir+PM.Angle.Wrap(ta-dir)*(C.solo?.lock?.meleeSnap??.75):ta;}this.doAttack(h,a);}}
+    else{this.ctrl.s1=this.ctrl.s2=this.ctrl.s3=false;if(this.ctrl.atk||k.J.isDown||k.SPACE.isDown)h.combo.request(this.elapsed);if(h.combo.queued(this.elapsed)&&h.cd.attack<=0){const dir=this.inputDir()??h.faceAng,A=w.attack,t=A.kind==='melee'?this.lockPick(h,A.range+(C.solo?.lock?.meleeAssist??60),dir,PM.DegToRad(C.solo?.lock?.meleeCone??55)):this.lockPick(h,A.range,dir);let a=dir;if(t){const ta=ang(h,t);a=A.kind==='melee'?dir+PM.Angle.Wrap(ta-dir)*(C.solo?.lock?.meleeSnap??.75):ta;}this.doAttack(h,a,t);}}
     // Weapon afterimages ride the actual weapon sprite through the strike window.
-    if(h.clock&&!h.clock.done&&h.action==='attack'){const c=h.clock,tm=c.timing;if(c.time>tm.windup*.5&&c.time<tm.windup+tm.active+.05&&(h.trailT=(h.trailT||0)-dt)<=0){h.trailT=C.feel.weaponGhostInterval;this.weaponGhost(h);}}
+    // v11：普攻残影=人物与金箍棒原色半透明副本（逐段增强），月牙光沿弯曲棍身扫过区域绘制
+    if(h.clock&&!h.clock.done&&h.action==='attack'){const c=h.clock,tm=c.timing,AG=(C.feel.attackGhost||{})[h.attackProfile?.poseStage];const w0=tm.windup*.45,w1=tm.windup+tm.active+.05;
+      if(AG&&c.time>w0&&c.time<w1){if(h.ghostN===undefined||h.ghostClock!==c){h.ghostClock=c;h.ghostN=0;}const due=Math.floor((c.time-w0)/((w1-w0)/AG.count))+1;while(h.ghostN<Math.min(AG.count,due)){h.ghostN++;const k=h.ghostN/AG.count;this.ghost(h.spr,{mode:'copy',alpha:AG.alpha*(.6+.4*k),duration:AG.life});this.staffGhost(h,AG.alpha*(.7+.3*k),AG.life);}}
+      else if(!AG&&c.time>tm.windup*.5&&c.time<w1&&(h.trailT=(h.trailT||0)-dt)<=0){h.trailT=C.feel.weaponGhostInterval;this.weaponGhost(h);}
+      if(c.time>tm.windup*.7&&c.time<w1)this.staffSweep(h);else h.prevSweep=null;}else h.prevSweep=null;
   }
   /* t100 目标锁定：范围内优先摇杆/朝向锥内的敌人（角度为主、距离为辅），锥内没有才取最近；防止远程/定点技能空放。 */
   lockPick(h,range,dir,cone=Math.PI*.42){let best=null,bs=1e9,near=null,nd=1e9;for(const e of this.enemies){if(e.dead)continue;const d=dist(h,e);if(d>range+e.r)continue;if(d<nd){nd=d;near=e;}if(dir!==undefined){const da=angDiff(ang(h,e),dir);if(da<=cone){const sc=da*260+d;if(sc<bs){bs=sc;best=e;}}}}return best||near;}
   inputDir(){const x=this.ctrl.kx,y=this.ctrl.ky;return (x||y)?Math.atan2(y,x):undefined;}
   updateLock(h){const w=this.W(h),R=C.solo?.lock,S=w.skill2;if(!R||h.dead){this.lockTarget=null;this.lockG?.setVisible(false);return;}const t=this.lockPick(h,R.range,this.inputDir()??h.faceAng);this.lockTarget=t;const g=this.lockG||(this.lockG=this.add.graphics());g.clear();if(!t){g.setVisible(false);return;}g.setVisible(true).setDepth(this.view.depth(t.x,t.y,40));const q=this.view.project(t.x,t.y,0),rx=t.r*1.15,ry=rx*C.view25d.yScale,sp=this.elapsed*3;g.clear();g.lineStyle(3,0xfff4cf,.9);for(let i=0;i<4;i++){const a0=sp+i*Math.PI/2,pts=[];for(let k=0;k<=8;k++){const a=a0+k*.09;pts.push({x:q.x+Math.cos(a)*rx,y:q.y+Math.sin(a)*ry});}g.strokePoints(pts,false);}const top=this.view.project(t.x,t.y,t.def.size*.95+6*Math.sin(this.elapsed*6));g.fillStyle(0xfff4cf,.95).fillTriangle(top.x-8,top.y-12,top.x+8,top.y-12,top.x,top.y).lineStyle(2,0x1a1210,.9).strokeTriangle(top.x-8,top.y-12,top.x+8,top.y-12,top.x,top.y);}
-  doDodge(h,mx,my){const D=C.solo?.dodge;if(!D||h.dead||h.stunT>0||h.cd.dodge>0||h.dodgeState)return false;if(h.clock&&!h.clock.done)this.cancelAction(h);h.dash=null;const a=(mx||my)?Math.atan2(my,mx):h.faceAng;h.faceAng=a;h.dodgeState={a,t:0,dur:D.duration,speed:D.distance/D.duration,ghostT:0};h.iframeT=D.iframes;h.cd.dodge=D.cooldown;this.stats.dodges++;AUD.play('swing');return true;}
-  updateDodge(h,dt){const S=h.dodgeState;S.t+=dt;const step=Math.min(dt,Math.max(0,S.dur-(S.t-dt)));h.x+=Math.cos(S.a)*S.speed*step;h.y+=Math.sin(S.a)*S.speed*step;h.moving=true;if((S.ghostT-=dt)<=0){S.ghostT=S.dur/C.solo.dodge.afterimages;this.ghost(h.spr,{snapshot:true,tint:0x7fb4e6,alpha:.5,duration:260});}if(S.t>=S.dur)h.dodgeState=null;}
-  ghost(spr,o={}){if(!spr||!spr.active)return null;let key=spr.texture.key,tmp=null;/* v10.1: snapshot canvases showed a faint full-frame box in WebGL; body ghosts now reuse the live, correctly-masked texture */if(false){const src=spr.texture.getSourceImage(),cv=document.createElement('canvas');cv.width=src.width;cv.height=src.height;cv.getContext('2d').drawImage(src,0,0);tmp='ghost_'+(++this.ghostSeq);this.textures.addCanvas(tmp,cv);this.ghostKeys.add(tmp);key=tmp;}const g=this.add.image(spr.x,spr.y,key).setOrigin(spr.originX,spr.originY).setScale(spr.scaleX,spr.scaleY).setRotation(spr.rotation).setDepth(spr.depth-.05);/* v10.1: body afterimages are colour-tinted copies (normal blend), never white silhouettes/boxes; only small weapon trails use additive fill */if(o.snapshot)g.setTint(o.tint||0x6f7f99).setAlpha((o.alpha||.45)*.75).setBlendMode(Phaser.BlendModes.NORMAL);else g.setTintFill(o.tint||0xbfd6ff).setAlpha(o.alpha||.45).setBlendMode(Phaser.BlendModes.ADD);this.tweens.add({targets:g,alpha:0,duration:o.duration||220,onComplete:()=>{g.destroy();if(tmp){this.ghostKeys.delete(tmp);if(this.textures.exists(tmp))this.textures.remove(tmp);}}});return g;}
+  doDodge(h,mx,my){const D=C.solo?.dodge;if(!D||h.dead||h.stunT>0||h.cd.dodge>0||h.dodgeState)return false;if(h.clock&&!h.clock.done)this.cancelAction(h);h.dash=null;const a=(mx||my)?Math.atan2(my,mx):h.faceAng;h.faceAng=a;h.dodgeState={a,t:0,dur:D.duration,speed:D.distance/D.duration,ghostT:0};h.iframeT=D.iframes;h.cd.dodge=D.cooldown;if(D.resetAttackCd)h.cd.attack=0;h.atkStep=null;this.stats.dodges++;AUD.play('swing');return true;}
+  updateDodge(h,dt){const S=h.dodgeState;S.t+=dt;const step=Math.min(dt,Math.max(0,S.dur-(S.t-dt)));h.x+=Math.cos(S.a)*S.speed*step;h.y+=Math.sin(S.a)*S.speed*step;h.moving=true;if((S.ghostT-=dt)<=0){S.ghostT=S.dur/C.solo.dodge.afterimages;const DG=C.feel.dodgeGhost||{};this.ghost(h.spr,{mode:'white',tint:DG.tint??0xeef4ff,alpha:DG.alpha??.42,duration:DG.life??260});}if(S.t>=S.dur)h.dodgeState=null;}
+  ghost(spr,o={}){if(!spr||!spr.active)return null;let key=spr.texture.key,tmp=null;/* v10.1: snapshot canvases showed a faint full-frame box in WebGL; body ghosts now reuse the live, correctly-masked texture */if(false){const src=spr.texture.getSourceImage(),cv=document.createElement('canvas');cv.width=src.width;cv.height=src.height;cv.getContext('2d').drawImage(src,0,0);tmp='ghost_'+(++this.ghostSeq);this.textures.addCanvas(tmp,cv);this.ghostKeys.add(tmp);key=tmp;}const g=this.add.image(spr.x,spr.y,key).setOrigin(spr.originX,spr.originY).setScale(spr.scaleX,spr.scaleY).setRotation(spr.rotation).setDepth(spr.depth-.05);/* v10.1: body afterimages are colour-tinted copies (normal blend), never white silhouettes/boxes; only small weapon trails use additive fill */if(o.mode==='copy')g.setAlpha(o.alpha||.3).setBlendMode(Phaser.BlendModes.NORMAL);else if(o.mode==='white')g.setTintFill(o.tint||0xeef4ff).setAlpha(o.alpha||.4).setBlendMode(Phaser.BlendModes.NORMAL);else if(o.snapshot)g.setTint(o.tint||0x6f7f99).setAlpha((o.alpha||.45)*.75).setBlendMode(Phaser.BlendModes.NORMAL);else g.setTintFill(o.tint||0xbfd6ff).setAlpha(o.alpha||.45).setBlendMode(Phaser.BlendModes.ADD);this.tweens.add({targets:g,alpha:0,duration:o.duration||220,onComplete:()=>{g.destroy();if(tmp){this.ghostKeys.delete(tmp);if(this.textures.exists(tmp))this.textures.remove(tmp);}}});return g;}
+  /* 棍身残影：沿当前弯曲棍身的原色半透明描线副本（Graphics 线条，无矩形贴图）。 */
+  staffGhost(h,alpha,life){const w=h.art?.weapon,P=h.art?.staffPts;if(!w||!P||!w.visible)return;const x0=w.x,y0=w.y,pts=P.map(p=>({x:x0+p.x,y:y0+p.y})),S=(C.staff||{})[h.key]||{},th=(S.thick||8)*.9,g=this.add.graphics().setDepth(w.depth-.02);
+    g.lineStyle(th+2,0x2a120c,1).strokePoints(pts,false);g.lineStyle(th,0x8f2a1e,1).strokePoints(pts,false);const n=pts.length-1,cap=Math.max(1,Math.round(n*.13));g.lineStyle(th+1,0xd9a640,1).strokePoints(pts.slice(0,cap+1),false).strokePoints(pts.slice(n-cap),false);g.setAlpha(alpha);this.tweens.add({targets:g,alpha:0,duration:life||180,onComplete:()=>g.destroy()});}
+  /* 月牙光跟随弯曲轨迹：填充上一帧与本帧棍身曲线之间扫过的带状区域（棍梢亮、近手淡）。 */
+  staffSweep(h){const w=h.art?.weapon,P=h.art?.staffPts,SS=h.art?.staffState;if(!w||!P||!SS)return;const g0=(SS.gripV||.5),i0=Math.floor(g0*(P.length-1)),cur=P.slice(i0).map(p=>({x:w.x+p.x,y:w.y+p.y})),prev=h.prevSweep;h.prevSweep=cur;if(!prev||prev.length!==cur.length)return;
+    const st=h.attackProfile?.step||1,S=C.feel.slash[st-1]||C.feel.slash[0],g=this.add.graphics().setDepth(w.depth+.05);for(let i=1;i<cur.length;i++){const k=i/(cur.length-1);g.fillStyle(i>cur.length*.75?S.color:S.ghost,(.15+.55*k)*(st===3?1:.85));g.fillPoints([prev[i-1],prev[i],cur[i],cur[i-1]],true);}
+    this.tweens.add({targets:g,alpha:0,duration:S.life||160,onComplete:()=>g.destroy()});}
+  /* 通用纯色剪影：对一个或多个实时贴图（人物/武器/怪物）叠加 tintFill 副本，按形状着色、随原图逐帧同步，淡出。 */
+  silhouette(targets,preset,o={}){const P={...(C.feel.silhouette?.[preset]||{color:0xffffff,alpha:.8,dur:.1}),...o};this.silh=this.silh||[];for(const src of [].concat(targets)){if(!src||!src.active)continue;const img=this.add.image(src.x,src.y,src.texture.key).setTintFill(P.color).setBlendMode(Phaser.BlendModes.NORMAL);this.silh.push({src,img,t:0,dur:P.dur,alpha:P.alpha,hold:P.hold??.35});}}
+  silhouetteFor(u,preset,o){const t=[u.spr];if(u.art?.weapon?.visible)t.push(u.art.weapon);if(u.art?.hand?.visible)t.push(u.art.hand);this.silhouette(t,preset,o);}
+  updateSilhouettes(dt){if(!this.silh?.length)return;for(const s of this.silh){s.t+=dt;const src=s.src,img=s.img;if(!src.active||s.t>=s.dur){s.done=true;continue;}const k=s.t/s.dur,a=k<s.hold?1:1-(k-s.hold)/(1-s.hold);img.setTexture(src.texture.key,src.frame?.name).setOrigin(src.originX,src.originY).setPosition(src.x,src.y).setScale(src.scaleX,src.scaleY).setRotation(src.rotation).setDepth(src.depth+.01).setVisible(src.visible).setAlpha(s.alpha*a*src.alpha);}
+    this.silh=this.silh.filter(s=>{if(s.done){s.img.destroy();return false;}return true;});}
+  /* 黑色星光飘散：Graphics 四角星粒子（非贴图，不会出现方框） */
+  starDissolve(t){const DF=C.feel.death||{},n=t.isBoss?(DF.bossStars||48):(DF.stars||16),sz=t.def.size,q0=this.view.project(t.x,t.y,sz*.35),g=this.add.graphics().setDepth(this.view.depth(t.x,t.y,1)),P=[];
+    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,r=Math.random()*sz*.38;P.push({x:q0.x+Math.cos(a)*r,y:q0.y+Math.sin(a)*r*.6,vx:Math.cos(a)*(10+Math.random()*26),vy:-20-Math.random()*45,s:2.5+Math.random()*(t.isBoss?6:4),rot:Math.random()*3,spin:(Math.random()-.5)*6,d:Math.random()*.25});}
+    const st={p:0},draw=()=>{g.clear();for(const o of P){const k=Math.max(0,(st.p-o.d)/(1-o.d));if(k<=0)continue;const x=o.x+o.vx*k,y=o.y+o.vy*k-14*k*k,s=o.s*(1-k*.7),a=o.rot+o.spin*k,al=k<.15?k/.15:1-(k-.15)/.85;const pts=[];for(let j=0;j<8;j++){const rr=j%2?s*.32:s;pts.push({x:x+Math.cos(a+j*Math.PI/4)*rr,y:y+Math.sin(a+j*Math.PI/4)*rr});}g.fillStyle(DF.starColor??0x0d0a12,.9*al).fillPoints(pts,true);}};
+    draw();this.tweens.add({targets:st,p:1,duration:t.isBoss?1300:800,onUpdate:draw,onComplete:()=>g.destroy()});}
+  /* 魂灵：红色水滴火焰（3帧手绘循环），弹出落地→停顿→沿曲线追向悟空，命中回血 */
+  spawnSouls(t,count){const S=C.soul;this.souls=this.souls||[];for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,r=20+Math.random()*(t.isBoss?90:30);const img=this.add.image(0,0,'soul11_0').setOrigin(.5,.85);const sc=S.size/80;img.setScale(sc);const sh=this.add.ellipse(0,0,S.size*.7,S.size*.25,0x000000,.28);this.souls.push({img,sh,sc,x0:t.x,y0:t.y,x:t.x+Math.cos(a)*r,y:t.y+Math.sin(a)*r,z:0,t:-i*.06,state:'pop',seed:Math.random()*10,side:Math.random()<.5?-1:1});}}
+  updateSouls(dt){const S=C.soul;if(!this.souls?.length)return;const h=this.player,fr=Math.floor(this.elapsed*(S.fps||9));for(const s of this.souls){s.t+=dt;if(s.t<0){s.img.setVisible(false);s.sh.setVisible(false);continue;}s.img.setVisible(true);s.sh.setVisible(true);
+      let wx,wy,z;if(s.state==='pop'){const k=Math.min(1,s.t/S.popTime);wx=s.x0+(s.x-s.x0)*k;wy=s.y0+(s.y-s.y0)*k;z=Math.sin(k*Math.PI)*40+(1-k)*20;if(k>=1){s.state='rest';s.t=0;}}
+      else if(s.state==='rest'){wx=s.x;wy=s.y;z=4+Math.sin((s.t+s.seed)*9)*3;if(s.t>=S.rest&&!h.dead){s.state='fly';s.t=0;s.fx=s.x;s.fy=s.y;}}
+      else{const k=Math.min(1,s.t/S.fly),e=k*k*(3-2*k),tx=h.x,ty=h.y,dx=tx-s.fx,dy=ty-s.fy,L=Math.hypot(dx,dy)||1,cx=(s.fx+tx)/2-dy/L*L*S.curve*s.side,cy=(s.fy+ty)/2+dx/L*L*S.curve*s.side;wx=(1-e)*(1-e)*s.fx+2*(1-e)*e*cx+e*e*tx;wy=(1-e)*(1-e)*s.fy+2*(1-e)*e*cy+e*e*ty;z=4+Math.sin(k*Math.PI)*60+k*h.def.size*.4;
+        if(k>=1){s.done=true;const heal=(S.heal||1)+(this.buildStats?.soulHealAdd||0);if(!h.dead&&h.hp<h.maxHp){const before=h.hp;h.hp=Math.min(h.maxHp,h.hp+heal);this.recordHeal?.(null,h,h.hp-before,'soul');}this.floatText(h.x,h.y,'+'+heal,'#ff9a7a',20,90);AUD.play('pickup');}}
+      const q=this.view.project(wx,wy,z),g0=this.view.project(wx,wy,0);s.img.setTexture('soul11_'+((fr+Math.floor(s.seed))%3)).setPosition(q.x,q.y).setDepth(this.view.depth(wx,wy,30)).setScale(s.sc*(1+.06*Math.sin((this.elapsed+s.seed)*14)),s.sc);s.sh.setPosition(g0.x,g0.y).setDepth(this.view.depth(wx,wy,-1));}
+    this.souls=this.souls.filter(s=>{if(s.done){s.img.destroy();s.sh.destroy();return false;}return true;});}
+  /* 命中特效：墨金放射笔触+白环+墨点，按段放大。 */
+  hitSpark(t,scale=1){const x=t.x,y=t.y,z=t.def.size*.45,g=this.add.graphics().setDepth(this.view.depth(x,y,.6)),seed=Math.random()*6,st={p:0},draw=()=>{const q=this.view.project(x,y,z),p=st.p,r0=8*scale,r1=(14+30*p)*scale;g.clear();
+      g.lineStyle(2.2*scale,0xfff6dc,.9*(1-p)).strokeEllipse(q.x,q.y,r1*1.9,r1*1.2);for(let i=0;i<8;i++){const a=seed+i*Math.PI/4+(i%2)*.2,l=(i%2?.65:1)*(18+26*scale)*(0.6+.4*p);g.lineStyle((i%2?2:3.4)*scale*(1-p*.6),i%3?0xf3c25a:0x1a1210,1-p);g.lineBetween(q.x+Math.cos(a)*r0,q.y+Math.sin(a)*r0*.7,q.x+Math.cos(a)*(r0+l),q.y+Math.sin(a)*(r0+l)*.7);}
+      g.fillStyle(0x1a1210,.8*(1-p));for(let i=0;i<5;i++){const a=seed*2+i*1.3,d=(16+14*p)*scale+i*3;g.fillCircle(q.x+Math.cos(a)*d,q.y+Math.sin(a)*d*.7,(2.4-p*1.5)*scale);}};
+    draw();this.viewFx.push({g,draw});this.tweens.add({targets:st,p:1,duration:200+60*scale,onUpdate:draw,onComplete:()=>g.destroy()});}
   weaponGhost(h){const w=h.art?.weapon;if(!w||!w.visible)return;const st=h.attackProfile?.step||1,S=C.feel.slash[st-1]||C.feel.slash[0];this.ghost(w,{tint:S.ghost,alpha:.5,duration:150});}
   /* ---------- 英雄 AI：打法由当前武器定位决定 ---------- */
   updateHeroAI(h, dt) {
@@ -470,20 +508,26 @@ class Battle extends Phaser.Scene {
   /* ---------- 普攻 / 技能（全部由武器定义） ---------- */
   cancelAction(h){if(h.motionAction?.kind==='pounce'){h.motionAction=null;h.leap=null;}if(h.combo)h.combo.reset();if(h.clock)h.clock.cancel();h.clock=null;h.actionT=0;h.actionPhase='idle';h.dash=null;}
   beginAction(h,kind,release){if(h.dead||h.stunT>0||(h.clock&&!h.clock.done))return false;const timing=kind==='attack'&&h.team==='hero'?{...C.combatWindows.attack,...(h.attackProfile||C.attackMotion[h.weapon])}:C.combatWindows[kind];h.action=kind==='attack'?'attack':'cast';h.clock=new window.ActionClock(kind,timing,()=>{if(!h.dead){if(h.art)h.art.update(0);release();}});h.actionDuration=h.clock.total;h.actionT=h.clock.total;h.actionPhase='windup';return true;}
-  doAttack(h,a){
+  doAttack(h,a,target){
     if(h.cd.attack>0||h.clock&&!h.clock.done)return false;
     const w=this.W(h),A=w.attack,step=h.combo?h.combo.peek(this.elapsed,h.weapon):1,profile={...C.attackMotion[h.weapon],...(h.combo?C.combo.profiles[h.weapon][step-1]:{}),step,finisher:step===3};if(h.combo)profile.recovery=Math.max(profile.recovery,A.cooldown-profile.windup-profile.active);h.attackProfile=profile;
-    if(!this.beginAction(h,'attack',()=>this.resolveAttack(h,h.faceAng,w)))return false;h.cd.attack=A.cooldown;h.faceAng=a;if(h.combo)h.combo.commit(this.elapsed,h.weapon,step,h.clock.total);AUD.play('swing',{ai:!h.isPlayer});return true;
+    if(!this.beginAction(h,'attack',()=>this.resolveAttack(h,h.faceAng,w)))return false;h.cd.attack=A.cooldown;h.faceAng=a;if(h.combo)h.combo.commit(this.elapsed,h.weapon,step,h.clock.total);
+    /* v11：每段小步前冲（重击=向前跃起一步）；锁定目标时贴近但不穿过 */
+    const AS=h.isPlayer&&C.solo?.attackStep,st=AS&&AS[profile.poseStage];if(st){let d=st.dist;if(target&&!target.dead){const gap=dist(h,target)-target.r-(h.r||20)-(AS.stopShort??26);d=PM.Clamp(gap,0,st.dist+(AS.closeGap??60));}h.atkStep={a,dist:d,dur:st.dur,t:0,delay:profile.jump?profile.windup*.25:0};}
+    AUD.play(h.isPlayer&&profile.poseStage?'swing'+step:'swing',{ai:!h.isPlayer});return true;
   }
+  updateAttackStep(h,dt){const S=h.atkStep;if(!S)return;if(!(h.clock&&!h.clock.done&&h.action==='attack')){h.atkStep=null;return;}if(S.delay>0){S.delay-=dt;return;}const prev=S.t;S.t=Math.min(S.dur,S.t+dt);const e=x=>1-(1-x)*(1-x),dd=(e(S.t/S.dur)-e(prev/S.dur))*S.dist,q=this.clampArena(h.x+Math.cos(S.a)*dd,h.y+Math.sin(S.a)*dd,40);h.x=q.x;h.y=q.y;if(S.t>=S.dur)h.atkStep=null;}
+  /* v11：普攻判定距离随金箍棒长度同步：基础距离 + (len-1)×棍梢外伸长度 */
+  staffReach(h,P){const S=(C.staff||{})[h.key],T=S&&P.poseStage&&S.stages[P.poseStage];if(!T||!S.rangeFromLength)return null;return (T.len-1)*(1-(T.gripV??S.gripV??.5))*S.baseLen;}
   resolveAttack(h,a,w){const A=w.attack;h.popT=.12;
     if (A.kind === 'melee') {
-      const P=h.attackProfile||{},range=A.range*(P.rangeMul||1),arc=P.arcDeg||A.arc;let hits=0;for (const e of this.enemies) if (!e.dead && dist(h, e) <= range + e.r && angDiff(ang(h, e), a) <= PM.DegToRad(arc / 2) + 0.2) {this.hurt(e, A.damage*(P.damageMul||1), h);hits++;}
+      const P=h.attackProfile||{},ext=this.staffReach(h,P),range=ext!==null?A.range+ext:A.range*(P.rangeMul||1),arc=P.arcDeg||A.arc;h.lastAttackRange=range;let hits=0;for (const e of this.enemies) if (!e.dead && dist(h, e) <= range + e.r && angDiff(ang(h, e), a) <= PM.DegToRad(arc / 2) + 0.2) {this.hurt(e, A.damage*(P.damageMul||1), h);hits++;}
       if(hits&&h.isPlayer&&h.attackProfile?.finisher)this.stats.finishers++;
       this.weaponStrokeFx(h,a,range,arc,w.color);if(P.jump){this.cameras.main.shake(140,C.feel.shake*3);}
     } else this.fire(h, a, A.tex, A.projSpeed, A.damage, A.range, {});
   }
-  doSkill(h,sk,target){if(!['skill1','skill2','skill3'].includes(sk)||!this.W(h)[sk])return;const w=this.W(h),S=w[sk];if(!this.beginAction(h,'cast',()=>this.resolveSkill(h,sk,target,w)))return;if(h.combo)h.combo.reset();h.cd[sk]=S.cooldown;if(target)h.faceAng=ang(h,target);}
-  resolveSkill(h,sk,target,w){const S=w[sk];h.popT=.2;if(S.kind!=='heal')AUD.play('skill',{ai:!h.isPlayer});
+  doSkill(h,sk,target){if(!['skill1','skill2','skill3'].includes(sk)||!this.W(h)[sk])return;const w=this.W(h),S=w[sk];if(!this.beginAction(h,'cast',()=>this.resolveSkill(h,sk,target,w)))return;h.castKind=S.kind;h.atkStep=null;if(h.isPlayer){const cs={spin:'castSpin',slam:'castSlam',freeze:'castSeal'}[S.kind];if(cs)AUD.play(cs);}if(h.combo)h.combo.reset();h.cd[sk]=S.cooldown;if(target)h.faceAng=ang(h,target);}
+  resolveSkill(h,sk,target,w){const S=w[sk];h.popT=.2;if(S.kind==='slam'&&h.isPlayer)AUD.play('slamImpact');else if(S.kind!=='heal'&&!(h.isPlayer&&['spin','freeze'].includes(S.kind)))AUD.play('skill',{ai:!h.isPlayer});
     const aimT = target || (h.isPlayer&&C.solo?null:this.nearest(this.enemies, h, 700));
     const a = aimT ? ang(h, aimT) : h.faceAng;
     switch (S.kind) {
@@ -512,7 +556,7 @@ class Battle extends Phaser.Scene {
         this.pillarFx(p.x,p.y);this.dustFx(p.x,p.y,S.radius*.8);this.crescentFx(p.x,p.y,a+Math.PI,S.radius*.75,150,{color:0xffffff,thick:.22,life:240,sweep:50,z:20});this.cameras.main.shake(220,.009);break;
       }
       case 'freeze': {
-        for(const e of this.alive(this.enemies))if(dist(h,e)<S.radius+e.r){this.hurt(e,S.damage,h,{skill:true});if(!e.dead){e.stunT=Math.max(e.stunT||0,e.isBoss?S.bossStun:S.stun);e.frozenT=e.stunT;}}
+        for(const e of this.alive(this.enemies))if(dist(h,e)<S.radius+e.r){this.hurt(e,S.damage,h,{skill:true});if(!e.dead){e.stunT=Math.max(e.stunT||0,e.isBoss?S.bossStun:S.stun);e.frozenT=e.stunT;if(C.feel.silhouette?.use?.frozen)this.silhouetteFor(e,C.feel.silhouette?.use.frozen,{dur:Math.min(e.stunT,1.2),alpha:.4,hold:.6});}}if(h.isPlayer&&C.feel.silhouette?.use?.freezeCast)this.silhouetteFor(h,C.feel.silhouette?.use.freezeCast);
         this.sealFx(h.x,h.y,S.radius);break;
       }
       case 'cleave': {
@@ -567,9 +611,10 @@ class Battle extends Phaser.Scene {
     amount = Math.max(0, Math.round(amount * (1 - (t.def.armor || 0))));
     const before=t.hp,effective=Math.min(before,amount);t.hp=Math.max(0,before-amount);t.flashT=amount>0?.08:0;
     if(effective>0){if(src?.team==='hero')this.contactFx(t.x,t.y,t.def.size*.46,src.attackProfile?.finisher?1.45:1);this.recordDamage?.(src,t,effective);const heavy=amount>=C.combatWindows.heavyThreshold;if(!(t.hitGuardT>0)){t.hitGuardT=C.combatWindows.hitGuard;const stun=t.isBoss?(heavy?.045:0):(heavy?C.combatWindows.heavyStun:C.combatWindows.lightStun);if(stun>(t.stunT||0)){t.stunT=stun;if(!t.isBoss)this.cancelAction(t);}if(!t.isBoss&&src){const a=ang(src,t),speed=heavy?160:85;t.kb={vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,t:heavy?.14:.09};}if(heavy)AUD.play('heavy',{ai:!t.isPlayer});else if(t.def.armor>.15)AUD.play('armor',{ai:!t.isPlayer});}}
+    if(effective>0&&src?.isPlayer&&t.team==='enemy'){const HS=C.solo?.hitStun,AP0=src.action==='attack'?src.attackProfile:null;if(HS){let st=opt?.skill?HS.skill:(AP0&&HS[AP0.poseStage])||0;if(t.isBoss)st*=HS.bossMul??.25;if(st>(t.stunT||0)){t.stunT=st;if(!t.isBoss)this.cancelAction(t);}t.hitStunT=Math.max(t.hitStunT||0,Math.min(.3,st));t.hitStunMax=t.hitStunT;}if(C.feel.silhouette?.use?.enemyHit)this.silhouetteFor(t,C.feel.silhouette?.use.enemyHit);this.hitSpark(t,AP0?.poseStage==='heavy'||opt?.skill?1.6:AP0?.poseStage==='normal'?1.2:.9);}
     if(effective>0&&src?.isPlayer&&t.team==='enemy'){const AP=src.action==='attack'?src.attackProfile:null,fin=AP?.finisher,F=C.feel;this.hitstopT=Math.max(this.hitstopT,opt?.skill?F.hitstopSkill:AP?.hitstop??(fin?F.hitstopFinisher:F.hitstop));this.cameras.main.shake(fin||opt?.skill?110:60,opt?.skill?F.shake*2:F.shake*(AP?.shakeMul??(fin?2:1)));this.pFire.explode(fin?10:5,t.x,t.y,t.def.size*.45);}
-    if(effective>0&&t.isPlayer)this.cameras.main.shake(120,.004);
-    if (amount > 0) { if (t.isPlayer) AUD.play('hurt'); else if (t.team === 'enemy' && src && src.team === 'hero') AUD.play('hit', { ai: !src.isPlayer }); }
+    if(effective>0&&t.isPlayer){this.cameras.main.shake(120,.004);if(C.feel.silhouette?.use?.heroHurt)this.silhouetteFor(t,C.feel.silhouette?.use.heroHurt);}
+    if (amount > 0) { if (t.isPlayer) AUD.play('hurt'); else if (t.team === 'enemy' && src && src.team === 'hero') AUD.play(src.isPlayer&&(src.attackProfile?.poseStage==='heavy'&&src.action==='attack')?'hitHeavy':'hit', { ai: !src.isPlayer }); }
     if (src && src.isPlayer) this.stats.dmg += effective;
     if (opt && opt.slow) { t.slowT = opt.slowTime; t.slowMul = opt.slow; }
     if(t.team==='enemy'&&src?.team==='hero')t.lastAttacker=src; // stable target until scheduled retarget or taunt
@@ -586,8 +631,11 @@ class Battle extends Phaser.Scene {
     t.dead = true; t.hp = 0;
     if (t.team === 'enemy') {
       if (src && src.isPlayer) this.stats.kills++;
-      this.pInk.explode(t.isBoss?80:20,t.x,t.y,t.def.size*.4);
-      this.tweens.add({ targets: [t.spr, t.shadow], alpha: 0, duration:t.isBoss?1500:550, onComplete: () => { t.spr.destroy(); t.shadow.destroy(); } });
+      /* v11 死亡演出：阴影色→扭曲倒地（EnemyArt 死亡形变）→黑色星光飘散后消失；记录结束时刻供奖励延时 */
+      const DF=C.feel.death||{dur:.8,bossDur:1.6},dur=(t.isBoss?DF.bossDur:DF.dur)*1000,now=this.time.now;t.deathT0=now;t.deathEnd=now+dur;this.pInk.explode(t.isBoss?30:8,t.x,t.y,t.def.size*.4);
+      this.time.delayedCall(dur*.5,()=>this.starDissolve(t));if(C.feel.silhouette?.use?.death)this.silhouette([t.spr],C.feel.silhouette?.use.death,{dur:dur/1000*.55,hold:.7});
+      this.tweens.add({ targets: [t.spr, t.shadow], alpha: 0, delay:dur*.55, duration:dur*.45, onComplete: () => { t.spr.destroy(); t.shadow.destroy(); } });
+      if(src&&src.team==='hero'&&C.soul)this.spawnSouls(t,t.isBoss?(C.soul.bossCount||6):1);
       if (t.isBoss) { this.cameras.main.shake(800, 0.012); this.bus.emit('banner', C.boss.name + '伏诛！', ''); }
     } else {
       t.downToken=this.runActive?this.run.markDown(t.runId):null;t.downed=true;t.bleedT=C.rescue.bleedOut;t.rescueProgress=0;t.rescueBy=null;t.lifeGeneration=(t.lifeGeneration||0)+1;this.cancelAction(t);t.spr.setTint(0x555555).setAlpha(0.55); t.dash = null;
@@ -730,6 +778,8 @@ class Battle extends Phaser.Scene {
   }
   clearWave() {
     if(this.phase!=='fight'||this.spawnQ.length||this.alive(this.enemies).length)return;
+    /* t109：等最后一只怪死亡演出播完、魂灵收完，再延时 ~0.8s 出奖励牌 */
+    const lastEnd=Math.max(0,...this.enemies.map(e=>e.deathEnd||0));if(this.souls?.length||this.time.now<lastEnd+(C.feel.death?.rewardDelay??.8)*1000)return;
     const cards=this.run.clearEncounter();this.runActive=false;this.phase='reward';
     this.timers=[];this.teles=[];for(const p of this.projs){p.s.destroy();p.shadow.destroy();}this.projs=[];this.teleG.clear();
     for (const h of this.heroes){this.cancelAction(h);h.dodgeState=null;if(h.dead){h.dead=false;h.downed=false;h.rescueProgress=0;h.hp=h.maxHp*C.reviveHpRatio;h.spr.clearTint().setAlpha(1).setAngle(0);}else h.hp=Math.min(h.maxHp,h.hp+h.maxHp*C.waveClearHealRatio);this.run.syncHeroHP(h.runId,h.hp,h.maxHp);}
@@ -759,13 +809,13 @@ class Battle extends Phaser.Scene {
         const d=this.view.vector(Math.cos(u.faceAng),Math.sin(u.faceAng)),flip=d.x<-.15?-1:d.x>.15?1:(u.lastFlip||1);u.lastFlip=flip;u.spr.setScale(u.base*sx*flip*u.native,u.base*sy);
         if(u.flashT>0){if(u.team==='enemy'&&!u.isBoss)u.spr.setTintFill(0xffffff);else if(u.isBoss)u.spr.setTint(0xffd8c8);else u.spr.setTint(0xff8a7a);}else if(u.stunT>.3&&u.team==='enemy')u.spr.setTint(0xffe08a);else if(u.isBoss&&u.phase===2)u.spr.setTint(0xffb0a0);else if(u.isBoss&&u.def.tint)u.spr.setTint(u.def.tint);else if(u.slowT>0)u.spr.setTint(0xa8c8ff);else u.spr.clearTint();
       }
-      u.spr.setPosition(foot.x,foot.y-bob).setDepth(this.view.depth(u.x,u.y));u.shadow.setPosition(foot.x,foot.y);if(u.art)u.art.update(dt);if(u.enemyArt)u.enemyArt.update(dt);
-      if(u.dead){if(u.team==='hero')u.spr.setAngle(80);continue;}
+      u.spr.setPosition(foot.x,foot.y-bob).setDepth(this.view.depth(u.x,u.y));u.shadow.setPosition(foot.x,foot.y);if(u.art)u.art.update(dt);if(u.enemyArt)u.enemyArt.update(dt);if(u.hitStunT>0&&u.team==='enemy'){const k=u.hitStunT/(u.hitStunMax||.2),amp=(C.solo?.hitStun?.shake??6)*k*(u.isBoss?.5:1);u.spr.x+=Math.sin(this.elapsed*90)*amp;u.spr.y-=Math.abs(Math.sin(this.elapsed*45))*amp*.3;}
+      if(u.dead){if(u.team==='hero')u.spr.setAngle(80);else if(u.deathT0){const DF=C.feel.death||{},p=Math.min(1,(this.time.now-u.deathT0)/((u.deathEnd-u.deathT0)*.4)),c=Phaser.Display.Color.Interpolate.ColorWithColor(Phaser.Display.Color.ValueToColor(0xffffff),Phaser.Display.Color.ValueToColor(DF.shadow??0x2a2236),100,p*100);u.spr.setTint(Phaser.Display.Color.GetColor(c.r,c.g,c.b));}continue;}
       if(!u.isBoss){const w=u.team==='hero'?80:Math.max(50,u.def.size*.7),y=foot.y-Math.max(u.def.size*1.02,u.art?.poseTop?u.art.poseTop*u.def.size/512+10:0)-bob;g.fillStyle(0x120c0a,.9).fillRect(foot.x-w/2-3,y-3,w+6,14);g.fillStyle(u.team==='hero'?(u.isPlayer?0x6ad06a:0x4aa3df):0xc0392b).fillRect(foot.x-w/2,y,w*Math.max(0,u.hp/u.maxHp),8);}
       if(u.isPlayer){ground.lineStyle(4,0xf5c542,.9);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.4,u.def.size*.22),false,true);}
       if(u.shieldT>0){ground.lineStyle(5,0xc0392b,.6);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.6),false,true);}
     }
-    this.viewFx=this.viewFx.filter(f=>f.g.active);for(const f of this.viewFx)f.draw();
+    this.viewFx=this.viewFx.filter(f=>f.g.active);for(const f of this.viewFx)f.draw();this.updateSilhouettes(dt||1/60);
     for(const t of this.floats)if(t.floatAnchor){const a=t.floatAnchor,p=this.view.project(a.x,a.y,a.z+(this.elapsed-a.start)*(a.rise||65));t.setPosition(p.x,p.y);}
     // Rotated view-foot Y orders both props and units. Tall covers fade only to retain player visibility.
     if(this.boss&&!this.boss.dead){const b=this.boss,bp=this.view.project(b.x,b.y),cover=this.heroes.some(h=>{const hp=this.view.project(h.x,h.y);return!h.dead&&this.view.depth(h.x,h.y)<this.view.depth(b.x,b.y)&&Math.abs(hp.x-bp.x)<C.boss.size*.5&&bp.y-hp.y<C.boss.size*.85;});b.spr.setAlpha(cover?.65:1);}
@@ -783,7 +833,7 @@ class Battle extends Phaser.Scene {
     const draw=()=>{const n=Math.max(2,Math.round(N*st.p)),outer=[],inner=[];for(let i=0;i<=n;i++){outer.push(pt(i,false));inner.push(pt(i,true));}const poly=outer.concat(inner.reverse());g.clear();g.lineStyle(7,0x0d0b09,.45*st.v).strokePoints(poly,true);g.fillStyle(o.color||0xffffff,.72*st.v).fillPoints(poly,true);const core=[];for(let i=0;i<=n;i++){const q=pt(i,false),w=pt(i,true);core.push({x:q.x*.72+w.x*.28,y:q.y*.72+w.y*.28});}g.lineStyle(3,0xffffff,.95*st.v).strokePoints(core,false);};
     draw();this.viewFx.push({g,draw});this.tweens.add({targets:st,p:1,duration:o.sweep||70,onComplete:()=>this.tweens.add({targets:st,v:0,duration:o.life||180,onComplete:()=>g.destroy()})});return g;}
   thrustFx(x,y,a,L,S){const g=this.add.graphics().setDepth(this.view.depth(x,y,60)),st={p:0,v:1},c=Math.cos(a),s=Math.sin(a),draw=()=>{const pts=[];for(let i=0;i<=12;i++){const t=i/12*st.p,w=18*Math.sin(Math.PI*t/Math.max(.01,st.p));pts.push(this.view.project(x+c*L*t-s*w,y+s*L*t+c*w,52));}for(let i=12;i>=0;i--){const t=i/12*st.p,w=18*Math.sin(Math.PI*t/Math.max(.01,st.p));pts.push(this.view.project(x+c*L*t+s*w,y+s*L*t-c*w,52));}g.clear().lineStyle(6,0x0d0b09,.4*st.v).strokePoints(pts,true).fillStyle(S.color,.75*st.v).fillPoints(pts,true);};draw();this.viewFx.push({g,draw});this.tweens.add({targets:st,p:1,duration:S.sweep,onComplete:()=>this.tweens.add({targets:st,v:0,duration:S.life,onComplete:()=>g.destroy()})});}
-  spinGhosts(h){const w=h.art?.weapon;if(!w)return;for(let i=0;i<8;i++)this.time.delayedCall(i*28,()=>{if(!w.active)return;const g=this.ghost(w,{tint:i%2?0xffd27a:0xffffff,alpha:.55,duration:240});if(g)g.setRotation(w.rotation+i*Math.PI/4);});}
+  spinGhosts(h){const w=h.art?.weapon;if(!w)return;for(let i=0;i<8;i++)this.time.delayedCall(i*28,()=>{if(!w.active)return;const g=this.ghost(w,{mode:'copy',alpha:.42,duration:240});if(g)g.setRotation(w.rotation+i*Math.PI/4);});}
   dustFx(x,y,r,small){this.pDust.explode(small?10:26,x,y,4);const g=this.add.graphics().setDepth(3),o={v:.25};const draw=()=>{g.clear().lineStyle(small?3:5,0xd8cfb8,.7*(1-o.v*.6));this.view.groundShape(g,this.view.circle(x,y,r*o.v),false,true);};draw();this.viewFx.push({g,draw});this.tweens.add({targets:o,v:1,duration:small?220:380,ease:'Cubic.Out'});this.tweens.add({targets:g,alpha:0,duration:small?260:420,onComplete:()=>g.destroy()});}
   pillarFx(x,y){const g=this.add.graphics().setDepth(this.view.depth(x,y,5)),o={h:0,v:1},draw=()=>{const top=this.view.project(x,y,320),bot=this.view.project(x,y,320*(1-o.h));g.clear().fillStyle(0xf5c542,.85*o.v).fillRect(bot.x-11,top.y,22,bot.y-top.y).lineStyle(4,0x1a1210,.8*o.v).strokeRect(bot.x-11,top.y,22,bot.y-top.y).fillStyle(0xffffff,.7*o.v).fillRect(bot.x-3,top.y,6,bot.y-top.y);};draw();this.viewFx.push({g,draw});this.tweens.add({targets:o,h:1,duration:90,ease:'Quad.In',onComplete:()=>this.tweens.add({targets:o,v:0,duration:300,onComplete:()=>g.destroy()})});}
   sealFx(x,y,r){const g=this.add.graphics().setDepth(3),o={v:0};const draw=()=>{g.clear();for(const [k,c]of[[1,0xf5c542],[.72,0xfff1c4]]){g.lineStyle(4,c,.8*(1-Math.max(0,o.v-.6)/.4));this.view.groundShape(g,this.view.circle(x,y,r*k*Math.min(1,o.v*1.6)),false,true);}for(let i=0;i<8;i++){const a=i*Math.PI/4+o.v,p=this.view.project(x+Math.cos(a)*r*.86,y+Math.sin(a)*r*.86,4);g.fillStyle(0xf5c542,.8*(1-o.v)).fillCircle(p.x,p.y,5);}};draw();this.viewFx.push({g,draw});this.tweens.add({targets:o,v:1,duration:900,onComplete:()=>g.destroy()});this.floatText(x,y,'定','#ffe08a',40,150);}

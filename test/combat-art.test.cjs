@@ -12,7 +12,7 @@ let draws=0;
 const ctx=new Proxy({}, {get:(_,k)=>(...args)=>{for(const n of args)if(typeof n==='number')assert(Number.isFinite(n),k);if(k==='drawImage')draws++;}});
 const image=()=>new Proxy({alpha:1,depth:0,x:0,y:0}, {get:(o,k)=>k in o?o[k]:(...a)=>{if(k==='setDepth')o.depth=a[0];if(k==='setPosition'){o.x=a[0];o.y=a[1];}if(k==='setAlpha')o.alpha=a[0];return new Proxy(o,{get:(oo,kk)=>kk in oo?oo[kk]:(...aa)=>{if(kk==='setDepth')oo.depth=aa[0];if(kk==='setPosition'){oo.x=aa[0];oo.y=aa[1];}return imageChain(oo);}});}});
 function imageChain(o){return new Proxy(o,{get:(o,k)=>k in o?o[k]:(...a)=>{if(k==='setDepth')o.depth=a[0];if(k==='setPosition'){o.x=a[0];o.y=a[1];}if(k==='setAlpha')o.alpha=a[0];return imageChain(o);}});}
-const scene={cache:{json:{get:()=>({handAnchor:{x:.3,y:.55},weapon:{grip:{x:.5,y:.7}}})}},textures:{createCanvas:()=>({getContext:()=>ctx,refresh(){}}),get:()=>({getSourceImage:()=>({width:512,height:512})}),remove(){}},add:{image:()=>imageChain({alpha:1,depth:0,x:0,y:0})},events:{once(){}},time:{now:1}};
+const scene={cache:{json:{get:()=>({handAnchor:{x:.3,y:.55},weapon:{grip:{x:.5,y:.7}}})}},textures:{exists:()=>true,createCanvas:()=>({getContext:()=>ctx,refresh(){}}),get:()=>({getSourceImage:()=>({width:512,height:512})}),remove(){}},add:{image:()=>imageChain({alpha:1,depth:0,x:0,y:0})},events:{once(){}},time:{now:1}};
 for(const key of Object.keys(C.heroes)){
  const h={key,isPlayer:true,def:C.heroes[key],weapon:C.heroes[key].weapon,spr:imageChain({alpha:1}),x:100,y:100,t:1,faceAng:Math.PI/2,moving:false};
  const art=new Art(scene,h);
