@@ -1,0 +1,1499 @@
+{
+ "errors": [],
+ "size": {
+  "spawn": {
+   "pose": "spawn",
+   "screenH": 94.85
+  },
+  "idle-right": {
+   "pose": "v6-idle-side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "idle-left": {
+   "pose": "v6-idle-side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "idle-down": {
+   "pose": "v6-idle-front",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "idle-up": {
+   "pose": "v6-idle-back",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-right-f0": {
+   "pose": "p11_wukong_run-side_f0",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-right-f1": {
+   "pose": "p11_wukong_run-side_f1",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "run-right-f2": {
+   "pose": "p11_wukong_run-side_f2",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-right-f3": {
+   "pose": "p11_wukong_run-side_f3",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-left-f0": {
+   "pose": "p11_wukong_run-side_f0",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-left-f1": {
+   "pose": "p11_wukong_run-side_f1",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "run-left-f2": {
+   "pose": "p11_wukong_run-side_f2",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-left-f3": {
+   "pose": "p11_wukong_run-side_f3",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-down-f0": {
+   "pose": "p11_wukong_run-front_f0",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-down-f1": {
+   "pose": "p11_wukong_run-front_f1",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-down-f2": {
+   "pose": "p11_wukong_run-front_f2",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-down-f3": {
+   "pose": "p11_wukong_run-front_f3",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-up-f0": {
+   "pose": "p11_wukong_run-back_f0",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-up-f1": {
+   "pose": "p11_wukong_run-back_f1",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "run-up-f2": {
+   "pose": "p11_wukong_run-back_f2",
+   "view": "back",
+   "screenH": 95.2,
+   "handsOverStaff": true
+  },
+  "run-up-f3": {
+   "pose": "p11_wukong_run-back_f3",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-light": {
+   "pose": "p11_wukong_light_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-normal": {
+   "pose": "p11_wukong_normal_side",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "attack-heavy": {
+   "pose": "p11_wukong_normal_side",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "dodge": {
+   "pose": "p11_wukong_dodge_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill1": {
+   "pose": "p11_wukong_skill-spin_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill2": {
+   "pose": "p11_wukong_skill-slam_side",
+   "view": "side",
+   "screenH": 95.2,
+   "handsOverStaff": true
+  },
+  "cast-skill3": {
+   "pose": "p11_wukong_skill-seal_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-light-right-windup": {
+   "pose": "p11_wukong_light_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-normal-right-windup": {
+   "pose": "p11_wukong_normal_side",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "attack-heavy-right-windup": {
+   "pose": "p11_wukong_heavy_side",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "dodge-right": {
+   "pose": "p11_wukong_dodge_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill1-right": {
+   "pose": "p11_wukong_skill-spin_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill2-right": {
+   "pose": "p11_wukong_skill-slam_side",
+   "view": "side",
+   "screenH": 95.2,
+   "handsOverStaff": true
+  },
+  "cast-skill3-right": {
+   "pose": "p11_wukong_skill-seal_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-light-left-windup": {
+   "pose": "p11_wukong_light_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-normal-left-windup": {
+   "pose": "p11_wukong_normal_side",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "attack-heavy-left-windup": {
+   "pose": "p11_wukong_heavy_side",
+   "view": "side",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  },
+  "dodge-left": {
+   "pose": "p11_wukong_dodge_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill1-left": {
+   "pose": "p11_wukong_skill-spin_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill2-left": {
+   "pose": "p11_wukong_skill-slam_side",
+   "view": "side",
+   "screenH": 95.2,
+   "handsOverStaff": true
+  },
+  "cast-skill3-left": {
+   "pose": "p11_wukong_skill-seal_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-light-down-windup": {
+   "pose": "p11_wukong_light_front",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-normal-down-windup": {
+   "pose": "p11_wukong_normal_front",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-heavy-down-windup": {
+   "pose": "p11_wukong_heavy_front",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "dodge-down": {
+   "pose": "p11_wukong_dodge_front",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill1-down": {
+   "pose": "p11_wukong_skill-spin_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill2-down": {
+   "pose": "p11_wukong_skill-slam_front",
+   "view": "front",
+   "screenH": 95.2,
+   "handsOverStaff": true
+  },
+  "cast-skill3-down": {
+   "pose": "p11_wukong_skill-seal_front",
+   "view": "front",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-light-up-windup": {
+   "pose": "p11_wukong_light_back",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-normal-up-windup": {
+   "pose": "p11_wukong_normal_back",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "attack-heavy-up-windup": {
+   "pose": "p11_wukong_heavy_back",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "dodge-up": {
+   "pose": "p11_wukong_dodge_back",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill1-up": {
+   "pose": "p11_wukong_skill-spin_side",
+   "view": "side",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill2-up": {
+   "pose": "p11_wukong_skill-slam_back",
+   "view": "back",
+   "screenH": 94.85,
+   "handsOverStaff": true
+  },
+  "cast-skill3-up": {
+   "pose": "p11_wukong_skill-seal_back",
+   "view": "back",
+   "screenH": 94.5,
+   "handsOverStaff": true
+  }
+ },
+ "clips": {
+  "size-idle-right": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-idle-left": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-idle-down": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-idle-up": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-right-f0": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-right-f1": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-right-f2": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-right-f3": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-left-f0": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-left-f1": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-left-f2": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-left-f3": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-down-f0": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-down-f1": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-down-f2": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-down-f3": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-up-f0": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-up-f1": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-up-f2": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-run-up-f3": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-light": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-normal": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-heavy": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-dodge": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill1": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill2": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill3": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-light-right-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-normal-right-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-heavy-right-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-dodge-right": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill1-right": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill2-right": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill3-right": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-light-left-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-normal-left-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-heavy-left-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-dodge-left": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill1-left": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill2-left": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill3-left": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-light-down-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-normal-down-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-heavy-down-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-dodge-down": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill1-down": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill2-down": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill3-down": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-light-up-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-normal-up-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-attack-heavy-up-windup": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-dodge-up": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill1-up": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill2-up": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "size-cast-skill3-up": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-left-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-left-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-left-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-right-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-right-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-right-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-up-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-up-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-up-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-down-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-down-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-light-down-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-left-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-left-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-left-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-right-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-right-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-right-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-up-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-up-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-up-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-down-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-down-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-normal-down-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-left-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-left-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-left-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-right-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-right-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-right-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-up-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-up-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-up-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-down-a": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-down-b": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "atk-heavy-down-c": {
+   "x": 512.3393923933999,
+   "y": 406.2945448052278,
+   "z": 1.2
+  },
+  "live-trail-light-left": {
+   "x": 502.73939239339984,
+   "y": 419.4945448052278,
+   "z": 1.2
+  },
+  "live-trail-light-right": {
+   "x": 524.3393923933999,
+   "y": 426.6945448052278,
+   "z": 1.2
+  },
+  "cast-hit-no-interrupt": {
+   "x": 520.7393923933998,
+   "y": 426.6945448052278,
+   "z": 1.2
+  },
+  "hurt-flash": {
+   "x": 532.7768923933999,
+   "y": 426.6945448052278,
+   "z": 1.2
+  },
+  "hand-closeup-idle-right": {
+   "x": 224.3393923933999,
+   "y": 426.6945448052278,
+   "z": 1.2
+  },
+  "hand-closeup-idle-left": {
+   "x": 147.53939239339988,
+   "y": 426.6945448052278,
+   "z": 1.2
+  },
+  "hand-closeup-heavy": {
+   "x": 112.73939239339988,
+   "y": 426.6945448052278,
+   "z": 1.2
+  }
+ },
+ "sizeCheck": {
+  "spawn": {
+   "pose": "spawn",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "idle-right": {
+   "pose": "v6-idle-side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "idle-left": {
+   "pose": "v6-idle-side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "idle-down": {
+   "pose": "v6-idle-front",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "idle-up": {
+   "pose": "v6-idle-back",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-right-f0": {
+   "pose": "p11_wukong_run-side_f0",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-right-f1": {
+   "pose": "p11_wukong_run-side_f1",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "run-right-f2": {
+   "pose": "p11_wukong_run-side_f2",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-right-f3": {
+   "pose": "p11_wukong_run-side_f3",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-left-f0": {
+   "pose": "p11_wukong_run-side_f0",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-left-f1": {
+   "pose": "p11_wukong_run-side_f1",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "run-left-f2": {
+   "pose": "p11_wukong_run-side_f2",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-left-f3": {
+   "pose": "p11_wukong_run-side_f3",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-down-f0": {
+   "pose": "p11_wukong_run-front_f0",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-down-f1": {
+   "pose": "p11_wukong_run-front_f1",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-down-f2": {
+   "pose": "p11_wukong_run-front_f2",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-down-f3": {
+   "pose": "p11_wukong_run-front_f3",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-up-f0": {
+   "pose": "p11_wukong_run-back_f0",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-up-f1": {
+   "pose": "p11_wukong_run-back_f1",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "run-up-f2": {
+   "pose": "p11_wukong_run-back_f2",
+   "screenH": 95.2,
+   "ratio": 1.004,
+   "asserted": true
+  },
+  "run-up-f3": {
+   "pose": "p11_wukong_run-back_f3",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-light": {
+   "pose": "p11_wukong_light_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-normal": {
+   "pose": "p11_wukong_normal_side",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "attack-heavy": {
+   "pose": "p11_wukong_normal_side",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "dodge": {
+   "pose": "p11_wukong_dodge_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill1": {
+   "pose": "p11_wukong_skill-spin_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill2": {
+   "pose": "p11_wukong_skill-slam_side",
+   "screenH": 95.2,
+   "ratio": 1.004,
+   "asserted": true
+  },
+  "cast-skill3": {
+   "pose": "p11_wukong_skill-seal_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-light-right-windup": {
+   "pose": "p11_wukong_light_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-normal-right-windup": {
+   "pose": "p11_wukong_normal_side",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "attack-heavy-right-windup": {
+   "pose": "p11_wukong_heavy_side",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "dodge-right": {
+   "pose": "p11_wukong_dodge_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill1-right": {
+   "pose": "p11_wukong_skill-spin_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill2-right": {
+   "pose": "p11_wukong_skill-slam_side",
+   "screenH": 95.2,
+   "ratio": 1.004,
+   "asserted": true
+  },
+  "cast-skill3-right": {
+   "pose": "p11_wukong_skill-seal_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-light-left-windup": {
+   "pose": "p11_wukong_light_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-normal-left-windup": {
+   "pose": "p11_wukong_normal_side",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "attack-heavy-left-windup": {
+   "pose": "p11_wukong_heavy_side",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  },
+  "dodge-left": {
+   "pose": "p11_wukong_dodge_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill1-left": {
+   "pose": "p11_wukong_skill-spin_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill2-left": {
+   "pose": "p11_wukong_skill-slam_side",
+   "screenH": 95.2,
+   "ratio": 1.004,
+   "asserted": true
+  },
+  "cast-skill3-left": {
+   "pose": "p11_wukong_skill-seal_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-light-down-windup": {
+   "pose": "p11_wukong_light_front",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-normal-down-windup": {
+   "pose": "p11_wukong_normal_front",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-heavy-down-windup": {
+   "pose": "p11_wukong_heavy_front",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "dodge-down": {
+   "pose": "p11_wukong_dodge_front",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill1-down": {
+   "pose": "p11_wukong_skill-spin_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill2-down": {
+   "pose": "p11_wukong_skill-slam_front",
+   "screenH": 95.2,
+   "ratio": 1.004,
+   "asserted": true
+  },
+  "cast-skill3-down": {
+   "pose": "p11_wukong_skill-seal_front",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-light-up-windup": {
+   "pose": "p11_wukong_light_back",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-normal-up-windup": {
+   "pose": "p11_wukong_normal_back",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "attack-heavy-up-windup": {
+   "pose": "p11_wukong_heavy_back",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "dodge-up": {
+   "pose": "p11_wukong_dodge_back",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill1-up": {
+   "pose": "p11_wukong_skill-spin_side",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill2-up": {
+   "pose": "p11_wukong_skill-slam_back",
+   "screenH": 94.85,
+   "ratio": 1,
+   "asserted": true
+  },
+  "cast-skill3-up": {
+   "pose": "p11_wukong_skill-seal_back",
+   "screenH": 94.5,
+   "ratio": 0.996,
+   "asserted": true
+  }
+ },
+ "attack": {
+  "light-left": {
+   "side": -1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 5.262,
+   "endAng": 4.636,
+   "endTipRel": {
+    "dx": -80.7,
+    "dy": 4.3
+   },
+   "pose": "p11_wukong_light_side",
+   "handAbove": true
+  },
+  "light-right": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 1.021,
+   "endAng": 1.647,
+   "endTipRel": {
+    "dx": 80.4,
+    "dy": 8
+   },
+   "pose": "p11_wukong_light_side",
+   "handAbove": true
+  },
+  "light-up": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": -0.55,
+   "endAng": 0.077,
+   "endTipRel": {
+    "dx": 8.1,
+    "dy": -80.4
+   },
+   "pose": "p11_wukong_light_back",
+   "handAbove": true
+  },
+  "light-down": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 2.592,
+   "endAng": 3.218,
+   "endTipRel": {
+    "dx": -8,
+    "dy": 80.4
+   },
+   "pose": "p11_wukong_light_front",
+   "handAbove": true
+  },
+  "normal-left": {
+   "side": -1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 6.162,
+   "endAng": 3.488,
+   "endTipRel": {
+    "dx": -41.8,
+    "dy": 102.2
+   },
+   "pose": "p11_wukong_normal_side",
+   "handAbove": true
+  },
+  "normal-right": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 0.121,
+   "endAng": 2.795,
+   "endTipRel": {
+    "dx": 33.2,
+    "dy": 105.3
+   },
+   "pose": "p11_wukong_normal_side",
+   "handAbove": true
+  },
+  "normal-up": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": -1.45,
+   "endAng": 1.224,
+   "endTipRel": {
+    "dx": 105.3,
+    "dy": -33.2
+   },
+   "pose": "p11_wukong_normal_back",
+   "handAbove": true
+  },
+  "normal-down": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 1.692,
+   "endAng": 4.366,
+   "endTipRel": {
+    "dx": -105.3,
+    "dy": 33.2
+   },
+   "pose": "p11_wukong_normal_front",
+   "handAbove": true
+  },
+  "heavy-left": {
+   "side": -1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 7.362,
+   "endAng": 3.938,
+   "endTipRel": {
+    "dx": -117.2,
+    "dy": 96.3
+   },
+   "pose": "p11_wukong_normal_side",
+   "handAbove": true
+  },
+  "heavy-right": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": -1.079,
+   "endAng": 2.345,
+   "endTipRel": {
+    "dx": 98.8,
+    "dy": 115.1
+   },
+   "pose": "p11_wukong_normal_side",
+   "handAbove": true
+  },
+  "heavy-up": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": -2.65,
+   "endAng": 0.774,
+   "endTipRel": {
+    "dx": 115.1,
+    "dy": -98.8
+   },
+   "pose": "p11_wukong_normal_back",
+   "handAbove": true
+  },
+  "heavy-down": {
+   "side": 1,
+   "mono": true,
+   "endsTowardTarget": true,
+   "startAng": 0.492,
+   "endAng": 3.916,
+   "endTipRel": {
+    "dx": -115.1,
+    "dy": 98.8
+   },
+   "pose": "p11_wukong_normal_front",
+   "handAbove": true
+  }
+ },
+ "live": {
+  "left": {
+   "stage": "light",
+   "sweep": {
+    "stage": "light",
+    "side": -1,
+    "o": 0.08,
+    "start": -0.55,
+    "end": 0.08,
+    "desired": 4.712
+   },
+   "faceAng": 3.141592653589793
+  },
+  "right": {
+   "stage": "light",
+   "sweep": {
+    "stage": "light",
+    "side": 1,
+    "o": 0.08,
+    "start": -0.55,
+    "end": 0.08,
+    "desired": 1.571
+   },
+   "faceAng": 0
+  }
+ },
+ "cast": {
+  "res": {
+   "skill1": {
+    "kind": "spin",
+    "log": [
+     {
+      "clock": 0.05,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99977
+     },
+     {
+      "clock": 0.15,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99955.1
+     },
+     {
+      "clock": 0.3,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99933.25000000001
+     }
+    ],
+    "damageTaken": 65.34999999996217,
+    "cancelled": false,
+    "resolved": true,
+    "completed": true
+   },
+   "skill2": {
+    "kind": "slam",
+    "log": [
+     {
+      "clock": 0.05,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99911.75000000004
+     },
+     {
+      "clock": 0.15,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99889.85000000005
+     },
+     {
+      "clock": 0.3,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99868.00000000006
+     }
+    ],
+    "damageTaken": 65.29999999995925,
+    "cancelled": false,
+    "resolved": true,
+    "completed": true
+   },
+   "skill3": {
+    "kind": "freeze",
+    "log": [
+     {
+      "clock": 0.05,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99846.50000000009
+     },
+     {
+      "clock": 0.15,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99824.6000000001
+     },
+     {
+      "clock": 0.3,
+      "cancelled": false,
+      "stunT": 0,
+      "kb": false,
+      "hp": 99802.7500000001
+     }
+    ],
+    "damageTaken": 65.29999999995925,
+    "cancelled": false,
+    "resolved": true,
+    "completed": true
+   }
+  },
+  "armorBlocks": 3,
+  "armorLog": [
+   {
+    "t": 4.043,
+    "cast": "spin",
+    "clock": 0.05,
+    "hp": 99977
+   },
+   {
+    "t": 4.793,
+    "cast": "slam",
+    "clock": 0.05,
+    "hp": 99911.75000000004
+   },
+   {
+    "t": 5.543,
+    "cast": "freeze",
+    "clock": 0.05,
+    "hp": 99846.50000000009
+   }
+  ]
+ },
+ "castShot": {
+  "action": "cast",
+  "cast": "slam",
+  "clock": 0.15,
+  "cancelled": false,
+  "stunT": 0
+ },
+ "hurt": {
+  "cancelled": false,
+  "stunT": 0,
+  "iframe": 0.45,
+  "flinch": true,
+  "silh": 4,
+  "secondHitBlocked": true
+ },
+ "dodgeBuffer": {
+  "executed": true,
+  "after": 0.2
+ },
+ "latency": {
+  "atk": {
+   "gameFrames": 1,
+   "ms": 144,
+   "gameSec": 0.05
+  },
+  "dodge": {
+   "gameFrames": 1,
+   "ms": 154.4,
+   "gameSec": 0.05
+  }
+ }
+}

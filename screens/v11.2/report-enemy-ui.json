@@ -1,0 +1,193 @@
+{
+ "errors": [],
+ "fonts": {
+  "calli": "\"MaShanZheng\",\"LiuJianMaoCao\",cursive",
+  "loaded": [
+   "LiuJianMaoCao",
+   "MaShanZheng"
+  ]
+ },
+ "walk": [
+  {
+   "mode": "move",
+   "b": 4.11,
+   "sy": 0.986
+  },
+  {
+   "mode": "move",
+   "b": 1.2,
+   "sy": 0.939
+  },
+  {
+   "mode": "move",
+   "b": 2.32,
+   "sy": 0.957
+  },
+  {
+   "mode": "move",
+   "b": 4.68,
+   "sy": 0.995
+  },
+  {
+   "mode": "move",
+   "b": 4.68,
+   "sy": 0.995
+  },
+  {
+   "mode": "move",
+   "b": 2.32,
+   "sy": 0.957
+  },
+  {
+   "mode": "move",
+   "b": 1.2,
+   "sy": 0.939
+  },
+  {
+   "mode": "move",
+   "b": 4.11,
+   "sy": 0.986
+  },
+  {
+   "mode": "move",
+   "b": 4.96,
+   "sy": 0.999
+  },
+  {
+   "mode": "move",
+   "b": 3.32,
+   "sy": 0.973
+  },
+  {
+   "mode": "move",
+   "b": 0,
+   "sy": 0.92
+  },
+  {
+   "mode": "move",
+   "b": 3.32,
+   "sy": 0.973
+  },
+  {
+   "mode": "move",
+   "b": 4.96,
+   "sy": 0.999
+  },
+  {
+   "mode": "move",
+   "b": 4.11,
+   "sy": 0.986
+  },
+  {
+   "mode": "move",
+   "b": 1.2,
+   "sy": 0.939
+  },
+  {
+   "mode": "move",
+   "b": 2.32,
+   "sy": 0.957
+  },
+  {
+   "mode": "move",
+   "b": 4.68,
+   "sy": 0.995
+  },
+  {
+   "mode": "move",
+   "b": 4.68,
+   "sy": 0.995
+  },
+  {
+   "mode": "move",
+   "b": 2.32,
+   "sy": 0.957
+  },
+  {
+   "mode": "move",
+   "b": 1.2,
+   "sy": 0.939
+  },
+  {
+   "mode": "move",
+   "b": 4.11,
+   "sy": 0.986
+  },
+  {
+   "mode": "move",
+   "b": 4.96,
+   "sy": 0.999
+  },
+  {
+   "mode": "action",
+   "b": 0,
+   "sy": 1
+  },
+  {
+   "mode": "action",
+   "b": 0,
+   "sy": 1
+  }
+ ],
+ "walkSummary": {
+  "frames": 24,
+  "moving": 22,
+  "bounceRange": [
+   0,
+   4.96
+  ],
+  "syRange": [
+   0.92,
+   0.999
+  ]
+ },
+ "leap": {
+  "1-crouch": {
+   "z": 0,
+   "sx": 1.096,
+   "sy": 0.863,
+   "landT": 0,
+   "shadow": 1,
+   "angle": 0
+  },
+  "2-rise": {
+   "z": 9.2,
+   "sx": 1.096,
+   "sy": 0.84,
+   "landT": 0,
+   "shadow": 0.966,
+   "angle": 14
+  },
+  "3-apex": {
+   "z": 135,
+   "sx": 1,
+   "sy": 1,
+   "landT": 0,
+   "shadow": 0.5,
+   "angle": 0
+  },
+  "4-land": {
+   "z": 0,
+   "sx": 1.163,
+   "sy": 0.796,
+   "landT": 0.17,
+   "shadow": 1,
+   "angle": 0
+  }
+ },
+ "dbg": {
+  "ma": {
+   "kind": "pounce",
+   "time": 0.05,
+   "windup": 0.55,
+   "active": 0.46,
+   "recovery": 0.72
+  },
+  "leap": false,
+  "stun": 0,
+  "dead": false,
+  "over": false,
+  "phase": "fight",
+  "paused": false
+ }
+}

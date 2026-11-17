@@ -5,7 +5,7 @@
 'use strict';
 const C = window.GAME_CONFIG;
 // v11 actor canvas: 384x480 px (art 614x768) — extra side/top room for scaled linework poses and jumps.
-const CW=384,CH=480,OX=32,OYM=160;
+const CW=384,CH=560,OX=32,OYM=240; // v11.2: taller headroom for the both-hands-overhead heavy pose (512x720 frame)
 function point(v, fallback) {
   if (Array.isArray(v)) return {x:v[0],y:v[1]};
   return v && Number.isFinite(v.x) && Number.isFinite(v.y) ? v : fallback;
@@ -39,7 +39,7 @@ class CombatArt {
       scene.load.image('select_'+key,'assets/selection-v6/'+key+'.png'+revision);
     }
     // v10 key-pose art (static drawings switched per combo stage; not a skeletal rig).
-    for(const [key,P] of Object.entries(C.poseArtV11||{})){const rv='?v='+encodeURIComponent(C.releaseId),L=(set,fr)=>scene.load.image('p11_'+key+'_'+set+'_'+fr,P.dir+set+'-'+fr+P.ext+rv);scene.load.json('pose11_meta_'+key,P.dir+'manifest.json'+rv);const V=['front','back','side'];for(const st of Object.values(P.attack))V.forEach(v=>L(st,v));V.forEach(v=>L(P.dodge,v));for(const st of Object.values(P.skills))V.forEach(v=>L(st,v));for(const st of [P.run.front,P.run.side,P.run.back])P.run.frames.forEach(f=>L(st,f));}
+    for(const [key,P] of Object.entries(C.poseArtV11||{})){const rv='?v='+encodeURIComponent(C.releaseId),L=(set,fr)=>scene.load.image('p11_'+key+'_'+set+'_'+fr,P.dir+set+'-'+fr+P.ext+rv);scene.load.json('pose11_meta_'+key,P.dir+'manifest.json'+rv);const V=['front','back','side'];for(const st of Object.values(P.attack))V.forEach(v=>L(st,v));V.forEach(v=>L(P.dodge,v));for(const st of Object.values(P.skills))V.forEach(v=>L(st,v));for(const st of [P.run.front,P.run.side,P.run.back])P.run.frames.forEach(f=>L(st,f));if(P.idle)V.forEach(v=>L(P.idle,v));}
     (C.soul?.frames||[]).forEach((f,i)=>scene.load.image('soul11_'+i,f+'?v='+encodeURIComponent(C.releaseId)));
     for(const [key,S] of Object.entries(C.staff||{}))scene.load.image('staff11_'+key,S.file+'?v='+encodeURIComponent(C.releaseId));
     for(const [key,P] of Object.entries(C.poseArt||{})){const revision='?v='+encodeURIComponent(C.releaseId);scene.load.json('pose_meta_'+key,P.dir+'manifest.json'+revision);for(const st of P.stages)for(const v of P.views)scene.load.image('pose_'+key+'_'+st+'_'+v,P.dir+st+'-'+v+'.png'+revision);}
@@ -62,8 +62,10 @@ class CombatArt {
     // Grip patch is real pixels from the unarmed hand, masking the pole in front views.
     this.patch=scene.textures.createCanvas(this.id+'_grip',64,64);
     this.hand=scene.add.image(h.x,h.y,this.id+'_grip');
+    // v11.2: full-size hand layer (same transform as the body) holding only the fist pixels of the current pose; drawn above the staff so hands wrap the pole.
+    this.handTex=scene.textures.createCanvas(this.id+'_hands',CW,CH);
     this.last=-1;this.view='front';this.mode='idle';this.gait=new window.ActorMotion.ContactGait();
-    scene.events.once('shutdown',()=>{scene.textures.remove(this.id);scene.textures.remove(this.id+'_grip');if(this.staffTex)scene.textures.remove(this.id+'_staff');});
+    scene.events.once('shutdown',()=>{scene.textures.remove(this.id);scene.textures.remove(this.id+'_grip');scene.textures.remove(this.id+'_hands');if(this.staffTex)scene.textures.remove(this.id+'_staff');});
   }
   update(dt) {
     const h=this.h, s=this.scene;
@@ -74,7 +76,7 @@ class CombatArt {
     // t112 横扫千军：顺时针依次 左侧面→正面→右侧面 循环，并轻微左右横移
     const SPC=((C.poseArtV11||{})[h.key]||{}).spinCycle,spinOn=SPC&&h.action==='cast'&&h.castKind==='spin'&&h.clock&&!h.clock.done;let spinFlip=null;this.spinSway=this.spinSway||0;
     if(spinOn){const seg=Math.floor(h.clock.time/SPC.step)%3,tg=[-1,0,1][seg];this.view=seg===1?'front':'side';spinFlip=seg===0?-1:1;this.spinSway+=(tg*SPC.sway-this.spinSway)*Math.min(1,dt*SPC.swayEase);}else this.spinSway+=(0-this.spinSway)*Math.min(1,dt*12);
-    foot.x+=this.spinSway;this.spinSeg=spinOn?['left','front','right'][Math.floor(h.clock.time/SPC.step)%3]:null;
+    foot.x+=this.spinSway;if(h.flinchT>0){const FL=(C.solo&&C.solo.heroHurt)||{};foot.x+=Math.sin(h.flinchT*95)*(FL.flinchPx??3)*Math.min(1,h.flinchT/(FL.flinch||.14));}this.spinSeg=spinOn?['left','front','right'][Math.floor(h.clock.time/SPC.step)%3]:null;
     this.mode=h.actionT>0?h.action:h.moving?'walk':'idle';
     const m=metadata(s,h.key,this.view); if(!m.hand)return;
     const flip=this.view==='side' ? ((spinFlip??(co<0?-1:1))*(m.sideFaces==='left'?-1:1)) : 1;
@@ -100,9 +102,9 @@ class CombatArt {
     const PA=(C.poseArt||{})[h.key],pm=PA&&s.cache.json.get('pose_meta_'+h.key),stage=profile.poseStage,clk=h.clock,tm=clk&&clk.timing;
     if(dt>0){const md=Math.hypot(h.x-this.prevPos.x,h.y-this.prevPos.y);if(md<60){this.runDist+=md;this.spd+=(md/dt-this.spd)*Math.min(1,dt*12);}this.prevPos={x:h.x,y:h.y};}
     let src=this.pickPose(h,profile,clk,tm,stage,PA,pm),lift=src?src.lift:0;
-    this.poseStage=src?src.set:null;this.poseSrc=src;this.lift=lift;this.poseTop=src?(599-src.info.bbox[1])*src.k+lift:0;
+    this.poseStage=src?src.set:null;this.poseSrc=src;this.lift=lift;this.poseTop=src?(src.fy-src.info.bbox[1])*src.k+lift:0;
     let hp=deform(m.hand.x*512,m.hand.y*512);
-    if(src){const g=src.grip;hp={x:256+(g.x*512-256)*src.k,y:m.foot*512+(g.y*640-599)*src.k-lift};}
+    if(src){src.grip=this.pickGrip(src,co*flip,si);const g=src.grip;hp={x:256+(g.x*512-256)*src.k,y:m.foot*512+(g.y*src.fh-src.fy)*src.k-lift};}
     const handX=foot.x+(hp.x-256)*unitScale*flip, handY=foot.y+(hp.y-m.foot*512)*unitScale;
     const wk=C.weaponArt[h.weapon], wm=metadata(s,wk,this.view), grip=wm.grip;
     if(!grip)return;
@@ -110,7 +112,7 @@ class CombatArt {
     const rest=Number(wm.weapon.rotation || wm.weapon.rotationRad || 0);
     const desired=Math.atan2(si,co)+Math.PI/2,weight=pose.weight;let angle=rest+Math.atan2(Math.sin(desired-rest),Math.cos(desired-rest))*weight+pose.angle*sign*flip;
     const SCF=this.staffCfg,useStaff=!!(this.staffTex&&SCF&&wk===h.key);
-    if(useStaff)angle=this.staffAngle(h,angle,desired,clk,tm,sign);
+    if(useStaff)angle=this.staffAim(h,angle,desired,clk,tm,co,si,flip,src,profile);
     if(dt>0&&this.prevAngle!==null){const da=Math.atan2(Math.sin(angle-this.prevAngle),Math.cos(angle-this.prevAngle));this.omega+=(da/dt-this.omega)*Math.min(1,dt*20);}this.prevAngle=angle;
     const wdepth=(s.view?s.view.depth(h.x,h.y):h.y+10)+(this.view==='back'?-.1:.1);
     if(useStaff){this.drawStaff(h,angle,clk,tm,profile);this.weapon.setTexture(this.id+'_staff').setOrigin(.5,.5).setScale(1/this.SR).setRotation(0).setPosition(handX,handY).setAlpha(h.spr.alpha).setVisible(true).setDepth(wdepth);}
@@ -118,11 +120,13 @@ class CombatArt {
     const frame=Math.floor(t*(this.mode==='idle'?12:32))+'_'+this.view+'_'+this.mode+'_'+(h.clock?.time||0).toFixed(2)+'_'+(src?src.tex:'')+Math.round(lift);
     if(frame!==this.last){
       this.last=frame;const ctx=this.texture.getContext();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,CW,CH);
-      if(src){const pimg=s.textures.get(src.tex).getSourceImage(),k=src.k,jump=src.attack&&profile.jump,q=jump&&clk.time<tm.windup?clk.time/tm.windup:1,sq=jump?(clk.time<tm.windup*.3?1-.08*q:clk.time>tm.windup&&clk.time<tm.windup+tm.active+.06?1-.1:1):1;
+      if(src){const pimg=s.textures.get(src.tex).getSourceImage(),k=src.k,jump=src.attack&&profile.jump,q=jump&&clk.time<tm.windup?clk.time/tm.windup:1,sq=jump&&!((C.poseArtV11||{})[h.key]||{}).normalizeAllHeights?(clk.time<tm.windup*.3?1-.08*q:clk.time>tm.windup&&clk.time<tm.windup+tm.active+.06?1-.1:1):1;
         // squash on take-off / landing about the foot line; pose frame 512x640 with foot at y=599
-        const K=.625*k,sx=2-sq,sy=sq;ctx.setTransform(K*sx,0,0,K*sy,OX+.625*256-K*sx*256,FOOTC-.625*lift-K*sy*599);ctx.drawImage(pimg,0,0);this.texture.refresh();
+        const BR=src.idle?(C.poseArtV11[h.key].idleBreath||{amp:0,hz:1}):null,sqB=BR?1+BR.amp*Math.sin(h.t*Math.PI*2*BR.hz):sq;
+        const K=.625*k,sx=BR?1/Math.sqrt(sqB):2-sq,sy=sqB;ctx.setTransform(K*sx,0,0,K*sy,OX+.625*256-K*sx*256,FOOTC-.625*lift-K*sy*src.fy);ctx.drawImage(pimg,0,0);this.texture.refresh();
+        this.drawHands(pimg,src,K*sx,K*sy,OX+.625*256-K*sx*256,FOOTC-.625*lift-K*sy*src.fy);
         const pc=this.patch.getContext();pc.setTransform(1,0,0,1,0,0);pc.clearRect(0,0,64,64);
-        if(src.info.fists&&src.info.fists.length){const fi=src.info.fists.reduce((a,b)=>b.y>a.y?b:a,src.info.fists[0]),rad=512*cfg.handRadius;pc.save();pc.beginPath();pc.ellipse(32,32,rad*.8*k,rad*.9*k,0,0,Math.PI*2);pc.clip();pc.setTransform(k,0,0,k,32-fi.x*512*k,32-fi.y*640*k);pc.drawImage(pimg,0,0);pc.restore();this.patchPos={x:256+(fi.x*512-256)*k,y:m.foot*512+(fi.y*640-599)*k-lift};}else this.patchPos=null;this.patch.refresh();
+        if(src.info.fists&&src.info.fists.length){const fi=src.grip,rad=512*cfg.handRadius;pc.save();pc.beginPath();pc.ellipse(32,32,rad*.8*k,rad*.9*k,0,0,Math.PI*2);pc.clip();pc.setTransform(k,0,0,k,32-fi.x*512*k,32-fi.y*src.fh*k);pc.drawImage(pimg,0,0);pc.restore();this.patchPos={x:256+(fi.x*512-256)*k,y:m.foot*512+(fi.y*src.fh-src.fy)*k-lift};}else this.patchPos=null;this.patch.refresh();
       } else {
       this.patchPos=null;const img=s.textures.get('v6_'+h.key+'_'+this.view).getSourceImage();ctx.setTransform(.625,0,0,.625,OX,OYM);
       const nx=8,ny=14;
@@ -142,24 +146,44 @@ class CombatArt {
       }
     }
     const pp=this.patchPos,phx=pp?foot.x+(pp.x-256)*unitScale*flip:handX,phy=pp?foot.y+(pp.y-m.foot*512)*unitScale:handY;
-    this.hand.setPosition(phx,phy).setScale(unitScale*flip,unitScale).setAlpha(h.spr.alpha).setVisible((this.view!=='back'||!!this.poseStage)&&!(this.poseSrc&&!this.patchPos)).setDepth((s.view?s.view.depth(h.x,h.y):h.y+10)+.2);
+    if(src&&this.handsOn){this.hand.setTexture(this.id+'_hands').setOrigin(h.spr.originX,h.spr.originY).setPosition(h.spr.x,h.spr.y).setScale(h.spr.scaleX,h.spr.scaleY).setAlpha(h.spr.alpha).setVisible(true).setDepth(this.weapon.depth+.05);}
+    else this.hand.setTexture(this.id+'_grip').setOrigin(.5,.5).setPosition(phx,phy).setScale(unitScale*flip,unitScale).setAlpha(h.spr.alpha).setVisible(!src&&this.view!=='back').setDepth((s.view?s.view.depth(h.x,h.y):h.y+10)+.2);
     if(h.flashT>0){this.weapon.setTint(0xff9a8a);this.hand.setTint(0xff9a8a);}else{this.weapon.clearTint();this.hand.clearTint();}
-    this.state={spinSeg:this.spinSeg,sway:+this.spinSway.toFixed(2),poseStage:this.poseStage,poseTex:src?src.tex:null,staff:this.staffState||null,lift:this.lift,gait:{phase:gait.phase,blend:gait.blend,distance:gait.distance,feet:gait.feet.map(f=>({stance:f.stance,screen:f.screen,anchor:f.lockWorld})),bob:gait.bob},pose,weaponAngle:angle,view:this.view,mode:this.mode,flip,weapon:h.weapon,hand:{x:handX,y:handY},grip:{x:this.weapon.x,y:this.weapon.y},weaponDepth:this.weapon.depth,bodyDepth:h.spr.depth};
+    this.state={spinSeg:this.spinSeg,sway:+this.spinSway.toFixed(2),poseStage:this.poseStage,poseTex:src?src.tex:null,staff:this.staffState||null,lift:this.lift,gait:{phase:gait.phase,blend:gait.blend,distance:gait.distance,feet:gait.feet.map(f=>({stance:f.stance,screen:f.screen,anchor:f.lockWorld})),bob:gait.bob},pose,weaponAngle:angle,view:this.view,mode:this.mode,flip,weapon:h.weapon,hand:{x:handX,y:handY},grip:{x:this.weapon.x,y:this.weapon.y},weaponDepth:this.weapon.depth,bodyDepth:h.spr.depth,handDepth:this.hand.depth,handsOn:!!(src&&this.handsOn),fists:this.fistsDrawn||0,gripFist:src?src.grip:null,poseK:src?src.k:null,flinch:h.flinchT>0};
   }
   pickPose(h,profile,clk,tm,stage,PA,pm){
     const s=this.scene,PV=(C.poseArtV11||{})[h.key],m11=PV&&s.cache.json.get('pose11_meta_'+h.key),view=this.view;
-    const mk=(set,fr,extra)=>{const tex='p11_'+h.key+'_'+set+'_'+fr,info=m11.sets[set]?.frames?.[fr];if(!info||!s.textures.exists(tex))return null;return Object.assign({set,tex,info,k:PV.scale||1,lift:0,grip:info.grip||this.fallbackGrip(info)},extra||{});};
+    const mk=(set,fr,extra)=>{const tex='p11_'+h.key+'_'+set+'_'+fr,info=m11.sets[set]?.frames?.[fr];if(!info||!s.textures.exists(tex))return null;const S=m11.sets[set],fy=S.footLineY||m11.footLineY||599,fh=S.frameH||(m11.frameSize||{}).height||640;return Object.assign({set,tex,info,fy,fh,k:(PV.scale||1)*(info.fit||1)*((PV.setScale||{})[set]||1),lift:0,grip:info.grip||this.fallbackGrip(info,fy,fh)},extra||{});};
     const atkLive=h.action==='attack'&&clk&&!clk.done&&tm&&stage;
     if(m11){
-      if(atkLive&&PV.attack[stage]&&clk.time<=tm.windup+tm.active+tm.recovery*(PV.holdUntil??.7)){let lift=0;if(profile.jump){const up=window.ActorMotion.smooth(Math.min(1,clk.time/(tm.windup*.85))),down=clk.time>tm.windup?Math.min(1,(clk.time-tm.windup)/Math.max(.01,tm.active)):0;lift=(PV.heavyJumpPx||80)*up*(1-down);}const r=mk(PV.attack[stage],view,{lift,attack:true});if(r)return r;}
+      if(atkLive&&PV.attack[stage]&&clk.time<=tm.windup+tm.active+tm.recovery*(PV.holdUntil??.7)){let lift=0;if(profile.jump){const up=window.ActorMotion.smooth(Math.min(1,clk.time/(tm.windup*.85))),down=clk.time>tm.windup?Math.min(1,(clk.time-tm.windup)/Math.max(.01,tm.active)):0;lift=(PV.heavyJumpPx||80)*up*(1-down);}const FT=(PV.followThrough||{})[stage],set=FT&&clk.time>=tm.windup+tm.active*(FT.at??0)?FT.set:PV.attack[stage];const r=mk(set,view,{lift,attack:true,follow:set!==PV.attack[stage]});if(r)return r;}
       if(h.dodgeState){const r=mk(PV.dodge,view);if(r)return r;}
       if(h.action==='cast'&&clk&&!clk.done&&h.castKind&&PV.skills[h.castKind]){const r=mk(PV.skills[h.castKind],view,{cast:h.castKind});if(r)return r;}
-      const R=PV.run;if(!(clk&&!clk.done)&&h.moving&&this.spd>R.minSpeed){const fr=R.frames[Math.floor(this.runDist/R.stride)%R.frames.length],r=mk(R[view],fr,{run:true});if(r)return r;}
+      const R=PV.run;if(!(clk&&!clk.done)&&h.moving&&this.spd>R.minSpeed){const fr=R.frames[Math.floor(this.runDist/(R.cycleStride?R.cycleStride/R.frames.length:R.stride))%R.frames.length],r=mk(R[view],fr,{run:true});if(r)return r;}
+      if(PV.idle&&!(clk&&!clk.done)){const r=mk(PV.idle,view,{idle:true});if(r)return r;}
     }
     if(pm&&atkLive&&clk.time<=tm.windup+tm.active+tm.recovery*(PA.holdUntil??.7)&&s.textures.exists('pose_'+h.key+'_'+stage+'_'+view)){const info=pm.stages[stage][view];let lift=0;if(profile.jump&&info.liftPx){const up=window.ActorMotion.smooth(Math.min(1,clk.time/(tm.windup*.85))),down=clk.time>tm.windup?Math.min(1,(clk.time-tm.windup)/Math.max(.01,tm.active)):0;lift=info.liftPx*up*(1-down);}return{set:stage,tex:'pose_'+h.key+'_'+stage+'_'+view,info,k:1,lift,grip:info.grip,attack:true};}
     return null;
   }
-  fallbackGrip(info){const b=info.bbox;return{x:.5,y:(599-(599-b[1])*.52)/640};}
+  fallbackGrip(info,fy=599,fh=640){const b=info.bbox;return{x:.5,y:(fy-(fy-b[1])*.52)/fh};}
+  /* v11.2 grip = one real fist (not the midpoint between two fists). Default: the fist furthest along the aim direction in sprite space; override per set/view in poseArtV11.gripFist. */
+  pickGrip(src,ax,ay){const F=src.info.fists||[];if(!F.length)return src.grip;const PV=C.poseArtV11[this.h.key]||{},o=(PV.gripFist||{})[src.set+'-'+this.view];if(Number.isInteger(o)&&F[o])return F[o];if(F.length===1)return F[0];let best=F[0],bs=-1e9;for(const f of F){const sc=(f.x-.5)*512*ax+(f.y*src.fh-src.fy)*ay*.6;if(sc>bs){bs=sc;best=f;}}return best;}
+  /* hand layer: copy each fist region (alpha-shaped pose pixels inside an ellipse) onto a transparent canvas laid exactly over the body */
+  drawHands(pimg,src,kx,ky,tx,ty){const ctx=this.handTex.getContext(),HO=C.combatArt.handOverlay||{rx:27,ry:29};ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,CW,CH);const F=src.info.fists||[];this.handsOn=F.length>0&&HO.enabled!==false;this.fistsDrawn=F.length;if(!this.handsOn){this.handTex.refresh();return;}
+    ctx.save();ctx.setTransform(kx,0,0,ky,tx,ty);ctx.beginPath();for(const f of F){ctx.moveTo(f.x*512+HO.rx,f.y*src.fh);ctx.ellipse(f.x*512,f.y*src.fh,HO.rx,HO.ry,0,0,Math.PI*2);}ctx.clip();ctx.drawImage(pimg,0,0);ctx.restore();this.handTex.refresh();}
+  /* v11.2 staff aim. Attacks: staff angle = attack direction + mirrored per-stage sweep offset (start→end), so the pole travels through the same arc the slash trail paints and ends pointing at the target.
+     Offsets are radians, positive = clockwise on screen for a right-side swing; mirrored (×-1) when the attack points left. Idle/run: carried diagonally (config carry). */
+  staffAim(h,angle,desired,clk,tm,co,si,flip,src,profile){const SA=this.staffCfg.aim;if(!SA)return this.staffAngle(h,angle,desired,clk,tm,co<0?-1:1);
+    const side=Math.abs(co)>(SA.sideDead??.08)?Math.sign(co):(SA.verticalSide??1),sm=window.ActorMotion.smooth,mixA=(a,b,t)=>a+Math.atan2(Math.sin(b-a),Math.cos(b-a))*t;
+    const view=this.view,face=view==='side'?flip:1,carry=(SA.carry[src&&src.run?'run':'idle']||{})[view]??0,carryA=view==='side'?carry*face:carry;
+    if(h.action==='attack'&&clk&&!clk.done&&tm&&profile.poseStage&&SA.stages[profile.poseStage]){const St=SA.stages[profile.poseStage],t=clk.time,W=tm.windup,A=tm.active,R=tm.recovery,a0=W*(St.antic??.5);
+      let o;if(t<a0)o=St.start;else if(t<W+A){const q=(t-a0)/Math.max(.01,W+A-a0);o=St.start+(St.end-St.start)*(1-Math.pow(1-q,St.ease??2.2));}else o=St.end;
+      const atk=desired+side*o;this.sweep={stage:profile.poseStage,side,o:+o.toFixed(3),start:St.start,end:St.end,desired:+desired.toFixed(3)};
+      const rk=t>W+A?sm(Math.max(0,(t-W-A-R*(St.hold??.45))/Math.max(.01,R*(1-(St.hold??.45))))):0;return rk>0?mixA(atk,carryA,rk):atk;}
+    this.sweep=null;
+    if(h.action==='cast'&&clk&&!clk.done&&tm){if(h.castKind==='slam'&&SA.slam){const S=SA.slam,t=clk.time,W=tm.windup,A=tm.active,up=S.up??0,dn=desired+side*S.end;if(t<W*S.antic)return up;const q=t<W+A?1-Math.pow(1-(t-W*S.antic)/Math.max(.01,W*(1-S.antic)+A),2.2):1;let d=Math.atan2(Math.sin(dn-up),Math.cos(dn-up));if(d*side<0)d+=2*Math.PI*side;this.sweep={stage:'slam',side,o:+(d*q).toFixed(3)};return up+d*q;}
+      return this.staffAngle(h,angle,desired,clk,tm,co<0?-1:1);}
+    return carryA;}
   // staff envelope 0..1 over an attack/cast clock: extend in late windup, hold in active, retract in recovery
   staffEnv(clk,tm){if(!clk||clk.done||!tm)return{ext:0,bend:0};const t=clk.time,W=tm.windup,A=tm.active,R=tm.recovery,e=(this.staffCfg.extendEase??.6),sm=window.ActorMotion.smooth;
     const ext=t<W?sm(Math.max(0,(t-W*(1-e))/(W*e))):t<W+A?1:Math.max(0,1-sm((t-W-A)/Math.max(.01,R*.85)));

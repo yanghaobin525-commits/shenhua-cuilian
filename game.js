@@ -332,7 +332,10 @@ class Battle extends Phaser.Scene {
     this.pInk.explode(14, x, y);
     this.enemies.push(e); return e;
   }
-  spawnBoss() {
+  /* v11.2：首领预热——普通房间开局时就提前解码首领配乐、生成首领名书法字、预建首领网格缓存，进入首领战不再集中做重活 */
+  prewarmBoss(){this.bossPrewarmed=true;const t0=performance.now(),out={};try{out.audioLayers=AUD.prefetch?.('boss')||0;const sp=C.boss.sprite,key=sp==='boss_jiuying'?'boss':'zheng';if(!this._enemySources?.[key]&&this.textures.exists(sp)){const probe={def:C.boss,key,x:-9999,y:-9999,faceAng:0,runId:'prewarm',native:1,t:0,spr:this.add.image(-9999,-9999,sp).setVisible(false),isBoss:true};const art=new window.EnemyArt(this,probe);art.update(0);probe.spr.destroy();out.mesh=true;}
+    const tx=this.add.text(-9999,-9999,C.boss.name+'现身！',{fontFamily:C.calliFont,fontSize:'64px',stroke:'#5a160d',strokeThickness:5}).setVisible(false);this.time.delayedCall(50,()=>tx.destroy());}catch(e){out.error=String(e.message||e);}out.ms=+(performance.now()-t0).toFixed(1);window.__bossPrewarm=out;}
+  spawnBoss() {if(!this.bossPrewarmed)this.prewarmBoss();
     const A = C.arena;
     const b = this.makeUnit(this.run?this.run.scaleEnemy(C.boss):C.boss, 'enemy', A.width / 2, A.height / 2 - 300);b.runId='enemy-'+(++this.enemySequence);if(this.runActive)this.run.registerEnemy({id:b.runId,maxHp:b.maxHp});
     b.key=C.boss.sprite==='boss_jiuying'?'boss':'zheng';b.isBoss=true;b.enemyArt=new window.EnemyArt(this,b); b.r = C.boss.size * 0.30; b.phase = 1;
@@ -371,7 +374,7 @@ class Battle extends Phaser.Scene {
   }
   tickUnit(u, dt) {
     if (u.dead) return;
-    u.stunT=Math.max(0,(u.stunT||0)-dt);u.hitStunT=Math.max(0,(u.hitStunT||0)-dt);u.iframeT=Math.max(0,(u.iframeT||0)-dt);u.hitGuardT=Math.max(0,(u.hitGuardT||0)-dt);
+    u.stunT=Math.max(0,(u.stunT||0)-dt);u.hitStunT=Math.max(0,(u.hitStunT||0)-dt);u.iframeT=Math.max(0,(u.iframeT||0)-dt);u.hurtIframeT=Math.max(0,(u.hurtIframeT||0)-dt);u.flinchT=Math.max(0,(u.flinchT||0)-dt);u.hitGuardT=Math.max(0,(u.hitGuardT||0)-dt);
     if(u.clock&&!u.clock.done){const clock=u.clock;clock.update(dt);u.actionT=clock.remaining;u.actionPhase=clock.phase;}
     for (const k in u.cd) u.cd[k] = Math.max(0, u.cd[k] - dt);
     if (u.slowT > 0) { u.slowT -= dt; if (u.slowT <= 0) u.slowMul = 1; }
@@ -388,7 +391,7 @@ class Battle extends Phaser.Scene {
     if(u.clock&&!u.clock.done)speed*=u.clock.timing.moveScale;
     const l = Math.hypot(dx, dy); if (l < 0.001) return;
     const s = speed * (u.slowMul || 1) * dt * Math.min(1, l);
-    u.x += dx / l * s; u.y += dy / l * s; u.moving = true; u.faceAng = Math.atan2(dy, dx);
+    u.x += dx / l * s; u.y += dy / l * s; u.moving = true; if(!(u.team==='hero'&&u.clock&&!u.clock.done))u.faceAng = Math.atan2(dy, dx); // v11.2：出招/施法中锁定朝向，摇杆不再把挥击翻到反方向
   }
   alive(list) { return list.filter(u => !u.dead); }
   nearest(list, p, maxD) { let best = null, bd = maxD || 1e9; for (const u of list) { if (u.dead) continue; const d = dist(p, u) - u.r; if (d < bd) { bd = d; best = u; } } return best; }
@@ -404,7 +407,7 @@ class Battle extends Phaser.Scene {
     if (k.W.isDown || k.UP.isDown) my = -1; if (k.S.isDown || k.DOWN.isDown) my = 1;
     const input=this.view.input(mx,my);mx=input.x;my=input.y;
     this.ctrl.kx = mx; this.ctrl.ky = my;
-    if(this.ctrl.dodge){this.ctrl.dodge=false;this.doDodge(h,mx,my);}
+    if(this.ctrl.dodge){this.ctrl.dodge=false;h.dodgeReqT=this.elapsed;}if(h.dodgeReqT!=null){if(this.doDodge(h,mx,my)||this.elapsed-h.dodgeReqT>(C.solo?.dodge?.buffer??0))h.dodgeReqT=null;} // v11.2：闪避缓冲，冷却/施法出手中按下不再被吞
     this.updateLock(h);if(h.dodgeState){if(this.ctrl.atk||k.J.isDown||k.SPACE.isDown)h.combo.request(this.elapsed);const DS=h.dodgeState;if(h.combo.queued(this.elapsed)&&DS.t>=DS.dur*(C.solo.dodge.attackCancel??.55))h.dodgeState=null;else{this.updateDodge(h,dt);return;}}this.updateAttackStep(h,dt);
     if(h.stunT>0)return;
     if(!C.solo&&(this.ctrl.rescue||k.R.isDown)&&this.attemptRescue(h,this.nearestDowned(h),dt))return;
@@ -424,7 +427,7 @@ class Battle extends Phaser.Scene {
   lockPick(h,range,dir,cone=Math.PI*.42){let best=null,bs=1e9,near=null,nd=1e9;for(const e of this.enemies){if(e.dead)continue;const d=dist(h,e);if(d>range+e.r)continue;if(d<nd){nd=d;near=e;}if(dir!==undefined){const da=angDiff(ang(h,e),dir);if(da<=cone){const sc=da*260+d;if(sc<bs){bs=sc;best=e;}}}}return best||near;}
   inputDir(){const x=this.ctrl.kx,y=this.ctrl.ky;return (x||y)?Math.atan2(y,x):undefined;}
   updateLock(h){const w=this.W(h),R=C.solo?.lock,S=w.skill2;if(!R||h.dead){this.lockTarget=null;this.lockG?.setVisible(false);return;}const t=this.lockPick(h,R.range,this.inputDir()??h.faceAng);this.lockTarget=t;const g=this.lockG||(this.lockG=this.add.graphics());g.clear();if(!t){g.setVisible(false);return;}g.setVisible(true).setDepth(this.view.depth(t.x,t.y,40));const q=this.view.project(t.x,t.y,0),rx=t.r*1.15,ry=rx*C.view25d.yScale,sp=this.elapsed*3;g.clear();g.lineStyle(3,0xfff4cf,.9);for(let i=0;i<4;i++){const a0=sp+i*Math.PI/2,pts=[];for(let k=0;k<=8;k++){const a=a0+k*.09;pts.push({x:q.x+Math.cos(a)*rx,y:q.y+Math.sin(a)*ry});}g.strokePoints(pts,false);}const top=this.view.project(t.x,t.y,t.def.size*.95+6*Math.sin(this.elapsed*6));g.fillStyle(0xfff4cf,.95).fillTriangle(top.x-8,top.y-12,top.x+8,top.y-12,top.x,top.y).lineStyle(2,0x1a1210,.9).strokeTriangle(top.x-8,top.y-12,top.x+8,top.y-12,top.x,top.y);}
-  doDodge(h,mx,my){const D=C.solo?.dodge;if(!D||h.dead||h.stunT>0||h.cd.dodge>0||h.dodgeState)return false;if(h.clock&&!h.clock.done)this.cancelAction(h);h.dash=null;const a=(mx||my)?Math.atan2(my,mx):h.faceAng;h.faceAng=a;h.dodgeState={a,t:0,dur:D.duration,speed:D.distance/D.duration,ghostT:0};h.iframeT=D.iframes;h.cd.dodge=D.cooldown;if(D.resetAttackCd)h.cd.attack=0;h.atkStep=null;this.stats.dodges++;AUD.play('swing');return true;}
+  doDodge(h,mx,my){const D=C.solo?.dodge;if(!D||h.dead||(h.stunT>0&&!h.isPlayer)||h.cd.dodge>0||h.dodgeState)return false;const CA=C.solo?.castSuperArmor;if(CA?.enabled&&!CA.dodgeCancel&&h.action==='cast'&&h.clock&&!h.clock.done&&h.clock.time<h.clock.timing.windup+h.clock.timing.active)return false;if(h.clock&&!h.clock.done)this.cancelAction(h);h.stunT=0;h.dash=null;const a=(mx||my)?Math.atan2(my,mx):h.faceAng;h.faceAng=a;h.dodgeState={a,t:0,dur:D.duration,speed:D.distance/D.duration,ghostT:0};h.iframeT=D.iframes;h.cd.dodge=D.cooldown;if(D.resetAttackCd)h.cd.attack=0;h.atkStep=null;this.stats.dodges++;AUD.play('swing');return true;}
   updateDodge(h,dt){const S=h.dodgeState;S.t+=dt;const step=Math.min(dt,Math.max(0,S.dur-(S.t-dt)));h.x+=Math.cos(S.a)*S.speed*step;h.y+=Math.sin(S.a)*S.speed*step;h.moving=true;if((S.ghostT-=dt)<=0){S.ghostT=S.dur/C.solo.dodge.afterimages;const DG=C.feel.dodgeGhost||{};this.ghost(h.spr,{mode:'white',tint:DG.tint??0xeef4ff,alpha:DG.alpha??.42,duration:DG.life??260});}if(S.t>=S.dur)h.dodgeState=null;}
   ghost(spr,o={}){if(!spr||!spr.active)return null;let key=spr.texture.key,tmp=null;/* v10.1: snapshot canvases showed a faint full-frame box in WebGL; body ghosts now reuse the live, correctly-masked texture */if(false){const src=spr.texture.getSourceImage(),cv=document.createElement('canvas');cv.width=src.width;cv.height=src.height;cv.getContext('2d').drawImage(src,0,0);tmp='ghost_'+(++this.ghostSeq);this.textures.addCanvas(tmp,cv);this.ghostKeys.add(tmp);key=tmp;}const g=this.add.image(spr.x,spr.y,key).setOrigin(spr.originX,spr.originY).setScale(spr.scaleX,spr.scaleY).setRotation(spr.rotation).setDepth(spr.depth-.05);/* v10.1: body afterimages are colour-tinted copies (normal blend), never white silhouettes/boxes; only small weapon trails use additive fill */if(o.mode==='copy')g.setAlpha(o.alpha||.3).setBlendMode(Phaser.BlendModes.NORMAL);else if(o.mode==='white')g.setTintFill(o.tint||0xeef4ff).setAlpha(o.alpha||.4).setBlendMode(Phaser.BlendModes.NORMAL);else if(o.snapshot)g.setTint(o.tint||0x6f7f99).setAlpha((o.alpha||.45)*.75).setBlendMode(Phaser.BlendModes.NORMAL);else g.setTintFill(o.tint||0xbfd6ff).setAlpha(o.alpha||.45).setBlendMode(Phaser.BlendModes.ADD);this.tweens.add({targets:g,alpha:0,duration:o.duration||220,onComplete:()=>{g.destroy();if(tmp){this.ghostKeys.delete(tmp);if(this.textures.exists(tmp))this.textures.remove(tmp);}}});return g;}
   /* 棍身残影：沿当前弯曲棍身的原色半透明描线副本（Graphics 线条，无矩形贴图）。 */
@@ -620,18 +623,21 @@ class Battle extends Phaser.Scene {
   }
   hurt(t, amount, src, opt) {
     if (t.dead) return;
+    if (t.team==='hero'&&t.hurtIframeT>0) return; // v11.2 受伤后短无敌（不计闪避）
     if (t.team==='hero'&&t.iframeT>0) { if(this.elapsed-(t.lastEvadeT??-9)>.3){t.lastEvadeT=this.elapsed;if(t.isPlayer)this.stats.evades++;this.floatText(t.x,t.y,'闪','#bfe6ff',30,130);} return; }
     let crit = false;
     if (src && src.team === 'hero') { amount *= src.def.damageMul || 1; if (Math.random() < (src.def.critChance || 0)) { crit = true; amount *= src.def.critMul || 1.5; } }
     if (t.team === 'hero') { if (this.god && t.isPlayer) amount = 0; if (t.shieldT > 0) amount *= 1 - (t.shieldReduce || 0.5); if (t.dash) amount *= 0.3; }
     amount = Math.max(0, Math.round(amount * (1 - (t.def.armor || 0))));
     const before=t.hp,effective=Math.min(before,amount);t.hp=Math.max(0,before-amount);t.flashT=amount>0?.08:0;
-    if(effective>0){if(src?.team==='hero')this.contactFx(t.x,t.y,t.def.size*.46,src.attackProfile?.finisher?1.45:1);this.recordDamage?.(src,t,effective);const heavy=amount>=C.combatWindows.heavyThreshold;if(!(t.hitGuardT>0)){t.hitGuardT=C.combatWindows.hitGuard;const stun=t.isBoss?(heavy&&!C.solo?.hitStun?.bossSuperArmor?.045:0):(heavy?C.combatWindows.heavyStun:C.combatWindows.lightStun);if(stun>(t.stunT||0)){t.stunT=stun;if(!t.isBoss)this.cancelAction(t);}if(!t.isBoss&&src){const a=ang(src,t),speed=heavy?160:85;t.kb={vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,t:heavy?.14:.09};}if(heavy)AUD.play('heavy',{ai:!t.isPlayer});else if(t.def.armor>.15)AUD.play('armor',{ai:!t.isPlayer});}}
+    if(effective>0){if(src?.team==='hero')this.contactFx(t.x,t.y,t.def.size*.46,src.attackProfile?.finisher?1.45:1);this.recordDamage?.(src,t,effective);const heavy=amount>=C.combatWindows.heavyThreshold;if(!(t.hitGuardT>0)){t.hitGuardT=C.combatWindows.hitGuard;const HH=t.isPlayer&&C.solo?.heroHurt,CA=C.solo?.castSuperArmor,armor=t.team==='hero'&&CA?.enabled&&t.action==='cast'&&t.clock&&!t.clock.done;if(armor){t.castArmorBlocks=(t.castArmorBlocks||0)+1;this.armorLog=(this.armorLog||[]);this.armorLog.push({t:+this.elapsed.toFixed(3),cast:t.castKind,clock:+t.clock.time.toFixed(3),hp:t.hp});}
+      const stun=(armor||(HH&&!HH.stun))?0:t.isBoss?(heavy&&!C.solo?.hitStun?.bossSuperArmor?.045:0):(heavy?C.combatWindows.heavyStun:C.combatWindows.lightStun);if(stun>(t.stunT||0)){t.stunT=stun;if(!t.isBoss)this.cancelAction(t);}if(!t.isBoss&&src&&!armor&&!HH){const a=ang(src,t),speed=heavy?160:85;t.kb={vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,t:heavy?.14:.09};}if(heavy)AUD.play('heavy',{ai:!t.isPlayer});else if(t.def.armor>.15)AUD.play('armor',{ai:!t.isPlayer});}}
     if(effective>0&&src?.isPlayer&&t.team==='enemy'){const HS=C.solo?.hitStun,AP0=src.action==='attack'?src.attackProfile:null;if(HS){const stg=opt?.skill?'skill':(AP0?.poseStage||'light');let st=HS[stg]??HS.light??0;if(t.isBoss){if(HS.bossSuperArmor)st=0;else st*=HS.bossMul??.25;}
           if(st>0){if(!t.isBoss||!HS.bossSuperArmor){t.stunT=HS.refresh?Math.max(t.stunT||0,st):(st>(t.stunT||0)?st:t.stunT);if(!t.isBoss){this.cancelAction(t);t.motionAction=null;t.leap=null;t.interrupts=(t.interrupts||0)+1;t.stunKind='hit';const K=HS.knockback?.[stg];if(K&&src){const a=ang(src,t),sp=K.dist/K.dur;t.kb={vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,t:K.dur};}}}
             t.hitStunT=Math.max(t.hitStunT||0,Math.min(.3,st));t.hitStunMax=t.hitStunT;}}if(C.feel.silhouette?.use?.enemyHit)this.silhouetteFor(t,C.feel.silhouette?.use.enemyHit);this.hitSpark(t,AP0?.poseStage==='heavy'||opt?.skill?1.6:AP0?.poseStage==='normal'?1.2:.9);}
     if(effective>0&&src?.isPlayer&&t.team==='enemy'){const AP=src.action==='attack'?src.attackProfile:null,fin=AP?.finisher,F=C.feel;this.hitstopT=Math.max(this.hitstopT,opt?.skill?F.hitstopSkill:AP?.hitstop??(fin?F.hitstopFinisher:F.hitstop));this.cameras.main.shake(fin||opt?.skill?110:60,opt?.skill?F.shake*2:F.shake*(AP?.shakeMul??(fin?2:1)));this.pFire.explode(fin?10:5,t.x,t.y,t.def.size*.45);}
-    if(effective>0&&t.isPlayer){this.cameras.main.shake(120,.004);if(C.feel.silhouette?.use?.heroHurt)this.silhouetteFor(t,C.feel.silhouette?.use.heroHurt);}
+    if(effective>0&&t.isPlayer&&C.solo?.heroHurt){const HH=C.solo.heroHurt;t.hurtIframeT=Math.max(t.hurtIframeT||0,HH.iframe||0);t.flinchT=HH.flinch||0;t.hurtCount=(t.hurtCount||0)+1;}
+    if(effective>0&&t.isPlayer){const HS=C.solo?.heroHurt?.shake;this.cameras.main.shake(HS?.ms??120,HS?.amp??.004);const FW=C.solo?.heroHurt?.flashWhite;if(FW){this.silhouetteFor(t,'white',{dur:FW,alpha:.9,hold:.5});this.time.delayedCall(FW*1000,()=>{if(!t.dead&&C.feel.silhouette?.use?.heroHurt)this.silhouetteFor(t,C.feel.silhouette.use.heroHurt);});}else if(C.feel.silhouette?.use?.heroHurt)this.silhouetteFor(t,C.feel.silhouette?.use.heroHurt);}
     if (amount > 0) { if (t.isPlayer) AUD.play('hurt'); else if (t.team === 'enemy' && src && src.team === 'hero') AUD.play(src.isPlayer&&(src.attackProfile?.poseStage==='heavy'&&src.action==='attack')?'hitHeavy':'hit', { ai: !src.isPlayer }); }
     if (src && src.isPlayer) this.stats.dmg += effective;
     if (opt && opt.slow) { t.slowT = opt.slowTime; t.slowMul = opt.slow; }
@@ -696,7 +702,7 @@ class Battle extends Phaser.Scene {
     b.moving = false; if (b.dead) return;
     const B=b.def,p2=b.phase===2,cdm=p2?B.phase2CooldownMul:1,t=this.player;
     if(b.leap){const L=b.leap;L.t=Math.min(L.duration,L.t+dt);const q=L.t/L.duration;b.x=L.sx+(L.x-L.sx)*q;b.y=L.sy+(L.y-L.sy)*q;b.moving=true;if((L.ghostT=(L.ghostT||0)-dt)<=0){L.ghostT=.09;this.ghost(b.spr,{snapshot:true,tint:0x8a6a5a,alpha:.34,duration:160});}
-      if(q>=1){b.leap=null;if(!t.dead&&Math.hypot(t.x-L.x,t.y-L.y)<L.radius+t.r)this.hurt(t,B.leap.damage,b);this.dustFx(L.x,L.y,L.radius);this.cameras.main.shake(220,.008);}return;}
+      if(q>=1){b.leap=null;if(!t.dead&&Math.hypot(t.x-L.x,t.y-L.y)<L.radius+t.r)this.hurt(t,B.leap.damage,b);this.dustFx(L.x,L.y,L.radius);this.pInk.explode(18,L.x,L.y,0);this.contactFx(L.x,L.y,4,2.2);this.cameras.main.shake(220,.008);}return;}
     if(b.lunge){const L=b.lunge;L.t+=dt;const s=L.speed*Math.min(dt,Math.max(0,L.dur-(L.t-dt)));b.x+=Math.cos(L.a)*s;b.y+=Math.sin(L.a)*s;b.moving=true;if((L.ghostT-=dt)<=0){L.ghostT=.07;this.ghost(b.spr,{snapshot:true,tint:0x8a6a5a,alpha:.36,duration:150});}
       if(!L.hit&&!t.dead&&dist(b,t)<b.r+t.r+18){L.hit=true;this.hurt(t,B.lunge.damage,b);}
       if(L.t>=L.dur){b.lunge=null;this.pDust.explode(10,b.x,b.y);if(L.chain>0&&!t.dead)this.bossLunge(b,L.chain-1,.38);}return;}
@@ -792,6 +798,7 @@ class Battle extends Phaser.Scene {
     this.enemies=this.enemies.filter(e=>{if(!e.dead)return true;if(e.spr.active)e.spr.destroy();if(e.shadow.active)e.shadow.destroy();return false;});
     const w=this.run.startEncounter();this.encounter=w;this.runActive=true;this.waveIdx=w.waveIndex+this.debugWaveOffset;this.absoluteWave=w.index+1;this.phase='fight';
     if(!w.boss)AUD.play('wave');else AUD.setMode('boss');this.spawnQ=w.spawnOrder.slice();this.spawnT=w.boss?3:.3;
+    if(!w.boss&&!this.bossPrewarmed)this.prewarmBoss();
     if(w.boss)this.spawnBoss();else this.bus.emit('banner',w.name,'第 '+w.loopNumber+' 轮 · 本间 '+this.spawnQ.length+' 只妖物 · 遭遇随机');
   }
   clearWave() {
@@ -814,7 +821,7 @@ class Battle extends Phaser.Scene {
   checkEnd() { if (!this.over && this.heroes.every(h => h.dead)) this.finish(false); }
   finish(win) {
     if (this.over) return;
-    this.settlement=win?this.run.settlement():this.run.fail('team-wipe');this.runActive=false;this.over = true; AUD.setMode('silent'); AUD.play(win ? 'victory' : 'defeat');
+    this.settlement=win?this.run.settlement():this.run.fail('team-wipe');this.runActive=false;this.over = true; AUD.setMode('silent'); AUD.play(win ? 'victory' : 'defeat');const rd=C.audio?.resultDelay??1.1;clearTimeout(window.__resultBgmT);window.__resultBgmT=setTimeout(()=>{if(this.over&&this.sys?.isActive?.()!==undefined)AUD.setMode('result');},rd*1000);
     this.time.delayedCall(win ? 1500 : 1000, () => this.scene.launch('Result', { win, hero: this.heroKey, team: this.teamKeys, time: this.elapsed, wave:this.absoluteWave||0,stats:this.stats,settlement:this.settlement,settings:this.settings,weaponName:this.W(this.player).name,solo:!!C.solo,soloStats:{...this.stats},feedback:this.settlement.team.find(h=>h.isPlayer)?.stats.revives?'并肩重生：本局完成了真实救助。':win?'新的封印已成。保留经验，换一颗种子再试新构筑。':'调整走位与祝福搭配，再挑战新的遭遇。' }));
     this.bus.emit('over');
   }
@@ -1101,7 +1108,7 @@ function restartBattle(scene, hero, team, settings) {
   sm.get('Battle').scene.restart({ hero, team,settings,restart:true });
 }
 function backToSelect(scene) {
-  window.RunUI.close();AUD.resume('reward'); AUD.setMode('silent'); AUD.resume('manual'); const sm = scene.scene; sm.stop('Result'); sm.stop('HUD'); sm.stop('Battle'); sm.start('Select'); }
+  window.RunUI.close();clearTimeout(window.__resultBgmT);AUD.resume('reward'); AUD.setMode('silent'); AUD.resume('manual'); const sm = scene.scene; sm.stop('Result'); sm.stop('HUD'); sm.stop('Battle'); sm.start('Select'); }
 
 /* ======================= 结算 ======================= */
 class Result extends Phaser.Scene {

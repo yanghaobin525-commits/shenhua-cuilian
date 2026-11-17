@@ -24,7 +24,7 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'solo-wukong-v11.1-20261117',
+  releaseId: 'solo-wukong-v11.2-20261117',
   artVersion: 'approved-v6',
   presentation:{maxNumbers:24,numberRise:90,numberLifetime:700,trailInterval:.035},
   motion: { stride:84, startSmooth:.12, stopSmooth:.10, maxFootTravel:14, footLift:9, bodyBounce:1.8, torsoSway:8, attackTwist:.11 },
@@ -319,3 +319,59 @@ window.GAME_CONFIG.feel.slashInk={color:0x15100c,layerDepth:.06,fade:260,startK:
   stages:[{count:3,width:[2,5],alpha:.55},{count:5,width:[3,8],alpha:.68},{count:8,width:[4,13],alpha:.82}],
   skill:{count:6,width:[3,10],alpha:.7},
   radial:[.5,1.0],press:.14,tip:1.7,dry:.38,dryFrom:.28,hairs:5,halo:.2,jitter:2.2};
+
+// ===== v11.2（t126–t129 iPad 实机反馈）=====
+// 待机改用 v11 同管线绘制的待机姿势（与跑动/普攻同一眼宽归一化 → 同一身体比例）；重击换成双手合握举过头顶的新姿势（512×720 帧）。
+Object.assign(window.GAME_CONFIG.poseArtV11.wukong,{
+  idle:'idle',                       // 待机姿势组（正/背/侧）
+  idleBreath:{amp:.012,hz:.9},       // 待机呼吸：纵向起伏比例、频率
+  setScale:{},                       // 个别姿势组的额外缩放（默认全部=1，已按眼宽统一）
+  gripFist:{},                       // 指定握棍拳头索引，如 {'light-front':1}；缺省自动取朝向攻击方向的那只拳
+  attack:{light:'light',normal:'normal',heavy:'heavy2'}
+});
+window.GAME_CONFIG.poseArtV11.wukong.run.cycleStride=150; // 跑动：每 4 帧一个完整步态循环对应的移动距离(世界px)，帧随实际位移推进，防止滑步
+window.GAME_CONFIG.combatArt.handOverlay={rx:27,ry:29,enabled:true}; // 手部覆盖层：在姿势帧像素坐标中围绕每个拳心截取的椭圆，叠在金箍棒上面
+// 金箍棒朝向：攻击时 = 攻击方向 + 各段扫动偏移(弧度，右侧挥为顺时针；朝左时自动镜像)。start→end 与刀光同向扫过，结束时指向目标。
+window.GAME_CONFIG.staff.wukong.aim={
+  sideDead:.08, verticalSide:1,
+  stages:{
+    light: {start:-.55,end:.08, antic:.45,ease:2.4,hold:.5},   // 轻击·快戳：略抬后直戳
+    normal:{start:-1.45,end:1.25,antic:.5, ease:2.2,hold:.45}, // 普通击·挥扫：上→目标方向→下，150°左右
+    heavy: {start:-2.65,end:.42, antic:.6, ease:2.6,hold:.55}  // 重击：棍举过头顶（背后）→ 越顶砸向目标前下方
+  },
+  slam:{up:0,end:.25,antic:.55},     // 擎天一棍：双拳上举时棍竖直向上，再沿出手侧砸下
+  carry:{                            // 待机/跑动握持：0=竖直向上；侧面为“棍梢朝身后上方”（自动随朝向镜像）
+    idle:{side:-.5,front:-.42,back:.42},
+    run: {side:-.45,front:-.45,back:.45}
+  }
+};
+// 施法霸体：施法期间不被打断、不击退、不僵直（伤害照常结算）
+window.GAME_CONFIG.solo.castSuperArmor={enabled:true};
+// 悟空受伤反馈：白闪→红剪影、短震屏、短无敌；不再僵直打断玩家动作，只有轻微抖动
+window.GAME_CONFIG.solo.heroHurt={stun:false,iframe:.45,flinch:.14,flinchPx:3,shake:{ms:150,amp:.006},flashWhite:.06};
+// 闪避输入缓冲：冷却/僵直中按下的闪避在窗口内保留，一可用立即执行（不再被吞）
+window.GAME_CONFIG.solo.dodge.buffer=.25;
+// t127/t129：草书在 iPad 上难认 → 标题/房间名/角色名/菜单统一改用较好认的毛笔楷（Ma Shan Zheng），草书仅作缺字后备。
+window.GAME_CONFIG.calliFontCursive='"LiuJianMaoCao","MaShanZheng",cursive';
+window.GAME_CONFIG.calliFont='"MaShanZheng","LiuJianMaoCao",cursive';
+// t129：小怪行走（程序化步态：每步弹跳/左右摆/落地压扁，帧随实际位移推进）；首领跃扑真实跳跃（蹲伏蓄力→抛物线腾空拉伸+影子缩小→落地压扁+尘墨爆开→收招）
+window.GAME_CONFIG.enemyWalk={default:{bounce:4,tilt:5,squash:.07},imp:{bounce:5,tilt:6,squash:.08},zheng:{bounce:4,tilt:3,squash:.06},gudiao:{bounce:2,tilt:3,squash:.03},boss:{bounce:5,tilt:2.5,squash:.05}};
+window.GAME_CONFIG.enemyLeapFx={crouch:.14,stretch:.16,landSquash:.24,landDur:.2,shadowShrink:.5};
+// v11.2 重击：起跳蓄力用双手合握举过头顶姿势，砸中瞬间切到前伸收势姿势（静态关键帧切换，非骨骼）；挥击段握点更靠棍尾，减少棍尾穿身
+window.GAME_CONFIG.poseArtV11.wukong.followThrough={heavy:{set:'normal',at:.35}};
+(()=>{const S=window.GAME_CONFIG.staff.wukong.stages;S.light.gripV=.2;S.normal.gripV=.16;S.heavy.gripV=.12;window.GAME_CONFIG.staff.wukong.aim.stages.heavy.end=.8;})();
+window.GAME_CONFIG.boss.leap.height=135;window.GAME_CONFIG.enemyLeapFx.tilt=14; // 跃扑腾空高度(世界px)、空中抬头/俯冲倾角(度)
+// t130/t131 配乐（用户指定）：选角=开场二胡曲 Samurai Nights；首领=原创合成鼓点(主导) + Dark Ambience Loop(低音量氛围底)，去掉 Samurai Nights；
+// 普通房间静音；结算(胜/败)=开场二胡曲中按拍切出的 32 拍(15.14s)循环片段，尾部 0.3s 等功率交叉淡入开头，m4a 优先、mp3 后备。
+(()=>{const A=window.GAME_CONFIG.audio,SN=A.credits[0],DA=A.credits[1];
+  A.bgm.boss={fade:2.2,synth:'drums',drumLevel:1.1,drumFade:2.2,layers:[{url:'assets/audio/dark-ambience-loop-qubodup.mp3',volume:.3,...DA}]};
+  A.bgm.result={fade:1.8,layers:[{url:'assets/audio/samurai-nights-erhu-result-loop.mp3',m4a:'assets/audio/samurai-nights-erhu-result-loop.m4a',loopSec:15.14,volume:.7,...SN}]};
+  A.resultDelay=1.1; // 胜负提示音后多久淡入结算曲(秒)
+})();
+// t132/t133：用户要求以出场(=待机)时的大小为基准。v11.1 实测：出场/待机 94.8px，跑动 132px（+39%）。
+// v11.2：所有 v11 姿势按逐帧 fit 缩放（manifest frames[].fit），直立帧(跑动/轻击/定身法)站高 = 待机 435 美术单位；举手/下蹲/跳跃帧用同一头部比例。
+// 新画的待机/重击/选角立绘等待用户确认，暂不启用（art-direction/wukong-v11-preview/pending-v11.2/）。
+Object.assign(window.GAME_CONFIG.poseArtV11.wukong,{idle:null,attack:{light:'light',normal:'normal',heavy:'heavy'}});
+
+// Spawn-reference alpha height normalization covers attacks, dodge and all casts too.
+window.GAME_CONFIG.poseArtV11.wukong.normalizeAllHeights=true;

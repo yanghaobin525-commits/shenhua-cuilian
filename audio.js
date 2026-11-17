@@ -95,7 +95,8 @@ function bow(t,n,d,level,bus,slideFrom) {
 }
 function stopVoices(bus) {for(const v of [...voices])if(!bus||v.bus===bus)v.stop();}
 function stopScheduler(){if(timer){root.clearInterval(timer);timer=null;}}
-function schedule() {
+let bossT0=0;
+function schedule() {const drumRaw=drum,thumpRaw=thump,rustleRaw=rustle;
  if(!ctx||ctx.state!=='running'||paused.size||mode==='silent')return;
  if(next<ctx.currentTime-0.2) next=ctx.currentTime+0.04; // 后台恢复不追补漏掉的音符
  const eighth=30/(mode==='boss'?cfg.bossBpm:cfg.bpm);
@@ -107,7 +108,7 @@ function schedule() {
    if(beat===3||beat===7)rustle(next,.04,.03,2600,music);
    if(bar===0&&beat===0)bell(next,50,3,.05,music);
    step=(step+1)%64;next+=e;continue;}
-  const spS=bgmSpec(mode);if(mode==='boss'&&spS&&spS.synth==='drums'){const e=30/(cfg.bossBpm||104),bar=Math.floor(step/8)%4,beat=step%8;
+  const spS=bgmSpec(mode);if(mode==='boss'&&spS&&spS.synth==='drums'){const e=30/(cfg.bossBpm||104),bar=Math.floor(step/8)%4,beat=step%8,gk=(spS.drumLevel??1)*Math.min(1,Math.max(.05,(next-bossT0)/Math.max(.01,spS.drumFade??0))),drum=(t,v,b)=>drumRaw(t,v*gk,b),thump=(t,f0,f1,d,v,b)=>thumpRaw(t,f0,f1,d,v*gk,b),rustle=(t,d,v,f,b)=>rustleRaw(t,d,v*gk,f,b);
    // 原创紧张鼓点：低鼓骨架 + 重音 + 小节末滚奏 + 闷鼓脉冲（合成，非采样）
    if(beat===0||beat===3||beat===6)drum(next,beat===0?.3:.2,music);if(beat===4)thump(next,180,90,.12,.1,music);
    if(bar===3&&beat>=5){drum(next,.16,music);drum(next+e*.5,.14,music);}rustle(next,.03,beat%2?.018:.03,beat%2?3200:5200,music);
@@ -134,18 +135,20 @@ function unlock() {
 const layers=new Map(),bufs=new Map();
 function bgmSpec(m){const b=cfg.bgm||{};return Object.prototype.hasOwnProperty.call(b,m)?b[m]:undefined;}
 function loadBuf(url){if(!bufs.has(url))bufs.set(url,fetch(url).then(r=>{if(!r.ok)throw new Error('bgm '+r.status);return r.arrayBuffer();}).then(ab=>new Promise((res,rej)=>ctx.decodeAudioData(ab,res,rej))).catch(e=>{error=String(e.message||e);bufs.delete(url);return null;}));return bufs.get(url);}
+// v11.2：iOS/Chrome 均支持 AAC(m4a)；优先 m4a，否则 mp3。loopSec 给出精确循环长度，跳过编码器前导静音，循环无缝。
+function pickUrl(l){if(l.m4a&&typeof document!=='undefined'){try{if(document.createElement('audio').canPlayType('audio/mp4; codecs="mp4a.40.2"'))return l.m4a;}catch(_){}}return l.url;}
 function fadeLayer(L,v,sec){if(!ctx)return;const g=L.gain.gain;g.cancelScheduledValues(ctx.currentTime);g.setValueAtTime(Math.max(.0001,g.value),ctx.currentTime);g.linearRampToValueAtTime(Math.max(.0001,v),ctx.currentTime+sec);}
 function stopBgm(sec){for(const [url,L] of [...layers]){layers.delete(url);fadeLayer(L,0,sec||.01);const t=ctx?ctx.currentTime+(sec||.01)+.05:0;try{L.src&&L.src.stop(t);}catch(_){}setTimeout(()=>{try{L.gain.disconnect();}catch(_){}},((sec||0)+.2)*1000);}}
-function startBgm(){const sp=bgmSpec(mode);if(sp===undefined)return false;if(!ctx)return true;const fade=(sp&&sp.fade)||1.2,want=new Map(((sp&&sp.layers)||[]).map(l=>[l.url,l]));
+function startBgm(){const sp=bgmSpec(mode);if(sp===undefined)return false;if(!ctx)return true;const fade=(sp&&sp.fade)||1.2,want=new Map(((sp&&sp.layers)||[]).map(l=>[pickUrl(l),l]));
  for(const [url,L] of [...layers])if(!want.has(url)){layers.delete(url);fadeLayer(L,0,fade);try{L.src&&L.src.stop(ctx.currentTime+fade+.05);}catch(_){}}
  for(const [url,l] of want){let L=layers.get(url);if(L){fadeLayer(L,clamp(l.volume??1),fade);continue;}
   const gain=ctx.createGain();gain.gain.value=.0001;gain.connect(music);L={gain,src:null};layers.set(url,L);
-  loadBuf(url).then(buf=>{if(!buf||layers.get(url)!==L||!ctx)return;const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);src.start(ctx.currentTime+.02);L.src=src;fadeLayer(L,clamp(l.volume??1),fade);});}
+  loadBuf(url).then(buf=>{if(!buf||layers.get(url)!==L||!ctx)return;const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;if(l.loopSec){const d=buf.getChannelData(0);let k=0;while(k<4096&&Math.abs(d[k])<1e-4)k++;src.loopStart=k/buf.sampleRate;src.loopEnd=Math.min(buf.duration,src.loopStart+l.loopSec);L.loopWin=[src.loopStart,src.loopEnd];}src.connect(gain);src.start(ctx.currentTime+.02);L.src=src;fadeLayer(L,clamp(l.volume??1),fade);});}
  return !(sp&&sp.synth);}
 function setMode(m) {
- if(!['silent','arena','boss','menu'].includes(m))return;
+ if(!['silent','arena','boss','menu','result'].includes(m))return;
  if(m===mode){if(!startBgm())startScheduler();return;}
- mode=m;step=0;stopScheduler();if(ctx)stopVoices(music);if(m==='silent'){stopBgm(.6);return;}if(!startBgm())startScheduler();
+ mode=m;step=0;bossT0=ctx?ctx.currentTime:0;stopScheduler();if(ctx)stopVoices(music);if(m==='silent'){stopBgm(.6);return;}if(!startBgm())startScheduler();
 }
 function pause(reason){paused.add(reason||'manual');stopScheduler();if(ctx){stopVoices();if(ctx.state==='running')ctx.suspend().catch(()=>{});}}
 function resume(reason){paused.delete(reason||'manual');if(!paused.size&&ctx&&unlocked){ctx.resume().then(()=>{if(!startBgm())startScheduler();}).catch(e=>error=e.message);}}
@@ -181,6 +184,9 @@ function play(name,opts) {
  }
 }
 root.ShenhuaAudio={unlock,setMode,play,pause,resume,
+ prefetch(m){const sp=bgmSpec(m);if(!sp||!ctx)return 0;const L=(sp.layers||[]);L.forEach(l=>loadBuf(pickUrl(l)));return L.length;},
+ bgmLayers(){return [...layers.entries()].map(([url,L])=>({url,playing:!!L.src,gain:+L.gain.gain.value.toFixed(3),loop:L.loopWin||null}));},
+ schedulerOn(){return !!timer;}, // v11.2：首领曲目提前下载+解码，避免进入首领战瞬间卡顿
  setBgm(m,spec){cfg.bgm=Object.assign({},cfg.bgm||{},{[m]:spec});if(m===mode){stopScheduler();if(!startBgm())startScheduler();}},
  setMuted(v){muted=!!v;applyLevels();},
  setVolume(v){volume=clamp(v);applyLevels();},

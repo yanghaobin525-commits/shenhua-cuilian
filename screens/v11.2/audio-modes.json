@@ -1,0 +1,163 @@
+{
+  "menu": [
+    {
+      "state": {
+        "bgmLayers": [
+          "assets/audio/samurai-nights-erhu-menu-majadroid.mp3"
+        ],
+        "bgmPlaying": 1,
+        "supported": true,
+        "unlocked": true,
+        "state": "running",
+        "mode": "menu",
+        "muted": false,
+        "volume": 0.42,
+        "music": 0.48,
+        "sfx": 0.5,
+        "paused": [],
+        "voices": 0,
+        "scheduler": false,
+        "error": null
+      },
+      "layers": [
+        {
+          "url": "assets/audio/samurai-nights-erhu-menu-majadroid.mp3",
+          "playing": true,
+          "gain": 0.529,
+          "loop": null
+        }
+      ]
+    }
+  ],
+  "boss": [
+    {
+      "state": {
+        "bgmLayers": [
+          "assets/audio/dark-ambience-loop-qubodup.mp3"
+        ],
+        "bgmPlaying": 1,
+        "supported": true,
+        "unlocked": true,
+        "state": "running",
+        "mode": "boss",
+        "muted": false,
+        "volume": 0.42,
+        "music": 0.48,
+        "sfx": 0.5,
+        "paused": [],
+        "voices": 1,
+        "scheduler": true,
+        "error": null
+      },
+      "layers": [
+        {
+          "url": "assets/audio/dark-ambience-loop-qubodup.mp3",
+          "playing": true,
+          "gain": 0.3,
+          "loop": null
+        }
+      ]
+    },
+    {
+      "state": {
+        "bgmLayers": [
+          "assets/audio/dark-ambience-loop-qubodup.mp3"
+        ],
+        "bgmPlaying": 1,
+        "supported": true,
+        "unlocked": true,
+        "state": "running",
+        "mode": "boss",
+        "muted": false,
+        "volume": 0.42,
+        "music": 0.48,
+        "sfx": 0.5,
+        "paused": [],
+        "voices": 1,
+        "scheduler": true,
+        "error": null
+      },
+      "layers": [
+        {
+          "url": "assets/audio/dark-ambience-loop-qubodup.mp3",
+          "playing": true,
+          "gain": 0.3,
+          "loop": null
+        }
+      ]
+    }
+  ],
+  "silent": [
+    {
+      "state": {
+        "bgmLayers": [],
+        "bgmPlaying": 0,
+        "supported": true,
+        "unlocked": true,
+        "state": "running",
+        "mode": "silent",
+        "muted": false,
+        "volume": 0.42,
+        "music": 0.48,
+        "sfx": 0.5,
+        "paused": [],
+        "voices": 0,
+        "scheduler": false,
+        "error": null
+      },
+      "layers": []
+    },
+    {
+      "state": {
+        "bgmLayers": [],
+        "bgmPlaying": 0,
+        "supported": true,
+        "unlocked": true,
+        "state": "running",
+        "mode": "silent",
+        "muted": false,
+        "volume": 0.42,
+        "music": 0.48,
+        "sfx": 0.5,
+        "paused": [],
+        "voices": 0,
+        "scheduler": false,
+        "error": null
+      },
+      "layers": []
+    }
+  ],
+  "result": [
+    {
+      "state": {
+        "bgmLayers": [
+          "assets/audio/samurai-nights-erhu-result-loop.m4a"
+        ],
+        "bgmPlaying": 1,
+        "supported": true,
+        "unlocked": true,
+        "state": "running",
+        "mode": "result",
+        "muted": false,
+        "volume": 0.42,
+        "music": 0.48,
+        "sfx": 0.5,
+        "paused": [],
+        "voices": 0,
+        "scheduler": false,
+        "error": null
+      },
+      "layers": [
+        {
+          "url": "assets/audio/samurai-nights-erhu-result-loop.m4a",
+          "playing": true,
+          "gain": 0.7,
+          "loop": [
+            0,
+            15.14
+          ]
+        }
+      ]
+    }
+  ]
+}

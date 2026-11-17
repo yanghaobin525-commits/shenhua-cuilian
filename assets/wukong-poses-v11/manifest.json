@@ -1,738 +1,806 @@
 {
- "id": "wukong-v11",
- "eyePx": 34.3,
- "gameScaleToV10": 1.1662,
- "frameSize": {
-  "width": 512,
-  "height": 640
- },
- "footLineY": 599,
- "sideFaces": "right",
- "headScaleRef": "eye-white 40px",
- "sets": {
-  "light": {
-   "scale": 0.758,
-   "frames": {
-    "front": {
-     "file": "light-front.webp",
-     "fists": [
-      {
-       "x": 0.4191,
-       "y": 0.5666
-      },
-      {
-       "x": 0.5774,
-       "y": 0.5664
-      }
-     ],
-     "grip": {
-      "x": 0.4982,
-      "y": 0.5665
-     },
-     "clipped": false,
-     "bbox": [
-      132,
-      113,
-      254,
-      486
-     ]
-    },
-    "back": {
-     "file": "light-back.webp",
-     "fists": [],
-     "grip": null,
-     "clipped": false,
-     "bbox": [
-      120,
-      121,
-      244,
-      479
-     ]
-    },
-    "side": {
-     "file": "light-side.webp",
-     "fists": [
-      {
-       "x": 0.3063,
-       "y": 0.5314
-      }
-     ],
-     "grip": {
-      "x": 0.3063,
-      "y": 0.5314
-     },
-     "clipped": false,
-     "bbox": [
-      135,
-      116,
-      269,
-      483
-     ]
-    }
-   }
+  "id": "wukong-v11",
+  "eyePx": 34.3,
+  "gameScaleToV10": 1.1662,
+  "frameSize": {
+    "width": 512,
+    "height": 640
   },
-  "normal": {
-   "scale": 1.0394,
-   "frames": {
-    "front": {
-     "file": "normal-front.webp",
-     "fists": [
-      {
-       "x": 0.745,
-       "y": 0.4707
-      },
-      {
-       "x": 0.8712,
-       "y": 0.294
+  "footLineY": 599,
+  "sideFaces": "right",
+  "headScaleRef": "eye-white 40px",
+  "sets": {
+    "light": {
+      "scale": 0.758,
+      "frames": {
+        "front": {
+          "file": "light-front.webp",
+          "fists": [
+            {
+              "x": 0.4191,
+              "y": 0.5666
+            },
+            {
+              "x": 0.5774,
+              "y": 0.5664
+            }
+          ],
+          "grip": {
+            "x": 0.4982,
+            "y": 0.5665
+          },
+          "clipped": false,
+          "bbox": [
+            132,
+            113,
+            254,
+            486
+          ],
+          "standH": 486,
+          "fit": 0.767503
+        },
+        "back": {
+          "file": "light-back.webp",
+          "fists": [],
+          "grip": null,
+          "clipped": false,
+          "bbox": [
+            120,
+            121,
+            244,
+            479
+          ],
+          "standH": 479,
+          "fit": 0.778719
+        },
+        "side": {
+          "file": "light-side.webp",
+          "fists": [
+            {
+              "x": 0.3063,
+              "y": 0.5314
+            }
+          ],
+          "grip": {
+            "x": 0.3063,
+            "y": 0.5314
+          },
+          "clipped": false,
+          "bbox": [
+            135,
+            116,
+            269,
+            483
+          ],
+          "standH": 483,
+          "fit": 0.77227
+        }
       }
-     ],
-     "grip": {
-      "x": 0.8081,
-      "y": 0.3823
-     },
-     "clipped": false,
-     "bbox": [
-      48,
-      26,
-      429,
-      573
-     ]
     },
-    "back": {
-     "file": "normal-back.webp",
-     "fists": [
-      {
-       "x": 0.6445,
-       "y": 0.4989
-      },
-      {
-       "x": 0.8092,
-       "y": 0.3559
+    "normal": {
+      "scale": 1.0394,
+      "frames": {
+        "front": {
+          "file": "normal-front.webp",
+          "fists": [
+            {
+              "x": 0.745,
+              "y": 0.4707
+            },
+            {
+              "x": 0.8712,
+              "y": 0.294
+            }
+          ],
+          "grip": {
+            "x": 0.8081,
+            "y": 0.3823
+          },
+          "clipped": false,
+          "bbox": [
+            48,
+            26,
+            429,
+            573
+          ],
+          "standH": 573,
+          "fit": 0.650971
+        },
+        "back": {
+          "file": "normal-back.webp",
+          "fists": [
+            {
+              "x": 0.6445,
+              "y": 0.4989
+            },
+            {
+              "x": 0.8092,
+              "y": 0.3559
+            }
+          ],
+          "grip": {
+            "x": 0.7268,
+            "y": 0.4274
+          },
+          "clipped": false,
+          "bbox": [
+            30,
+            41,
+            415,
+            559
+          ],
+          "standH": 559,
+          "fit": 0.667274
+        },
+        "side": {
+          "file": "normal-side.webp",
+          "fists": [
+            {
+              "x": 0.6893,
+              "y": 0.484
+            },
+            {
+              "x": 0.849,
+              "y": 0.3672
+            }
+          ],
+          "grip": {
+            "x": 0.7692,
+            "y": 0.4256
+          },
+          "clipped": false,
+          "bbox": [
+            47,
+            33,
+            417,
+            566
+          ],
+          "standH": 566,
+          "fit": 0.659022
+        }
       }
-     ],
-     "grip": {
-      "x": 0.7268,
-      "y": 0.4274
-     },
-     "clipped": false,
-     "bbox": [
-      30,
-      41,
-      415,
-      559
-     ]
     },
-    "side": {
-     "file": "normal-side.webp",
-     "fists": [
-      {
-       "x": 0.6893,
-       "y": 0.484
-      },
-      {
-       "x": 0.849,
-       "y": 0.3672
+    "heavy": {
+      "scale": 1.1246,
+      "frames": {
+        "front": {
+          "file": "heavy-front.webp",
+          "fists": [
+            {
+              "x": 0.1982,
+              "y": 0.1431
+            },
+            {
+              "x": 0.8122,
+              "y": 0.1513
+            }
+          ],
+          "grip": {
+            "x": 0.5052,
+            "y": 0.1472
+          },
+          "clipped": false,
+          "bbox": [
+            73,
+            62,
+            372,
+            537
+          ],
+          "standH": 537,
+          "fit": 0.694611
+        },
+        "back": {
+          "file": "heavy-back.webp",
+          "fists": [
+            {
+              "x": 0.2505,
+              "y": 0.1161
+            },
+            {
+              "x": 0.746,
+              "y": 0.1174
+            }
+          ],
+          "grip": {
+            "x": 0.4982,
+            "y": 0.1168
+          },
+          "clipped": false,
+          "bbox": [
+            96,
+            47,
+            353,
+            552
+          ],
+          "standH": 552,
+          "fit": 0.675736
+        },
+        "side": {
+          "file": "heavy-side.webp",
+          "fists": [
+            {
+              "x": 0.2843,
+              "y": 0.1575
+            },
+            {
+              "x": 0.4562,
+              "y": 0.1554
+            }
+          ],
+          "grip": {
+            "x": 0.3702,
+            "y": 0.1564
+          },
+          "clipped": false,
+          "bbox": [
+            19,
+            66,
+            374,
+            532
+          ],
+          "standH": 532,
+          "fit": 0.70114
+        }
       }
-     ],
-     "grip": {
-      "x": 0.7692,
-      "y": 0.4256
-     },
-     "clipped": false,
-     "bbox": [
-      47,
-      33,
-      417,
-      566
-     ]
+    },
+    "dodge": {
+      "scale": 0.9086,
+      "frames": {
+        "front": {
+          "file": "dodge-front.webp",
+          "fists": [
+            {
+              "x": 0.5697,
+              "y": 0.5938
+            }
+          ],
+          "grip": {
+            "x": 0.5697,
+            "y": 0.5938
+          },
+          "clipped": false,
+          "bbox": [
+            76,
+            90,
+            362,
+            499
+          ],
+          "standH": 499,
+          "fit": 0.747508
+        },
+        "back": {
+          "file": "dodge-back.webp",
+          "fists": [],
+          "grip": null,
+          "clipped": false,
+          "bbox": [
+            132,
+            108,
+            345,
+            480
+          ],
+          "standH": 479,
+          "fit": 0.778719
+        },
+        "side": {
+          "file": "dodge-side.webp",
+          "fists": [
+            {
+              "x": 0.4093,
+              "y": 0.5889
+            },
+            {
+              "x": 0.7005,
+              "y": 0.5573
+            }
+          ],
+          "grip": {
+            "x": 0.5549,
+            "y": 0.5731
+          },
+          "clipped": false,
+          "bbox": [
+            7,
+            122,
+            370,
+            466
+          ],
+          "standH": 466,
+          "fit": 0.800443
+        }
+      }
+    },
+    "skill-spin": {
+      "scale": 0.973,
+      "frames": {
+        "front": {
+          "file": "skill-spin-front.webp",
+          "fists": [
+            {
+              "x": 0.274,
+              "y": 0.3962
+            },
+            {
+              "x": 0.6953,
+              "y": 0.4045
+            }
+          ],
+          "grip": {
+            "x": 0.4846,
+            "y": 0.4004
+          },
+          "clipped": false,
+          "bbox": [
+            99,
+            12,
+            345,
+            587
+          ],
+          "standH": 587,
+          "fit": 0.635445
+        },
+        "back": {
+          "file": "skill-spin-back.webp",
+          "fists": [
+            {
+              "x": 0.7926,
+              "y": 0.3862
+            }
+          ],
+          "grip": {
+            "x": 0.7926,
+            "y": 0.3862
+          },
+          "clipped": false,
+          "bbox": [
+            83,
+            12,
+            349,
+            587
+          ],
+          "standH": 587,
+          "fit": 0.635445
+        },
+        "side": {
+          "file": "skill-spin-side.webp",
+          "fists": [
+            {
+              "x": 0.2579,
+              "y": 0.42
+            },
+            {
+              "x": 0.7549,
+              "y": 0.3989
+            }
+          ],
+          "grip": {
+            "x": 0.5064,
+            "y": 0.4094
+          },
+          "clipped": false,
+          "bbox": [
+            70,
+            21,
+            337,
+            578
+          ],
+          "standH": 578,
+          "fit": 0.64534
+        }
+      }
+    },
+    "skill-slam": {
+      "scale": 0.758,
+      "frames": {
+        "front": {
+          "file": "skill-slam-front.webp",
+          "fists": [
+            {
+              "x": 0.5228,
+              "y": 0.2164
+            },
+            {
+              "x": 0.5246,
+              "y": 0.2848
+            }
+          ],
+          "grip": {
+            "x": 0.5237,
+            "y": 0.2506
+          },
+          "clipped": false,
+          "bbox": [
+            121,
+            117,
+            276,
+            482
+          ],
+          "standH": 482,
+          "fit": 0.773872
+        },
+        "back": {
+          "file": "skill-slam-back.webp",
+          "fists": [
+            {
+              "x": 0.4972,
+              "y": 0.2231
+            },
+            {
+              "x": 0.4981,
+              "y": 0.2918
+            }
+          ],
+          "grip": {
+            "x": 0.4976,
+            "y": 0.2574
+          },
+          "clipped": false,
+          "bbox": [
+            127,
+            122,
+            262,
+            478
+          ],
+          "standH": 478,
+          "fit": 0.780348
+        },
+        "side": {
+          "file": "skill-slam-side.webp",
+          "fists": [
+            {
+              "x": 0.5482,
+              "y": 0.2057
+            },
+            {
+              "x": 0.5482,
+              "y": 0.275
+            }
+          ],
+          "grip": {
+            "x": 0.5482,
+            "y": 0.2404
+          },
+          "clipped": false,
+          "bbox": [
+            113,
+            111,
+            268,
+            488
+          ],
+          "standH": 488,
+          "fit": 0.764357
+        }
+      }
+    },
+    "skill-seal": {
+      "scale": 0.758,
+      "frames": {
+        "front": {
+          "file": "skill-seal-front.webp",
+          "fists": [
+            {
+              "x": 0.3045,
+              "y": 0.6913
+            }
+          ],
+          "grip": {
+            "x": 0.3045,
+            "y": 0.6913
+          },
+          "clipped": false,
+          "bbox": [
+            110,
+            116,
+            273,
+            483
+          ],
+          "standH": 483,
+          "fit": 0.77227
+        },
+        "back": {
+          "file": "skill-seal-back.webp",
+          "fists": [],
+          "grip": null,
+          "clipped": false,
+          "bbox": [
+            122,
+            119,
+            267,
+            480
+          ],
+          "standH": 480,
+          "fit": 0.777097
+        },
+        "side": {
+          "file": "skill-seal-side.webp",
+          "fists": [
+            {
+              "x": 0.4918,
+              "y": 0.6819
+            }
+          ],
+          "grip": {
+            "x": 0.4918,
+            "y": 0.6819
+          },
+          "clipped": false,
+          "bbox": [
+            102,
+            117,
+            268,
+            482
+          ],
+          "standH": 482,
+          "fit": 0.773872
+        }
+      }
+    },
+    "run-front": {
+      "scale": 0.9594,
+      "frames": {
+        "f0": {
+          "file": "run-front-f0.webp",
+          "fists": [
+            {
+              "x": 0.4042,
+              "y": 0.4961
+            }
+          ],
+          "grip": {
+            "x": 0.4042,
+            "y": 0.4961
+          },
+          "clipped": false,
+          "bbox": [
+            121,
+            46,
+            253,
+            554
+          ],
+          "standH": 553,
+          "fit": 0.674514
+        },
+        "f1": {
+          "file": "run-front-f1.webp",
+          "fists": [
+            {
+              "x": 0.4098,
+              "y": 0.5099
+            }
+          ],
+          "grip": {
+            "x": 0.4098,
+            "y": 0.5099
+          },
+          "clipped": false,
+          "bbox": [
+            143,
+            58,
+            251,
+            539
+          ],
+          "standH": 539,
+          "fit": 0.692034
+        },
+        "f2": {
+          "file": "run-front-f2.webp",
+          "fists": [
+            {
+              "x": 0.4205,
+              "y": 0.5008
+            }
+          ],
+          "grip": {
+            "x": 0.4205,
+            "y": 0.5008
+          },
+          "clipped": false,
+          "bbox": [
+            130,
+            50,
+            242,
+            546
+          ],
+          "standH": 546,
+          "fit": 0.683162
+        },
+        "f3": {
+          "file": "run-front-f3.webp",
+          "fists": [
+            {
+              "x": 0.6287,
+              "y": 0.4627
+            }
+          ],
+          "grip": {
+            "x": 0.6287,
+            "y": 0.4627
+          },
+          "clipped": false,
+          "bbox": [
+            139,
+            53,
+            273,
+            508
+          ],
+          "standH": 508,
+          "fit": 0.734264
+        }
+      }
+    },
+    "run-side": {
+      "scale": 1.1828,
+      "frames": {
+        "f0": {
+          "file": "run-side-f0.webp",
+          "fists": [
+            {
+              "x": 0.2215,
+              "y": 0.5667
+            },
+            {
+              "x": 0.6946,
+              "y": 0.5043
+            }
+          ],
+          "grip": {
+            "x": 0.458,
+            "y": 0.5355
+          },
+          "clipped": false,
+          "bbox": [
+            24,
+            74,
+            346,
+            524
+          ],
+          "standH": 523,
+          "fit": 0.713205
+        },
+        "f1": {
+          "file": "run-side-f1.webp",
+          "fists": [
+            {
+              "x": 0.2114,
+              "y": 0.5842
+            },
+            {
+              "x": 0.6871,
+              "y": 0.5192
+            }
+          ],
+          "grip": {
+            "x": 0.4492,
+            "y": 0.5517
+          },
+          "clipped": false,
+          "bbox": [
+            26,
+            80,
+            337,
+            519
+          ],
+          "standH": 519,
+          "fit": 0.718702
+        },
+        "f2": {
+          "file": "run-side-f2.webp",
+          "fists": [
+            {
+              "x": 0.1984,
+              "y": 0.5657
+            },
+            {
+              "x": 0.6906,
+              "y": 0.5012
+            }
+          ],
+          "grip": {
+            "x": 0.4445,
+            "y": 0.5334
+          },
+          "clipped": false,
+          "bbox": [
+            24,
+            77,
+            346,
+            520
+          ],
+          "standH": 520,
+          "fit": 0.71732
+        },
+        "f3": {
+          "file": "run-side-f3.webp",
+          "fists": [
+            {
+              "x": 0.2245,
+              "y": 0.4854
+            }
+          ],
+          "grip": {
+            "x": 0.2245,
+            "y": 0.4854
+          },
+          "clipped": false,
+          "bbox": [
+            43,
+            24,
+            339,
+            536
+          ],
+          "standH": 536,
+          "fit": 0.695907
+        }
+      }
+    },
+    "run-back": {
+      "scale": 1.0244,
+      "frames": {
+        "f0": {
+          "file": "run-back-f0.webp",
+          "fists": [],
+          "grip": null,
+          "clipped": false,
+          "bbox": [
+            147,
+            53,
+            246,
+            543
+          ],
+          "standH": 543,
+          "fit": 0.686936
+        },
+        "f1": {
+          "file": "run-back-f1.webp",
+          "fists": [],
+          "grip": null,
+          "clipped": false,
+          "bbox": [
+            134,
+            101,
+            263,
+            495
+          ],
+          "standH": 495,
+          "fit": 0.753548
+        },
+        "f2": {
+          "file": "run-back-f2.webp",
+          "fists": [],
+          "grip": null,
+          "clipped": false,
+          "bbox": [
+            135,
+            58,
+            264,
+            541
+          ],
+          "standH": 541,
+          "fit": 0.689476
+        },
+        "f3": {
+          "file": "run-back-f3.webp",
+          "fists": [],
+          "grip": null,
+          "clipped": false,
+          "bbox": [
+            120,
+            26,
+            287,
+            550
+          ],
+          "standH": 550,
+          "fit": 0.678193
+        }
+      }
     }
-   }
   },
-  "heavy": {
-   "scale": 1.1246,
-   "frames": {
-    "front": {
-     "file": "heavy-front.webp",
-     "fists": [
-      {
-       "x": 0.1982,
-       "y": 0.1431
-      },
-      {
-       "x": 0.8122,
-       "y": 0.1513
-      }
-     ],
-     "grip": {
-      "x": 0.5052,
-      "y": 0.1472
-     },
-     "clipped": false,
-     "bbox": [
-      73,
-      62,
-      372,
-      537
-     ]
-    },
-    "back": {
-     "file": "heavy-back.webp",
-     "fists": [
-      {
-       "x": 0.2505,
-       "y": 0.1161
-      },
-      {
-       "x": 0.746,
-       "y": 0.1174
-      }
-     ],
-     "grip": {
-      "x": 0.4982,
-      "y": 0.1168
-     },
-     "clipped": false,
-     "bbox": [
-      96,
-      47,
-      353,
-      552
-     ]
-    },
-    "side": {
-     "file": "heavy-side.webp",
-     "fists": [
-      {
-       "x": 0.2843,
-       "y": 0.1575
-      },
-      {
-       "x": 0.4562,
-       "y": 0.1554
-      }
-     ],
-     "grip": {
-      "x": 0.3702,
-      "y": 0.1564
-     },
-     "clipped": false,
-     "bbox": [
-      19,
-      66,
-      374,
-      532
-     ]
-    }
-   }
-  },
-  "dodge": {
-   "scale": 0.9086,
-   "frames": {
-    "front": {
-     "file": "dodge-front.webp",
-     "fists": [
-      {
-       "x": 0.5697,
-       "y": 0.5938
-      }
-     ],
-     "grip": {
-      "x": 0.5697,
-      "y": 0.5938
-     },
-     "clipped": false,
-     "bbox": [
-      76,
-      90,
-      362,
-      499
-     ]
-    },
-    "back": {
-     "file": "dodge-back.webp",
-     "fists": [],
-     "grip": null,
-     "clipped": false,
-     "bbox": [
-      132,
-      108,
-      345,
-      480
-     ]
-    },
-    "side": {
-     "file": "dodge-side.webp",
-     "fists": [
-      {
-       "x": 0.4093,
-       "y": 0.5889
-      },
-      {
-       "x": 0.7005,
-       "y": 0.5573
-      }
-     ],
-     "grip": {
-      "x": 0.5549,
-      "y": 0.5731
-     },
-     "clipped": false,
-     "bbox": [
-      7,
-      122,
-      370,
-      466
-     ]
-    }
-   }
-  },
-  "skill-spin": {
-   "scale": 0.973,
-   "frames": {
-    "front": {
-     "file": "skill-spin-front.webp",
-     "fists": [
-      {
-       "x": 0.274,
-       "y": 0.3962
-      },
-      {
-       "x": 0.6953,
-       "y": 0.4045
-      }
-     ],
-     "grip": {
-      "x": 0.4846,
-      "y": 0.4004
-     },
-     "clipped": false,
-     "bbox": [
-      99,
-      12,
-      345,
-      587
-     ]
-    },
-    "back": {
-     "file": "skill-spin-back.webp",
-     "fists": [
-      {
-       "x": 0.7926,
-       "y": 0.3862
-      }
-     ],
-     "grip": {
-      "x": 0.7926,
-      "y": 0.3862
-     },
-     "clipped": false,
-     "bbox": [
-      83,
-      12,
-      349,
-      587
-     ]
-    },
-    "side": {
-     "file": "skill-spin-side.webp",
-     "fists": [
-      {
-       "x": 0.2579,
-       "y": 0.42
-      },
-      {
-       "x": 0.7549,
-       "y": 0.3989
-      }
-     ],
-     "grip": {
-      "x": 0.5064,
-      "y": 0.4094
-     },
-     "clipped": false,
-     "bbox": [
-      70,
-      21,
-      337,
-      578
-     ]
-    }
-   }
-  },
-  "skill-slam": {
-   "scale": 0.758,
-   "frames": {
-    "front": {
-     "file": "skill-slam-front.webp",
-     "fists": [
-      {
-       "x": 0.5228,
-       "y": 0.2164
-      },
-      {
-       "x": 0.5246,
-       "y": 0.2848
-      }
-     ],
-     "grip": {
-      "x": 0.5237,
-      "y": 0.2506
-     },
-     "clipped": false,
-     "bbox": [
-      121,
-      117,
-      276,
-      482
-     ]
-    },
-    "back": {
-     "file": "skill-slam-back.webp",
-     "fists": [
-      {
-       "x": 0.4972,
-       "y": 0.2231
-      },
-      {
-       "x": 0.4981,
-       "y": 0.2918
-      }
-     ],
-     "grip": {
-      "x": 0.4976,
-      "y": 0.2574
-     },
-     "clipped": false,
-     "bbox": [
-      127,
-      122,
-      262,
-      478
-     ]
-    },
-    "side": {
-     "file": "skill-slam-side.webp",
-     "fists": [
-      {
-       "x": 0.5482,
-       "y": 0.2057
-      },
-      {
-       "x": 0.5482,
-       "y": 0.275
-      }
-     ],
-     "grip": {
-      "x": 0.5482,
-      "y": 0.2404
-     },
-     "clipped": false,
-     "bbox": [
-      113,
-      111,
-      268,
-      488
-     ]
-    }
-   }
-  },
-  "skill-seal": {
-   "scale": 0.758,
-   "frames": {
-    "front": {
-     "file": "skill-seal-front.webp",
-     "fists": [
-      {
-       "x": 0.3045,
-       "y": 0.6913
-      }
-     ],
-     "grip": {
-      "x": 0.3045,
-      "y": 0.6913
-     },
-     "clipped": false,
-     "bbox": [
-      110,
-      116,
-      273,
-      483
-     ]
-    },
-    "back": {
-     "file": "skill-seal-back.webp",
-     "fists": [],
-     "grip": null,
-     "clipped": false,
-     "bbox": [
-      122,
-      119,
-      267,
-      480
-     ]
-    },
-    "side": {
-     "file": "skill-seal-side.webp",
-     "fists": [
-      {
-       "x": 0.4918,
-       "y": 0.6819
-      }
-     ],
-     "grip": {
-      "x": 0.4918,
-      "y": 0.6819
-     },
-     "clipped": false,
-     "bbox": [
-      102,
-      117,
-      268,
-      482
-     ]
-    }
-   }
-  },
-  "run-front": {
-   "scale": 0.9594,
-   "frames": {
-    "f0": {
-     "file": "run-front-f0.webp",
-     "fists": [
-      {
-       "x": 0.4042,
-       "y": 0.4961
-      }
-     ],
-     "grip": {
-      "x": 0.4042,
-      "y": 0.4961
-     },
-     "clipped": false,
-     "bbox": [
-      121,
-      46,
-      253,
-      554
-     ]
-    },
-    "f1": {
-     "file": "run-front-f1.webp",
-     "fists": [
-      {
-       "x": 0.4098,
-       "y": 0.5099
-      }
-     ],
-     "grip": {
-      "x": 0.4098,
-      "y": 0.5099
-     },
-     "clipped": false,
-     "bbox": [
-      143,
-      58,
-      251,
-      539
-     ]
-    },
-    "f2": {
-     "file": "run-front-f2.webp",
-     "fists": [
-      {
-       "x": 0.4205,
-       "y": 0.5008
-      }
-     ],
-     "grip": {
-      "x": 0.4205,
-      "y": 0.5008
-     },
-     "clipped": false,
-     "bbox": [
-      130,
-      50,
-      242,
-      546
-     ]
-    },
-    "f3": {
-     "file": "run-front-f3.webp",
-     "fists": [
-      {
-       "x": 0.6287,
-       "y": 0.4627
-      }
-     ],
-     "grip": {
-      "x": 0.6287,
-      "y": 0.4627
-     },
-     "clipped": false,
-     "bbox": [
-      139,
-      53,
-      273,
-      508
-     ]
-    }
-   }
-  },
-  "run-side": {
-   "scale": 1.1828,
-   "frames": {
-    "f0": {
-     "file": "run-side-f0.webp",
-     "fists": [
-      {
-       "x": 0.2215,
-       "y": 0.5667
-      },
-      {
-       "x": 0.6946,
-       "y": 0.5043
-      }
-     ],
-     "grip": {
-      "x": 0.458,
-      "y": 0.5355
-     },
-     "clipped": false,
-     "bbox": [
-      24,
-      74,
-      346,
-      524
-     ]
-    },
-    "f1": {
-     "file": "run-side-f1.webp",
-     "fists": [
-      {
-       "x": 0.2114,
-       "y": 0.5842
-      },
-      {
-       "x": 0.6871,
-       "y": 0.5192
-      }
-     ],
-     "grip": {
-      "x": 0.4492,
-      "y": 0.5517
-     },
-     "clipped": false,
-     "bbox": [
-      26,
-      80,
-      337,
-      519
-     ]
-    },
-    "f2": {
-     "file": "run-side-f2.webp",
-     "fists": [
-      {
-       "x": 0.1984,
-       "y": 0.5657
-      },
-      {
-       "x": 0.6906,
-       "y": 0.5012
-      }
-     ],
-     "grip": {
-      "x": 0.4445,
-      "y": 0.5334
-     },
-     "clipped": false,
-     "bbox": [
-      24,
-      77,
-      346,
-      520
-     ]
-    },
-    "f3": {
-     "file": "run-side-f3.webp",
-     "fists": [
-      {
-       "x": 0.2245,
-       "y": 0.4854
-      }
-     ],
-     "grip": {
-      "x": 0.2245,
-      "y": 0.4854
-     },
-     "clipped": false,
-     "bbox": [
-      43,
-      24,
-      339,
-      536
-     ]
-    }
-   }
-  },
-  "run-back": {
-   "scale": 1.0244,
-   "frames": {
-    "f0": {
-     "file": "run-back-f0.webp",
-     "fists": [],
-     "grip": null,
-     "clipped": false,
-     "bbox": [
-      147,
-      53,
-      246,
-      543
-     ]
-    },
-    "f1": {
-     "file": "run-back-f1.webp",
-     "fists": [],
-     "grip": null,
-     "clipped": false,
-     "bbox": [
-      134,
-      101,
-      263,
-      495
-     ]
-    },
-    "f2": {
-     "file": "run-back-f2.webp",
-     "fists": [],
-     "grip": null,
-     "clipped": false,
-     "bbox": [
-      135,
-      58,
-      264,
-      541
-     ]
-    },
-    "f3": {
-     "file": "run-back-f3.webp",
-     "fists": [],
-     "grip": null,
-     "clipped": false,
-     "bbox": [
-      120,
-      26,
-      287,
-      550
-     ]
-    }
-   }
-  }
- },
- "notes": [
-  "v11 linework key poses generated as original art from approved-v6 Wukong refs (static drawings, not skeletal)",
-  "fists = red grip-dot centres (dots inpainted away), frame UV",
-  "left-facing side views mirrored to face right",
-  "eyePx 34.3: draw at gameScaleToV10 to match v10 on-screen size"
- ]
+  "notes": [
+    "v11 linework key poses generated as original art from approved-v6 Wukong refs (static drawings, not skeletal)",
+    "fists = red grip-dot centres (dots inpainted away), frame UV",
+    "left-facing side views mirrored to face right",
+    "eyePx 34.3: draw at gameScaleToV10 to match v10 on-screen size"
+  ],
+  "fitNote": "v11.2 spawn reference: all pose alpha bbox heights normalized to 435 art units; exact rendered ±3% test across states; action squash disabled for scale stability.",
+  "fitRefStandH": 435.0
 }

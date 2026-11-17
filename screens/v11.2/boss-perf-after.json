@@ -1,0 +1,33 @@
+{
+ "spawnSyncMs": 16.8,
+ "pre": {
+  "n": 24,
+  "avg": 53,
+  "max": 91.6,
+  "over50": 14
+ },
+ "post": {
+  "n": 53,
+  "avg": 56.6,
+  "max": 74.8,
+  "over50": 42
+ },
+ "postFirst10": [
+  68,
+  65,
+  43,
+  58,
+  59,
+  52,
+  64,
+  51,
+  46,
+  58
+ ],
+ "prewarmed": {
+  "audioLayers": 0,
+  "mesh": true,
+  "ms": 34.5
+ },
+ "errors": []
+}
