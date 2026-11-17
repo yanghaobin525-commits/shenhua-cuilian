@@ -1,0 +1,20 @@
+name: Deterministic game rules
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      # These VM/Node contracts use only Node built-ins. Browser/art acceptance is
+      # deliberately a separate explicit release step, not falsely represented here.
+      - run: npm test
+      - run: node --check game.js && node --check run-ui.js && node --check run-system.js

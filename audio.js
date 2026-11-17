@@ -111,6 +111,9 @@ function play(name,opts) {
  if(prev!==undefined&&t-prev<(cooldowns[name]||0.1))return;recent.set(name,t);
  const gain=opts&&opts.ai?0.4:1, S=(n,off,d,l)=>tone(t+(off||0),n,d||0.25,(l||0.13)*gain,'pluck',sfx);
  switch(name){
+  case 'swing':rustle(t,.09,.055*gain,1800,sfx);break;
+  case 'armor':bell(t,82,.16,.045*gain,sfx);break;
+  case 'heavy':drum(t,.18,sfx);rustle(t,.15,.09*gain,450,sfx);break;
   case 'hit':rustle(t,0.065,0.12*gain,1100,sfx);tone(t,50,0.075,0.14*gain,'bass',sfx);break;
   case 'hurt':drum(t,0.22,sfx);rustle(t,0.12,0.09,650,sfx);break;
   case 'skill': S(62,0,0.18);S(69,0.045,0.22);bell(t+0.08,74,0.55,0.08*gain,sfx);rustle(t,0.15,0.035*gain,2100,sfx);break;

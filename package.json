@@ -1,6 +1,6 @@
 {
   "name": "shenhua-arena",
-  "version": "1.0.0",
+  "version": "1.8.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -8,9 +8,10 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/audio-system.test.cjs && node test/combat-art.test.cjs && node test/projection.test.cjs",
-    "test:v6": "python3 tools/validate-v6.py && node test/v6-browser.cjs",
-    "test:v7": "python3 tools/validate-v6.py && node test/projection-browser.cjs && node test/v7-browser.cjs"
+    "test": "node test/audio-system.test.cjs && node test/combat-art.test.cjs && node test/projection.test.cjs && node test/combat-cycle.test.cjs && node --test test/run-system-unit.cjs",
+    "test:v6": "python3 tools/validate-v6.py && node test/v8-roster.cjs",
+    "test:v7": "python3 tools/validate-v6.py && node test/projection-browser.cjs && node test/v8-roster.cjs",
+    "test:v8": "python3 tools/validate-v6.py && node test/v8-browser.cjs && node test/v8-roster.cjs && node test/projection-browser.cjs"
   },
   "keywords": [],
   "author": "",

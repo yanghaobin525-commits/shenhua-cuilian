@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="game-release" content="courtyard-25d-20261117">
+<meta name="game-release" content="roguelike-v8-20261117">
 <title>神话·淬炼</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,12 +13,12 @@
 <link rel="icon" href="data:,">
 <style>
   html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#120e0c;
-    touch-action:none;-ms-touch-action:none;overscroll-behavior:none;
+    touch-action:manipulation;-ms-touch-action:manipulation;overscroll-behavior:none;
     -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;
     font-family:"Noto Sans SC","PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;}
   #game{position:fixed;inset:0;touch-action:none;}
   canvas{display:block;touch-action:none;}
-  #rotate{display:none;position:fixed;inset:0;z-index:10;background:#120e0c;color:#efe3c8;
+  #rotate{display:none;position:fixed;inset:0;z-index:100;background:#120e0c;color:#efe3c8;
     flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:22px;letter-spacing:2px}
   #rotate .ico{font-size:64px;margin-bottom:18px;animation:rot 1.8s ease-in-out infinite}
   @keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
@@ -31,16 +31,19 @@
 <script>
   // 禁止双指缩放、双击放大、页面滚动（iOS Safari）
   ['gesturestart','gesturechange','gestureend'].forEach(function(e){document.addEventListener(e,function(ev){ev.preventDefault();},{passive:false});});
-  document.addEventListener('touchmove',function(e){e.preventDefault();},{passive:false});
+  document.addEventListener('touchmove',function(e){if(!e.target.closest('#run-overlay'))e.preventDefault();},{passive:false});
   document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:false});
-  var lastTouch=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-lastTouch<300)e.preventDefault();lastTouch=n;},{passive:false});
+  var lastTouch=0;document.addEventListener('touchend',function(e){if(e.target.closest('#run-overlay'))return;var n=Date.now();if(n-lastTouch<300)e.preventDefault();lastTouch=n;},{passive:false});
   document.addEventListener('contextmenu',function(e){e.preventDefault();});
 </script>
 <script src="lib/phaser.min.js"></script>
-<script src="config.js?v=courtyard-25d-20261117"></script>
-<script src="audio.js?v=courtyard-25d-20261117"></script>
-<script src="arena-view.js?v=courtyard-25d-20261117"></script>
-<script src="combat-art.js?v=courtyard-25d-20261117"></script>
-<script src="game.js?v=courtyard-25d-20261117"></script>
+<script src="config.js?v=roguelike-v8-20261117"></script>
+<script src="audio.js?v=roguelike-v8-20261117"></script>
+<script src="arena-view.js?v=roguelike-v8-20261117"></script>
+<script src="combat-art.js?v=roguelike-v8-20261117"></script>
+<script src="run-system.js?v=roguelike-v8-20261117"></script>
+<script src="run-ui.js?v=roguelike-v8-20261117"></script>
+<script src="combat-cycle.js?v=roguelike-v8-20261117"></script>
+<script src="game.js?v=roguelike-v8-20261117"></script>
 </body>
 </html>

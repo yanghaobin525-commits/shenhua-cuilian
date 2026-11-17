@@ -15,7 +15,7 @@ function advance(seconds){const c=contexts[0];for(let t=0;t<seconds;t+=0.025){c.
  assert(await a.unlock());assert.equal(contexts.length,1);assert.equal(timers.size,1);
  a.setMode('arena');await a.unlock();assert.equal(timers.size,1);assert.equal(contexts.length,1);
  advance(44);assert(pitches.length>100);assert(a.getState().voices<=64);
- for(const event of ['hit','hurt','skill','heal','pickup','wave','boss','bossPhase','victory','defeat']){a.play(event);advance(0.02);}
+ for(const event of ['swing','armor','heavy','hit','hurt','skill','heal','pickup','wave','boss','bossPhase','victory','defeat']){a.play(event);advance(0.02);}
  for(let i=0;i<200;i++)a.play('hit');assert(a.getState().voices<=64);
  a.setMuted(true);assert.equal(a.getState().muted,true);a.setVolume(5);assert.equal(a.getState().volume,1);a.setMusicVolume(-2);assert.equal(a.getState().music,0);a.setSfxVolume(0.3);
  a.setMuted(false);a.setMusicVolume(0.48);
@@ -28,5 +28,5 @@ function advance(seconds){const c=contexts[0];for(let t=0;t<seconds;t+=0.025){c.
  a.play('victory');advance(4);assert.equal(a.getState().voices,0);
  windowListeners.pagehide();assert.equal(a.getState().state,'suspended');windowListeners.pageshow();await Promise.resolve();assert.equal(timers.size,0);
  a.destroy();assert.equal(a.getState().state,'closed');assert.equal(timers.size,0);
- console.log('PASS: lazy unlock, single context/scheduler, 84s scored scheduling, all 10 events, throttling/64-voice bound, mute/levels, nested pause/visibility, scene stop and cleanup. No browser or audible playback used.');
+ console.log('PASS: lazy unlock, single context/scheduler, 84s scored scheduling, all 13 events, throttling/64-voice bound, mute/levels, nested pause/visibility, scene stop and cleanup. No browser or audible playback used.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

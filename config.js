@@ -24,12 +24,15 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'courtyard-25d-20261117',
+  releaseId: 'roguelike-v8-20261117',
   artVersion: 'approved-v6',
   combatArt: { canvasSize: 512, footY: 0.92, fps: 24, attackDuration: 0.36, castDuration: 0.65, handRadius: 0.043 },
   maxPixelRatio: 2,             // 渲染清晰度上限（视网膜屏=2 最清晰；老设备卡顿可改 1.5 或 1）
 
-  view25d: { yScale: 0.55, shear: 0.28, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 210, viewWidth: 1650, viewHeight: 1150 },
+  runDefaults: { enemyHpMultiplier: 1, difficulty: 1, loops: 1, endless: false },
+  combatWindows: { attack: {windup:.14,active:.08,recovery:.20,moveScale:.12}, cast: {windup:.28,active:.12,recovery:.28,moveScale:.05}, lightStun:.10, heavyStun:.23, hitGuard:.32, heavyThreshold:90 },
+  rescue: { radius:125, seconds:2.4, bleedOut:24, hpRatio:.35 },
+  view25d: { zoomScale:1.45, yScale: 0.55, shear: 0.28, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 210, viewWidth: 1650, viewHeight: 1150 },
   arena: {
     width: 2000,                 // 竞技场宽
     height: 1400,                // 竞技场高
@@ -146,7 +149,7 @@ window.GAME_CONFIG = {
   boss: {
     name: '九婴', sprite: 'boss_jiuying',
     size: 300, hp: 6500, speed: 85, armor: 0,
-    biteDamage: 45, biteCooldown: 1.6,          // 近身撕咬
+    biteWindup:.24,biteRadius:75,biteDamage: 45, biteCooldown: 1.6,          // 近身撕咬
     phase2At: 0.5,                              // 血量低于 50% 进入二阶段（暴怒）
     phase2SpeedMul: 1.35,                       // 二阶段移速倍率
     phase2CooldownMul: 0.7,                     // 二阶段技能冷却倍率（越小放技能越勤）
@@ -170,6 +173,7 @@ window.GAME_CONFIG = {
 
   /* ---------------- 队友 AI ---------------- */
   ai: {
+    allySpacingMul:1.10,         // 同队脚底分离半径，减少五人挤成一团
     rangedKeep: 290,             // 远程英雄与敌人保持的距离
     healerKeep: 320,             // 治疗与敌人保持的距离
     healThreshold: 0.65,         // 有队友血量低于该比例时治疗优先放月光

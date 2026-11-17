@@ -1,14 +1,14 @@
-# 音频模块接入说明（本地待整合，未发布）
+# 音频模块接入说明（v8）
 
 ## 设计
 - 原创固定 16 小节 D 羽调式配乐，八分音符旋律具有反复/应答/收束，不是随机选音。
 - 拨弦式短包络三角波旋律 + 低音持续根音 + 下滑低鼓 + 极轻噪声打击 + 非整数泛音钟磬。
 - 普通竞技场 88 BPM；Boss 104 BPM，并加鼓点和低拨弦。每次模式切换只有一条调度器；取消旧配乐节点后从第 1 小节开始。
-- 十类合成音效：hit/hurt/skill/heal/pickup/wave/boss/bossPhase/victory/defeat。
+- 十三类合成音效：swing/armor/heavy/hit/hurt/skill/heal/pickup/wave/boss/bossPhase/victory/defeat。
 - Master/music/sfx 三路音量，压缩器限制叠加峰值；命中 85ms、受伤 220ms 等节流，最多 64 个 voice，AI 音效衰减。
 - 不含下载音频/商业素材/联网请求；噪声打击使用固定种子，主旋律严格固定。
 
-## API（不创建任何 UI）
+## API（模块自身不创建 UI；v8 在 run-ui.js 接入）
 ```js
 const a = window.ShenhuaAudio;
 // 必须在 pointerdown/keydown/可信确认按钮事件内立即调用，不要先 await 其他工作。
@@ -23,7 +23,7 @@ a.pause('manual'); a.resume('manual'); // 按原因计数，hidden/manual 不相
 a.getState(); // 无敏感信息，返回 context、voices、暂停原因和错误状态
 ```
 
-音量初始参数在 `config.js` 的 `audio`。不持久化到 localStorage（避免隐私存储、跨版状态混乱）；未来音量 UI 可自行选择保存偏好。
+音量初始参数在 `config.js` 的 `audio`。不持久化到 localStorage（避免隐私存储、跨版状态混乱）；v8设置/暂停菜单有音乐、音效和静音控件；同页再开保留音量，刷新恢复配置默认。
 
 ## 已挂接
 - `<script>` 顺序：config.js → audio.js → game.js。
@@ -34,7 +34,7 @@ a.getState(); // 无敏感信息，返回 context、voices、暂停原因和错�
 
 ## 验证与待验
 - `node --check audio.js` / config.js / game.js 通过。
-- `node test/audio-system.test.cjs`（文件在原本忽略的 test/ 下）：模拟 Web Audio API，验证延迟解锁、84 秒谱面调度、单实例、全部音效、声部上限、清理、前后台和手动暂停叠加。没有驱动浏览器。
-- **尚未人工试听，也未运行真实 Safari/AudioContext 播放测试。** 需要父会话通过 computerUse 在 iPad Safari 点确认出战、试听 16 小节、Boss 切换、检查后台返回、静音与音量。旋律悦耳程度、动态范围和设备扬声器实听都待验证。
-- `dist/shenhua-cuilian.html` 和 `build_single.py` 尚未更新：旧单文件版本仍无本模块；未来打包时必须把 audio.js 内联在 config 和 game 之间。当前不重建、不部署、不 push。
-- 此次不添加音量 UI，不改任何英雄美术或 UI 布局。
+- `node test/audio-system.test.cjs`（文件在原本忽略的 test/ 下）：模拟 Web Audio API，验证延迟解锁、84 秒谱面调度、单实例、全部音效、声部上限、清理、前后台和手动暂停叠加。此纯测试没有驱动浏览器，v8另有真实 Chromium 手势、滑条和静音回归。
+- **尚未人工试听，也未运行真实 Safari 硬件/扬声器播放测试。** 需要父会话通过 computerUse 在 iPad Safari 点确认出战、试听 16 小节、Boss 切换、检查后台返回、静音与音量。旋律悦耳程度、动态范围和设备扬声器实听都待验证。
+- `dist/shenhua-cuilian.html` 和 `build_single.py` 尚未更新：旧单文件版本仍无本模块；未来打包时必须把 audio.js 内联在 config 和 game 之间。只发布多文件 Pages 版本，不发布旧 dist。
+- v8已添加音量 UI，不改定稿英雄美术。
