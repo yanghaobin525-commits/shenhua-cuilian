@@ -26,7 +26,7 @@ function triangle(ctx,img,s,d) {
   const E=(p.y*(c.x-b.x)+q.y*(a.x-c.x)+r.y*(b.x-a.x))/det;
   const F=(p.x*(b.x*c.y-c.x*b.y)+q.x*(c.x*a.y-a.x*c.y)+r.x*(a.x*b.y-b.x*a.y))/det;
   const G=(p.y*(b.x*c.y-c.x*b.y)+q.y*(c.x*a.y-a.x*c.y)+r.y*(a.x*b.y-b.x*a.y))/det;
-  ctx.save();ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.lineTo(r.x,r.y);ctx.closePath();ctx.clip();ctx.transform(A,B,D,E,F,G);const x=Math.min(a.x,b.x,c.x),y=Math.min(a.y,b.y,c.y),w=Math.max(a.x,b.x,c.x)-x,h=Math.max(a.y,b.y,c.y)-y;ctx.drawImage(img,x,y,w,h,x,y,w,h);ctx.restore();
+  const cx=(p.x+q.x+r.x)/3,cy=(p.y+q.y+r.y)/3,ex=v=>{const dx=v.x-cx,dy=v.y-cy,l=Math.hypot(dx,dy)||1;return{x:v.x+dx/l*.9,y:v.y+dy/l*.9};},P=ex(p),Q=ex(q),R=ex(r);ctx.save();ctx.beginPath();ctx.moveTo(P.x,P.y);ctx.lineTo(Q.x,Q.y);ctx.lineTo(R.x,R.y);ctx.closePath();ctx.clip();ctx.transform(A,B,D,E,F,G);const x=Math.min(a.x,b.x,c.x),y=Math.min(a.y,b.y,c.y),w=Math.max(a.x,b.x,c.x)-x,h=Math.max(a.y,b.y,c.y)-y;ctx.drawImage(img,x-1,y-1,w+2,h+2,x-1,y-1,w+2,h+2);ctx.restore();
 }
 class CombatArt {
   static preload(scene) {
@@ -92,7 +92,7 @@ class CombatArt {
       poseInfo=pm.stages[stage][this.view];
       if(profile.jump&&poseInfo.liftPx){const up=window.ActorMotion.smooth(Math.min(1,clk.time/(tm.windup*.85))),down=clk.time>tm.windup?Math.min(1,(clk.time-tm.windup)/Math.max(.01,tm.active)):0;lift=poseInfo.liftPx*up*(1-down);}
     }
-    this.poseStage=poseInfo?stage:null;this.lift=lift;
+    this.poseStage=poseInfo?stage:null;this.lift=lift;this.poseTop=poseInfo?599-poseInfo.bbox[1]+lift:0;
     let hp=deform(m.hand.x*512,m.hand.y*512);
     if(poseInfo){const g=poseInfo.grip;hp={x:g.x*512,y:g.y*640-128-lift};}
     const handX=foot.x+(hp.x-256)*unitScale*flip, handY=foot.y+(hp.y-m.foot*512)*unitScale;

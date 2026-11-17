@@ -24,7 +24,7 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'solo-wukong-v10-20261117',
+  releaseId: 'solo-wukong-v10.1-20261117',
   artVersion: 'approved-v6',
   presentation:{maxNumbers:24,numberRise:90,numberLifetime:700,trailInterval:.035},
   motion: { stride:84, startSmooth:.12, stopSmooth:.10, maxFootTravel:14, footLift:9, bodyBounce:1.8, torsoSway:8, attackTwist:.11 },
@@ -35,7 +35,7 @@ window.GAME_CONFIG = {
   runDefaults: { enemyHpMultiplier: 1, difficulty: 1, loops: 1, endless: false },
   combatWindows: { attack: {windup:.14,active:.08,recovery:.20,moveScale:.12}, cast: {windup:.28,active:.12,recovery:.28,moveScale:.05}, lightStun:.10, heavyStun:.23, hitGuard:.32, heavyThreshold:90 },
   rescue: { radius:125, seconds:2.4, bleedOut:24, hpRatio:.35 },
-  view25d: { zoomScale:2.75, fixedCamera:true,inkWash:true, propScale:.48, islandRadius:710, parallax:{far:.025,mid:.08,near:.13,farYaw:.03,midYaw:.08,nearYaw:.12,farOverscan:1.3,midOverscan:1.45,cloudDrift:32,cloudSpeed:.09,nearAlpha:.22}, rotateStep:Math.PI/4, rotateSmooth:.14, cliffHeight:95, yScale: 0.42, shear: 0, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 75, viewWidth: 1650, viewHeight: 1150 },
+  view25d: { zoomScale:2.3, fixedCamera:true,inkWash:true, propScale:.48, islandRadius:710, parallax:{far:.025,mid:.08,near:.13,farYaw:.03,midYaw:.08,nearYaw:.12,farOverscan:1.3,midOverscan:1.45,cloudDrift:32,cloudSpeed:.09,nearAlpha:.22}, rotateStep:Math.PI/4, rotateSmooth:.14, cliffHeight:95, yScale: 0.42, shear: 0, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 105, viewWidth: 1650, viewHeight: 1150 },
   arena: {
     width: 1400,                 // 竞技场宽
     height: 1400, radius:620,                // 竞技场高
