@@ -1,0 +1,165 @@
+{
+  "errors": [],
+  "anchorMask": [
+    {
+      "direction": "right",
+      "f": 0,
+      "view": "side",
+      "frame": "f0",
+      "maskAlpha": 255,
+      "error": 1.1368683772161603e-13
+    },
+    {
+      "direction": "right",
+      "f": 1,
+      "view": "side",
+      "frame": "f1",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "right",
+      "f": 2,
+      "view": "side",
+      "frame": "f2",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "right",
+      "f": 3,
+      "view": "side",
+      "frame": "f3",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "right",
+      "f": "dodge",
+      "view": "side",
+      "frame": "side",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "left",
+      "f": 0,
+      "view": "side",
+      "frame": "f0",
+      "maskAlpha": 255,
+      "error": 1.1368683772161603e-13
+    },
+    {
+      "direction": "left",
+      "f": 1,
+      "view": "side",
+      "frame": "f1",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "left",
+      "f": 2,
+      "view": "side",
+      "frame": "f2",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "left",
+      "f": 3,
+      "view": "side",
+      "frame": "f3",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "left",
+      "f": "dodge",
+      "view": "side",
+      "frame": "side",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "down",
+      "f": 0,
+      "view": "front",
+      "frame": "f0",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "down",
+      "f": 1,
+      "view": "front",
+      "frame": "f1",
+      "maskAlpha": 255,
+      "error": 1.1368683772161603e-13
+    },
+    {
+      "direction": "down",
+      "f": 2,
+      "view": "front",
+      "frame": "f2",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "down",
+      "f": 3,
+      "view": "front",
+      "frame": "f3",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "down",
+      "f": "dodge",
+      "view": "front",
+      "frame": "front",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "up",
+      "f": 0,
+      "view": "back",
+      "frame": "f0",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "up",
+      "f": 1,
+      "view": "back",
+      "frame": "f1",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "up",
+      "f": 2,
+      "view": "back",
+      "frame": "f2",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "up",
+      "f": 3,
+      "view": "back",
+      "frame": "f3",
+      "maskAlpha": 255,
+      "error": 0
+    },
+    {
+      "direction": "up",
+      "f": "dodge",
+      "view": "back",
+      "frame": "back",
+      "maskAlpha": 255,
+      "error": 0
+    }
+  ]
+}

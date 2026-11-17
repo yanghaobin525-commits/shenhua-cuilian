@@ -24,3 +24,16 @@ for(const key of Object.keys(C.heroes)){
  for(const w of C.dropWeapons){h.weapon=w;h.t+=.1;art.update(.1);assert.equal(art.state.weapon,w);}
 }
 assert(draws>5000);console.log('PASS: mocked eight-hero config, 3 directions + side mirror, idle/walk/attack/cast modes, eight weapon swaps, exact grip match and rear occlusion. NOT an actual-art or browser/visual test.');
+// t137: all run frames + dodge use manifest-authored SAME anatomical hand,
+// regardless of aim vector, source fist order, or mirror. No nearest/furthest search.
+const carryManifest=JSON.parse(fs.readFileSync('assets/wukong-poses-v11/manifest.json','utf8'));
+for(const view of ['side','front','back'])for(const mode of ['run','dodge']){
+ const set=mode==='run'?'run-'+view:'dodge',frames=mode==='run'?carryManifest.sets[set].frames:{[view]:carryManifest.sets.dodge.frames[view]};
+ for(const [fr,info] of Object.entries(frames)){
+  assert.equal(info.carryGrip.hand,'right');assert(info.carryGrip.x>0&&info.carryGrip.x<1&&info.carryGrip.y>0&&info.carryGrip.y<1);
+  const h={key:'wukong',dodgeState:mode==='dodge'?{}:null},self={h,view,staffCfg:C.staff.wukong},src={set,run:mode==='run',info,fh:640,fy:599,grip:{x:0,y:0}};
+  for(const [ax,ay] of [[1,0],[-1,0],[0,1],[0,-1],[.001,-1]])assert.equal(Art.prototype.pickGrip.call(self,src,ax,ay),info.carryGrip,'aim cannot change '+set+'/'+fr);
+  for(const flip of [-1,1]){const a=Art.prototype.staffAim.call(self,h,0,0,null,null,flip,0,flip,src,{}),expected=C.staff.wukong.aim.carry[mode][view]*(view==='side'?flip:1);assert.equal(a,expected);}
+ }
+}
+console.log('PASS t137 fixed hand over all run/dodge frames, aim independence, source-defined carry diagonals, mirror exactly once');

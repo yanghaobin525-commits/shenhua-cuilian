@@ -24,7 +24,7 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'solo-wukong-v11.2-20261117',
+  releaseId: 'solo-wukong-v11.3-20261117',
   artVersion: 'approved-v6',
   presentation:{maxNumbers:24,numberRise:90,numberLifetime:700,trailInterval:.035},
   motion: { stride:84, startSmooth:.12, stopSmooth:.10, maxFootTravel:14, footLift:9, bodyBounce:1.8, torsoSway:8, attackTwist:.11 },
@@ -375,3 +375,12 @@ Object.assign(window.GAME_CONFIG.poseArtV11.wukong,{idle:null,attack:{light:'lig
 
 // Spawn-reference alpha height normalization covers attacks, dodge and all casts too.
 window.GAME_CONFIG.poseArtV11.wukong.normalizeAllHeights=true;
+
+// v11.3 t137: fixed anatomical carry hand. No frame/aim-driven hand selection.
+window.GAME_CONFIG.poseArtV11.wukong.carryHand='right';
+Object.assign(window.GAME_CONFIG.staff.wukong.aim.carry,{
+  // Radians clockwise from up; side is reflected ONCE by actor facing.
+  // Red guide: right-run \ (rear-high/front-low); front/back /; side-dodge /.
+  run:{side:-.95,front:.85,back:.85},
+  dodge:{side:1.15,front:.95,back:.95}
+});

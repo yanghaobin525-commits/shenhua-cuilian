@@ -252,6 +252,10 @@
             {
               "x": 0.5697,
               "y": 0.5938
+            },
+            {
+              "x": 0.254,
+              "y": 0.577
             }
           ],
           "grip": {
@@ -266,11 +270,22 @@
             499
           ],
           "standH": 499,
-          "fit": 0.747508
+          "fit": 0.747508,
+          "carryGrip": {
+            "x": 0.254,
+            "y": 0.577,
+            "hand": "right",
+            "source": "t137 same carry hand during dodge"
+          }
         },
         "back": {
           "file": "dodge-back.webp",
-          "fists": [],
+          "fists": [
+            {
+              "x": 0.78125,
+              "y": 0.5390625
+            }
+          ],
           "grip": null,
           "clipped": false,
           "bbox": [
@@ -280,7 +295,13 @@
             480
           ],
           "standH": 479,
-          "fit": 0.778719
+          "fit": 0.778719,
+          "carryGrip": {
+            "x": 0.78125,
+            "y": 0.5390625,
+            "hand": "right",
+            "source": "t137 same carry hand during dodge"
+          }
         },
         "side": {
           "file": "dodge-side.webp",
@@ -306,7 +327,13 @@
             466
           ],
           "standH": 466,
-          "fit": 0.800443
+          "fit": 0.800443,
+          "carryGrip": {
+            "x": 0.4093,
+            "y": 0.5889,
+            "hand": "right",
+            "source": "t137 same carry hand during dodge"
+          }
         }
       }
     },
@@ -558,7 +585,13 @@
             554
           ],
           "standH": 553,
-          "fit": 0.674514
+          "fit": 0.674514,
+          "carryGrip": {
+            "x": 0.4042,
+            "y": 0.4961,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f1": {
           "file": "run-front-f1.webp",
@@ -580,7 +613,13 @@
             539
           ],
           "standH": 539,
-          "fit": 0.692034
+          "fit": 0.692034,
+          "carryGrip": {
+            "x": 0.4098,
+            "y": 0.5099,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f2": {
           "file": "run-front-f2.webp",
@@ -602,7 +641,13 @@
             546
           ],
           "standH": 546,
-          "fit": 0.683162
+          "fit": 0.683162,
+          "carryGrip": {
+            "x": 0.4205,
+            "y": 0.5008,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f3": {
           "file": "run-front-f3.webp",
@@ -610,6 +655,10 @@
             {
               "x": 0.6287,
               "y": 0.4627
+            },
+            {
+              "x": 0.333,
+              "y": 0.548
             }
           ],
           "grip": {
@@ -624,7 +673,13 @@
             508
           ],
           "standH": 508,
-          "fit": 0.734264
+          "fit": 0.734264,
+          "carryGrip": {
+            "x": 0.333,
+            "y": 0.548,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         }
       }
     },
@@ -655,7 +710,13 @@
             524
           ],
           "standH": 523,
-          "fit": 0.713205
+          "fit": 0.713205,
+          "carryGrip": {
+            "x": 0.2215,
+            "y": 0.5667,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f1": {
           "file": "run-side-f1.webp",
@@ -681,7 +742,13 @@
             519
           ],
           "standH": 519,
-          "fit": 0.718702
+          "fit": 0.718702,
+          "carryGrip": {
+            "x": 0.2114,
+            "y": 0.5842,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f2": {
           "file": "run-side-f2.webp",
@@ -707,7 +774,13 @@
             520
           ],
           "standH": 520,
-          "fit": 0.71732
+          "fit": 0.71732,
+          "carryGrip": {
+            "x": 0.1984,
+            "y": 0.5657,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f3": {
           "file": "run-side-f3.webp",
@@ -729,7 +802,13 @@
             536
           ],
           "standH": 536,
-          "fit": 0.695907
+          "fit": 0.695907,
+          "carryGrip": {
+            "x": 0.2245,
+            "y": 0.4854,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         }
       }
     },
@@ -738,7 +817,12 @@
       "frames": {
         "f0": {
           "file": "run-back-f0.webp",
-          "fists": [],
+          "fists": [
+            {
+              "x": 0.697266,
+              "y": 0.589063
+            }
+          ],
           "grip": null,
           "clipped": false,
           "bbox": [
@@ -748,11 +832,22 @@
             543
           ],
           "standH": 543,
-          "fit": 0.686936
+          "fit": 0.686936,
+          "carryGrip": {
+            "x": 0.697266,
+            "y": 0.589063,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f1": {
           "file": "run-back-f1.webp",
-          "fists": [],
+          "fists": [
+            {
+              "x": 0.685547,
+              "y": 0.601562
+            }
+          ],
           "grip": null,
           "clipped": false,
           "bbox": [
@@ -762,11 +857,22 @@
             495
           ],
           "standH": 495,
-          "fit": 0.753548
+          "fit": 0.753548,
+          "carryGrip": {
+            "x": 0.685547,
+            "y": 0.601562,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f2": {
           "file": "run-back-f2.webp",
-          "fists": [],
+          "fists": [
+            {
+              "x": 0.701172,
+              "y": 0.540625
+            }
+          ],
           "grip": null,
           "clipped": false,
           "bbox": [
@@ -776,11 +882,22 @@
             541
           ],
           "standH": 541,
-          "fit": 0.689476
+          "fit": 0.689476,
+          "carryGrip": {
+            "x": 0.701172,
+            "y": 0.540625,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         },
         "f3": {
           "file": "run-back-f3.webp",
-          "fists": [],
+          "fists": [
+            {
+              "x": 0.703125,
+              "y": 0.476562
+            }
+          ],
           "grip": null,
           "clipped": false,
           "bbox": [
@@ -790,7 +907,13 @@
             550
           ],
           "standH": 550,
-          "fit": 0.678193
+          "fit": 0.678193,
+          "carryGrip": {
+            "x": 0.703125,
+            "y": 0.476562,
+            "hand": "right",
+            "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+          }
         }
       }
     }
@@ -802,5 +925,6 @@
     "eyePx 34.3: draw at gameScaleToV10 to match v10 on-screen size"
   ],
   "fitNote": "v11.2 spawn reference: all pose alpha bbox heights normalized to 435 art units; exact rendered ±3% test across states; action squash disabled for scale stability.",
-  "fitRefStandH": 435.0
+  "fitRefStandH": 435.0,
+  "carryGripNote": "v11.3 t137: right-hand identity through f0–f3/front/back/side/dodge, with side reflection handled only by actor flip. Per-frame coordinates measured on existing art. No artwork replacement."
 }

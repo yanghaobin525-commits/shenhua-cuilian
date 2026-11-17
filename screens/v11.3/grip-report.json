@@ -1,0 +1,2564 @@
+{
+  "errors": [],
+  "spawn": 94.85,
+  "posed": {
+    "right-idle": {
+      "pose": null,
+      "view": "side",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": -0.5,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.5,
+        "tip": {
+          "x": -24.21098969951225,
+          "y": -44.31791937546382
+        },
+        "butt": {
+          "x": 24.21098969951225,
+          "y": 44.31791937546382
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-f0-0": {
+      "pose": "p11_wukong_run-side_f0",
+      "view": "side",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": -0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.95,
+        "tip": {
+          "x": -41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": 41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-f1-1": {
+      "pose": "p11_wukong_run-side_f1",
+      "view": "side",
+      "flip": 1,
+      "frame": "f1",
+      "hand": "right",
+      "grip": {
+        "x": 0.2114,
+        "y": 0.5842,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2114,
+        "y": 0.5842,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": -0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.5,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.95,
+        "tip": {
+          "x": -41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": 41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-f2-2": {
+      "pose": "p11_wukong_run-side_f2",
+      "view": "side",
+      "flip": 1,
+      "frame": "f2",
+      "hand": "right",
+      "grip": {
+        "x": 0.1984,
+        "y": 0.5657,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.1984,
+        "y": 0.5657,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": -0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.95,
+        "tip": {
+          "x": -41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": 41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-f3-3": {
+      "pose": "p11_wukong_run-side_f3",
+      "view": "side",
+      "flip": 1,
+      "frame": "f3",
+      "hand": "right",
+      "grip": {
+        "x": 0.2245,
+        "y": 0.4854,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2245,
+        "y": 0.4854,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": -0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.95,
+        "tip": {
+          "x": -41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": 41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-f0-4": {
+      "pose": "p11_wukong_run-side_f0",
+      "view": "side",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": -0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.95,
+        "tip": {
+          "x": -41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": 41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-dodge": {
+      "pose": "p11_wukong_dodge_side",
+      "view": "side",
+      "flip": 1,
+      "frame": "side",
+      "hand": "right",
+      "grip": {
+        "x": 0.4093,
+        "y": 0.5889,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "expected": {
+        "x": 0.4093,
+        "y": 0.5889,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "aimInvariant": true,
+      "angle": 1.15,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 1.15,
+        "tip": {
+          "x": 46.09457898315631,
+          "y": -20.628615764649947
+        },
+        "butt": {
+          "x": -46.09457898315631,
+          "y": 20.628615764649947
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-stop": {
+      "pose": null,
+      "view": "side",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": -0.5,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.5,
+        "tip": {
+          "x": -24.21098969951225,
+          "y": -44.31791937546382
+        },
+        "butt": {
+          "x": 24.21098969951225,
+          "y": 44.31791937546382
+        },
+        "lengthWorld": 101
+      }
+    },
+    "right-restart": {
+      "pose": "p11_wukong_run-side_f0",
+      "view": "side",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": -0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.95,
+        "tip": {
+          "x": -41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": 41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-idle": {
+      "pose": null,
+      "view": "side",
+      "flip": -1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": 0.5,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.5,
+        "tip": {
+          "x": 24.21098969951225,
+          "y": -44.31791937546382
+        },
+        "butt": {
+          "x": -24.21098969951225,
+          "y": 44.31791937546382
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-f0-0": {
+      "pose": "p11_wukong_run-side_f0",
+      "view": "side",
+      "flip": -1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-f1-1": {
+      "pose": "p11_wukong_run-side_f1",
+      "view": "side",
+      "flip": -1,
+      "frame": "f1",
+      "hand": "right",
+      "grip": {
+        "x": 0.2114,
+        "y": 0.5842,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2114,
+        "y": 0.5842,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.5,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-f2-2": {
+      "pose": "p11_wukong_run-side_f2",
+      "view": "side",
+      "flip": -1,
+      "frame": "f2",
+      "hand": "right",
+      "grip": {
+        "x": 0.1984,
+        "y": 0.5657,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.1984,
+        "y": 0.5657,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-f3-3": {
+      "pose": "p11_wukong_run-side_f3",
+      "view": "side",
+      "flip": -1,
+      "frame": "f3",
+      "hand": "right",
+      "grip": {
+        "x": 0.2245,
+        "y": 0.4854,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2245,
+        "y": 0.4854,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-f0-4": {
+      "pose": "p11_wukong_run-side_f0",
+      "view": "side",
+      "flip": -1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-dodge": {
+      "pose": "p11_wukong_dodge_side",
+      "view": "side",
+      "flip": -1,
+      "frame": "side",
+      "hand": "right",
+      "grip": {
+        "x": 0.4093,
+        "y": 0.5889,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "expected": {
+        "x": 0.4093,
+        "y": 0.5889,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "aimInvariant": true,
+      "angle": -1.15,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -1.15,
+        "tip": {
+          "x": -46.09457898315631,
+          "y": -20.628615764649947
+        },
+        "butt": {
+          "x": 46.09457898315631,
+          "y": 20.628615764649947
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-stop": {
+      "pose": null,
+      "view": "side",
+      "flip": -1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": 0.5,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.5,
+        "tip": {
+          "x": 24.21098969951225,
+          "y": -44.31791937546382
+        },
+        "butt": {
+          "x": -24.21098969951225,
+          "y": 44.31791937546382
+        },
+        "lengthWorld": 101
+      }
+    },
+    "left-restart": {
+      "pose": "p11_wukong_run-side_f0",
+      "view": "side",
+      "flip": -1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.2215,
+        "y": 0.5667,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-idle": {
+      "pose": null,
+      "view": "front",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": -0.42,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.42,
+        "tip": {
+          "x": -20.591902879508293,
+          "y": -46.110991485771564
+        },
+        "butt": {
+          "x": 20.591902879508293,
+          "y": 46.110991485771564
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-f0-0": {
+      "pose": "p11_wukong_run-front_f0",
+      "view": "front",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.4042,
+        "y": 0.4961,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.4042,
+        "y": 0.4961,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-f1-1": {
+      "pose": "p11_wukong_run-front_f1",
+      "view": "front",
+      "flip": 1,
+      "frame": "f1",
+      "hand": "right",
+      "grip": {
+        "x": 0.4098,
+        "y": 0.5099,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.4098,
+        "y": 0.5099,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-f2-2": {
+      "pose": "p11_wukong_run-front_f2",
+      "view": "front",
+      "flip": 1,
+      "frame": "f2",
+      "hand": "right",
+      "grip": {
+        "x": 0.4205,
+        "y": 0.5008,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.4205,
+        "y": 0.5008,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-f3-3": {
+      "pose": "p11_wukong_run-front_f3",
+      "view": "front",
+      "flip": 1,
+      "frame": "f3",
+      "hand": "right",
+      "grip": {
+        "x": 0.333,
+        "y": 0.548,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.333,
+        "y": 0.548,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-f0-4": {
+      "pose": "p11_wukong_run-front_f0",
+      "view": "front",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.4042,
+        "y": 0.4961,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.4042,
+        "y": 0.4961,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-dodge": {
+      "pose": "p11_wukong_dodge_front",
+      "view": "front",
+      "flip": 1,
+      "frame": "front",
+      "hand": "right",
+      "grip": {
+        "x": 0.254,
+        "y": 0.577,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "expected": {
+        "x": 0.254,
+        "y": 0.577,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-stop": {
+      "pose": null,
+      "view": "front",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": -0.42,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": -0.42,
+        "tip": {
+          "x": -20.591902879508293,
+          "y": -46.110991485771564
+        },
+        "butt": {
+          "x": 20.591902879508293,
+          "y": 46.110991485771564
+        },
+        "lengthWorld": 101
+      }
+    },
+    "down-restart": {
+      "pose": "p11_wukong_run-front_f0",
+      "view": "front",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.4042,
+        "y": 0.4961,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.4042,
+        "y": 0.4961,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-idle": {
+      "pose": null,
+      "view": "back",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": 0.42,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.42,
+        "tip": {
+          "x": 20.591902879508293,
+          "y": -46.110991485771564
+        },
+        "butt": {
+          "x": -20.591902879508293,
+          "y": 46.110991485771564
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-f0-0": {
+      "pose": "p11_wukong_run-back_f0",
+      "view": "back",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.697266,
+        "y": 0.589063,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.697266,
+        "y": 0.589063,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-f1-1": {
+      "pose": "p11_wukong_run-back_f1",
+      "view": "back",
+      "flip": 1,
+      "frame": "f1",
+      "hand": "right",
+      "grip": {
+        "x": 0.685547,
+        "y": 0.601562,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.685547,
+        "y": 0.601562,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-f2-2": {
+      "pose": "p11_wukong_run-back_f2",
+      "view": "back",
+      "flip": 1,
+      "frame": "f2",
+      "hand": "right",
+      "grip": {
+        "x": 0.701172,
+        "y": 0.540625,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.701172,
+        "y": 0.540625,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 95.2,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-f3-3": {
+      "pose": "p11_wukong_run-back_f3",
+      "view": "back",
+      "flip": 1,
+      "frame": "f3",
+      "hand": "right",
+      "grip": {
+        "x": 0.703125,
+        "y": 0.476562,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.703125,
+        "y": 0.476562,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-f0-4": {
+      "pose": "p11_wukong_run-back_f0",
+      "view": "back",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.697266,
+        "y": 0.589063,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.697266,
+        "y": 0.589063,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-dodge": {
+      "pose": "p11_wukong_dodge_back",
+      "view": "back",
+      "flip": 1,
+      "frame": "back",
+      "hand": "right",
+      "grip": {
+        "x": 0.78125,
+        "y": 0.5390625,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "expected": {
+        "x": 0.78125,
+        "y": 0.5390625,
+        "hand": "right",
+        "source": "t137 same carry hand during dodge"
+      },
+      "aimInvariant": true,
+      "angle": 0.95,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.95,
+        "tip": {
+          "x": 41.07748299186338,
+          "y": -29.374996017926122
+        },
+        "butt": {
+          "x": -41.07748299186338,
+          "y": 29.374996017926122
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-stop": {
+      "pose": null,
+      "view": "back",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "grip": null,
+      "aimInvariant": true,
+      "angle": 0.42,
+      "anchorError": 0,
+      "over": true,
+      "hands": false,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.42,
+        "tip": {
+          "x": 20.591902879508293,
+          "y": -46.110991485771564
+        },
+        "butt": {
+          "x": -20.591902879508293,
+          "y": 46.110991485771564
+        },
+        "lengthWorld": 101
+      }
+    },
+    "up-restart": {
+      "pose": "p11_wukong_run-back_f0",
+      "view": "back",
+      "flip": 1,
+      "frame": "f0",
+      "hand": "right",
+      "grip": {
+        "x": 0.697266,
+        "y": 0.589063,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "expected": {
+        "x": 0.697266,
+        "y": 0.589063,
+        "hand": "right",
+        "source": "t137 fixed anatomical hand; measured per-frame fist, never aim-selected"
+      },
+      "aimInvariant": true,
+      "angle": 0.85,
+      "anchorError": 0,
+      "over": true,
+      "hands": true,
+      "height": 94.85,
+      "staff": {
+        "flare": 0,
+        "thick": 1,
+        "len": 1,
+        "bend": 0,
+        "gripV": 0.5,
+        "angle": 0.85,
+        "tip": {
+          "x": 37.93966045958478,
+          "y": -33.3291488671916
+        },
+        "butt": {
+          "x": -37.93966045958478,
+          "y": 33.3291488671916
+        },
+        "lengthWorld": 101
+      }
+    }
+  },
+  "clips": {
+    "right-idle": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-f0-0": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-f1-1": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-f2-2": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-f3-3": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-f0-4": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-dodge": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-stop": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "right-restart": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-idle": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-f0-0": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-f1-1": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-f2-2": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-f3-3": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-f0-4": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-dodge": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-stop": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "left-restart": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-idle": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-f0-0": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-f1-1": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-f2-2": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-f3-3": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-f0-4": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-dodge": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-stop": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "down-restart": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-idle": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-f0-0": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-f1-1": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-f2-2": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-f3-3": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-f0-4": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-dodge": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-stop": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    },
+    "up-restart": {
+      "x": 512.3393923933999,
+      "y": 406.2945448052278,
+      "z": 1.2
+    }
+  },
+  "live": {
+    "right": [
+      {
+        "pose": null,
+        "view": "back",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "back",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "back",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "back",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": -0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.5,
+        "over": true,
+        "dodge": false
+      }
+    ],
+    "left": [
+      {
+        "pose": null,
+        "view": "side",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-side",
+        "view": "side",
+        "flip": -1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.95,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": -1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.5,
+        "over": true,
+        "dodge": false
+      }
+    ],
+    "down": [
+      {
+        "pose": null,
+        "view": "side",
+        "flip": -1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": -1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": -1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "side",
+        "flip": -1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.5,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-front",
+        "view": "front",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "front",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.42,
+        "over": true,
+        "dodge": false
+      }
+    ],
+    "up": [
+      {
+        "pose": null,
+        "view": "front",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "front",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "front",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "front",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": -0.42,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f1",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f2",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f3",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": "run-back",
+        "view": "back",
+        "flip": 1,
+        "frame": "f0",
+        "hand": "right",
+        "angle": 0.85,
+        "over": true,
+        "dodge": false
+      },
+      {
+        "pose": null,
+        "view": "back",
+        "flip": 1,
+        "frame": null,
+        "hand": "right",
+        "angle": 0.42,
+        "over": true,
+        "dodge": false
+      }
+    ]
+  },
+  "mirrorDodge": [
+    {
+      "pose": null,
+      "view": "back",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "angle": 0.42,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": null,
+      "view": "back",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "angle": 0.42,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": null,
+      "view": "back",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "angle": 0.42,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": null,
+      "view": "back",
+      "flip": 1,
+      "frame": null,
+      "hand": "right",
+      "angle": 0.42,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": 1,
+      "frame": "f1",
+      "hand": "right",
+      "angle": -0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": 1,
+      "frame": "f1",
+      "hand": "right",
+      "angle": -0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": 1,
+      "frame": "f1",
+      "hand": "right",
+      "angle": -0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": 1,
+      "frame": "f2",
+      "hand": "right",
+      "angle": -0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": 1,
+      "frame": "f2",
+      "hand": "right",
+      "angle": -0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f2",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f3",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f3",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f3",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f0",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f0",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f0",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": "dodge",
+      "view": "side",
+      "flip": -1,
+      "frame": "side",
+      "hand": "right",
+      "angle": -1.15,
+      "over": true,
+      "dodge": true
+    },
+    {
+      "pose": "dodge",
+      "view": "side",
+      "flip": -1,
+      "frame": "side",
+      "hand": "right",
+      "angle": -1.15,
+      "over": true,
+      "dodge": true
+    },
+    {
+      "pose": "dodge",
+      "view": "side",
+      "flip": -1,
+      "frame": "side",
+      "hand": "right",
+      "angle": -1.15,
+      "over": true,
+      "dodge": true
+    },
+    {
+      "pose": "run-side",
+      "view": "side",
+      "flip": -1,
+      "frame": "f1",
+      "hand": "right",
+      "angle": 0.95,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": null,
+      "view": "side",
+      "flip": -1,
+      "frame": null,
+      "hand": "right",
+      "angle": 0.5,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": null,
+      "view": "side",
+      "flip": -1,
+      "frame": null,
+      "hand": "right",
+      "angle": 0.5,
+      "over": true,
+      "dodge": false
+    },
+    {
+      "pose": null,
+      "view": "side",
+      "flip": -1,
+      "frame": null,
+      "hand": "right",
+      "angle": 0.5,
+      "over": true,
+      "dodge": false
+    }
+  ]
+}
