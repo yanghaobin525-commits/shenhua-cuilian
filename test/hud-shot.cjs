@@ -1,0 +1,10 @@
+const {chromium}=require('playwright-core');const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{const b=await chromium.launch({headless:true,executablePath:'/usr/bin/google-chrome',args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const c=await b.newContext({viewport:{width:1024,height:600},hasTouch:true,isMobile:true});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('http://127.0.0.1:8787/?hero=wukong');await p.waitForFunction(()=>window.__battle?.phase==='fight'&&__battle.enemies.length>0);await sleep(2500);
+await p.evaluate(()=>{__battle.player.cd.skill2=3;__battle.player.cd.dodge=.25;});await sleep(100);
+await p.screenshot({path:'screens/v11-dev/hud-room.png'});
+await p.evaluate(()=>{const B=__battle;B.enemies.forEach(e=>{e.dead=true;e.spr.setVisible(false);e.shadow?.setVisible(false)});B.spawnQ=[];B.spawnBoss();B.boss.hp*=.7;});await sleep(1500);
+await p.screenshot({path:'screens/v11-dev/hud-boss.png'});
+await p.evaluate(()=>{const h=__hud;h.showHelp();});await sleep(300);await p.screenshot({path:'screens/v11-dev/hud-help.png'});
+console.log(JSON.stringify({errs,btn:await p.evaluate(()=>__hud.btnDefs)}));await b.close();})();

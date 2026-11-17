@@ -24,7 +24,7 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'solo-wukong-v11-20261117',
+  releaseId: 'solo-wukong-v11.1-20261117',
   artVersion: 'approved-v6',
   presentation:{maxNumbers:24,numberRise:90,numberLifetime:700,trailInterval:.035},
   motion: { stride:84, startSmooth:.12, stopSmooth:.10, maxFootTravel:14, footLift:9, bodyBounce:1.8, torsoSway:8, attackTwist:.11 },
@@ -288,3 +288,34 @@ Object.assign(window.GAME_CONFIG.poseArtV11.wukong,{spinCycle:{step:.07,sway:9,s
 // t115：通用纯色剪影着色层（tintFill 按贴图 alpha 着色，跟随实时贴图；无方框）。预设颜色/透明度/持续秒数可调。
 window.GAME_CONFIG.feel.silhouette={white:{color:0xffffff,alpha:.85,dur:.09},black:{color:0x0d0a12,alpha:.75,dur:.6},blue:{color:0x6fb8ff,alpha:.55,dur:.45},red:{color:0xff3b2f,alpha:.6,dur:.22},
   use:{enemyHit:'white',heroHurt:'red',freezeCast:'blue',frozen:'blue',death:'black'}};
+// t116：小怪受击反向轻退 + 僵直（连续命中刷新僵直=连续打断；受击取消前摇/出招并关闭伤害判定）。首领霸体：不被普攻打断/击退，只受击闪色。
+Object.assign(window.GAME_CONFIG.solo.hitStun,{light:.45,normal:.72,heavy:.75,skill:.5,bossSuperArmor:true,refresh:true,
+  knockback:{light:{dist:10,dur:.08},normal:{dist:16,dur:.1},heavy:{dist:30,dur:.14},skill:{dist:22,dur:.12}}});
+// t118/t119：单人 HUD 布局（参考动作手游的布局思路，全部原创绘制）。数值为 1024×600 基准像素，运行时乘 UI 缩放 u。
+// safe：iPad 横屏安全区内边距；左半屏留给浮动摇杆。头顶血条：悟空与小怪不显示，仅首领在屏幕顶部居中显示血条。
+window.GAME_CONFIG.hud={
+  safe:{left:28,top:20,right:28,bottom:22},
+  worldBars:{hero:false,minion:false},
+  stats:{w:178,timerSize:30,rowH:38,icon:24,font:19,bg:0x0b0807,bgAlpha:.52,radius:14,rows:['hp','soul','room','foes']},
+  attack:{dx:132,dy:128,r:80},
+  ring:{radius:180,startDeg:178,endDeg:276,r:42,order:['dodge','s1','s2','s3']},
+  topRight:{r:28,gap:14},
+  boss:{w:520,h:16,top:30},
+  joystick:{x:170,y:160,r:92,knob:40},
+  title:{top:14,size:20,subSize:14}
+};
+// t120/t121：悟空血条（左上细长横条，长度∝最大血量，上限横跨顶边）；首领血条（进入首领战时从底部中间向两侧缓缓展开，横跨底边）。
+Object.assign(window.GAME_CONFIG.hud,{
+  hpBar:{pxPerHp:.42,h:11,maxLen:'full',minLen:120,grow:2.2,lowAt:.25,color:0xb3301f,low:0xff5a3c},
+  boss:{h:15,bottom:10,unfold:1.6,ease:'Cubic.Out',color:0xa8321e,phase2:0xe0531f,nameSize:34},
+  stats:{w:168,timerSize:28,rowH:34,icon:22,font:18,bg:0x0b0807,bgAlpha:.55,radius:0,rows:['hp','soul','room','foes'],gap:8}
+});
+// t122/t123：草书标题字体（OFL，本地子集化打包）：Liu Jian Mao Cao 为主，Ma Shan Zheng 补字与易读场合。正文仍用 fontFamily。
+window.GAME_CONFIG.calliFont='"LiuJianMaoCao","MaShanZheng",cursive';
+window.GAME_CONFIG.calliFontReadable='"MaShanZheng","LiuJianMaoCao",cursive';
+window.GAME_CONFIG.fontCredits=['草书字体 Liu Jian Mao Cao — The Liu Jian Mao Cao Project Authors · SIL OFL 1.1','楷体字体 Ma Shan Zheng — The Ma Shan Zheng Project Authors · SIL OFL 1.1'];
+// t124/t125：刀光内叠加毛笔笔痕游丝（单独图层可换色）。每段：条数、粗细范围[min,max]、透明度；笔触：起笔顿压比例、出锋指数、飞白干笔概率、干笔丝数、墨晕。
+window.GAME_CONFIG.feel.slashInk={color:0x15100c,layerDepth:.06,fade:260,startK:.35,
+  stages:[{count:3,width:[2,5],alpha:.55},{count:5,width:[3,8],alpha:.68},{count:8,width:[4,13],alpha:.82}],
+  skill:{count:6,width:[3,10],alpha:.7},
+  radial:[.5,1.0],press:.14,tip:1.7,dry:.38,dryFrom:.28,hairs:5,halo:.2,jitter:2.2};

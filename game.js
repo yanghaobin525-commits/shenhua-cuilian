@@ -68,11 +68,18 @@ class Boot extends Phaser.Scene {
     grd.addColorStop(0, 'rgba(10,6,4,0)'); grd.addColorStop(1, 'rgba(10,6,4,0.75)');
     ctx.fillStyle = grd; ctx.fillRect(0, 0, 512, 512); cv.refresh();
     g.destroy();
-    if (QS.get('hero') && C.heroes[QS.get('hero')]) { const k=C.solo?C.solo.hero:QS.get('hero'); this.scene.start('Battle', { hero: k, team: autoTeam(k).filter(Boolean) }); }
-    else this.scene.start('Select');
+    const go=()=>{if (QS.get('hero') && C.heroes[QS.get('hero')]) { const k=C.solo?C.solo.hero:QS.get('hero'); this.scene.start('Battle', { hero: k, team: autoTeam(k).filter(Boolean) }); }
+    else this.scene.start('Select');};
+    const F=document.fonts;if(F&&F.load)Promise.race([Promise.all([F.load('32px LiuJianMaoCao','神话淬炼'),F.load('32px MaShanZheng','神话淬炼')]),new Promise(r=>setTimeout(r,3000))]).then(go,go);else go();
   }
 }
 
+/* 把场景里带描边/填充的矩形框换成手绘游丝墨框（同父容器、同层级），避免干净矢量方框。 */
+function inkify(scene,u){const W=scene.scale.width,H=scene.scale.height;let seed=11;const visit=(list,parent)=>{for(const o of [...list]){if(o.type==='Container'){visit(o.list,o);continue;}
+  if(o.type!=='Rectangle'||o.noInk||(!o.isStroked&&!o.isFilled))continue;if(o.width>=W*.95&&o.height>=H*.95)continue;if(o.width<24||o.height<24)continue;
+  const x=o.x-o.width*o.originX,y=o.y-o.height*o.originY,fill=o.isFilled?o.fillColor:null,fa=o.fillAlpha,gold=o.isStroked&&(o.strokeColor===0xf5c542);const gg=scene.add.graphics();
+  InkUI.inkRect(gg,x,y,o.width,o.height,{u,fill,fillAlpha:fa,seed:seed+=7,w:o.width>200?3.6:3,accent:gold?0xf5c542:InkUI.GOLD});o.setVisible(false);o.inkG=gg;gg.inkBox={x,y,w:o.width,h:o.height};
+  if(parent){parent.addAt(gg,parent.getIndex(o)+1);}else{scene.children.moveAbove?scene.children.moveAbove(gg,o):null;gg.setDepth(o.depth);}}};visit(scene.children.list.slice(),null);}
 /* ======================= 选人界面（王者式横屏布局） ======================= */
 class Select extends Phaser.Scene {
   constructor() { super('Select'); }
@@ -93,10 +100,10 @@ class Select extends Phaser.Scene {
     this.add.tileSprite(0, 0, W, H, 'ground').setOrigin(0).setTileScale(u * 1.4).setTint(0x8a7a6a);
     this.add.rectangle(0, 0, W, H, 0x120c0a, 0.55).setOrigin(0);
     this.add.image(W / 2, H / 2, 'vignette').setDisplaySize(W * 1.15, H * 1.25);
-    txt(this, 28 * u, 18 * u, '《' + C.title + '》', 40 * u, '#f3e2b0', { stroke: '#1a1210', strokeThickness: 8 * u, fontStyle: 'bold' });
+    InkUI.calli(this, 24 * u, 6 * u, '《' + C.title + '》', 56 * u, {accent:'#6e1f14',reveal:900});
     txt(this, 32 * u, 76 * u, C.solo ? '单人试炼 · 当前开放孙悟空（其余英雄后续开放）' : '选择你的英雄 · 其余队友由 AI 补位', 17 * u, '#cbb994');
     // v11 音乐署名（CC-BY 要求）：作者、曲名、许可、来源
-    if(C.audio?.credits){const lines=C.audio.credits.filter(c=>c.license!=='original').map(c=>'♪ '+c.credit+' · '+c.license+' · '+c.source.replace(/^https?:\/\//,''));this.creditTxt=txt(this, 14 * u, H - (8 + lines.length * 14) * u, lines.join('\n'), 10.5 * u, '#9c8f78',{lineSpacing:2*u});}
+    if(C.audio?.credits){const lines=C.audio.credits.filter(c=>c.license!=='original').map(c=>'♪ '+c.credit+' · '+c.license+' · '+c.source.replace(/^https?:\/\//,''));if(C.fontCredits)lines.push(...C.fontCredits.map(s=>'✎ '+s));this.creditTxt=txt(this, W*.56, 8 * u, lines.join('\n'), 10 * u, '#9c8f78',{lineSpacing:1*u,stroke:'#0b0807',strokeThickness:2*u}).setOrigin(.5,0);}
     // 顶部队伍槽位
     this.slotObjs = [];
     const n = C.teamSize, sw = 80 * u, gap = 14 * u, sx = W - 40 * u - n * sw - (n - 1) * gap + sw / 2, sy = 54 * u;
@@ -116,7 +123,7 @@ class Select extends Phaser.Scene {
     this.add.rectangle(px - 18 * u, py - 14 * u, pw, 430 * u, 0x140e0c, 0.75).setOrigin(0).setStrokeStyle(3 * u, 0x3d2f25);
     const wrap = { wordWrap: { width: pw - 44 * u, useAdvancedWrap: true }, lineSpacing: 6 * u };
     this.info = {
-      name: txt(this, px, py, '', 46 * u, '#f3e2b0', { stroke: '#1a1210', strokeThickness: 6 * u, fontStyle: 'bold' }),
+      name: txt(this, px, py-8*u, '', 56 * u, '#f6e6b8', { fontFamily:C.calliFont, stroke: '#8a2a18', strokeThickness: 2.5 * u, shadow:{offsetX:2,offsetY:3,color:'#0a0503',blur:10*u,fill:true,stroke:true} }),
       title: txt(this, px, py + 62 * u, '', 19 * u, '#cbb994'),
       tags: this.add.container(px, py + 104 * u),
       talent: txt(this, px, py + 146 * u, '', 18 * u, '#efe3c8', wrap),
@@ -156,12 +163,13 @@ class Select extends Phaser.Scene {
     const btn = this.add.container(bx, by);
     const bbg = this.add.rectangle(0, 0, 300 * u, 112 * u, 0xa8321e).setStrokeStyle(6 * u, 0x1a1210);
     const bdeco = this.add.rectangle(0, 0, 278 * u, 90 * u).setStrokeStyle(2 * u, 0xf5c542, 0.8);
-    this.btnTxt = txt(this, 0, 0, '开局设置', 38 * u, '#fff4d6', { stroke: '#1a1210', strokeThickness: 6 * u, fontStyle: 'bold' }).setOrigin(0.5);
+    this.btnTxt = InkUI.calli(this, 0, 0, '开局设置', 44 * u, {origin:.5,color:'#fff0cf',accent:'#2a0c06'});
     btn.add([bbg, bdeco, this.btnTxt]); btn.setSize(300 * u, 112 * u).setInteractive();
     btn.on('pointerdown', () => btn.setScale(0.94));
     btn.on('pointerout', () => btn.setScale(1));
     btn.on('pointerup', () => { btn.setScale(1); this.confirm(); });
     this.tweens.add({ targets: bdeco, alpha: 0.2, duration: 700, yoyo: true, repeat: -1 });
+    inkify(this,u);
     this.pick(this.sel, true);
     this.input.keyboard.removeAllListeners();
     this.input.keyboard.on('keydown-ENTER', () => this.confirm());
@@ -175,7 +183,7 @@ class Select extends Phaser.Scene {
     const u = this.u, W = this.scale.width, H = this.scale.height, h = C.heroes[k], w = C.weapons[h.weapon];
     for (const kk of this.keys) {
       const c = this.cards[kk], on = kk === k;
-      c.bg.setStrokeStyle((on ? 7 : 4) * u, on ? 0xf5c542 : 0x5a4a3a).setFillStyle(on ? 0x5a2a18 : 0x241a15);
+      c.bg.setStrokeStyle((on ? 7 : 4) * u, on ? 0xf5c542 : 0x5a4a3a).setFillStyle(on ? 0x5a2a18 : 0x241a15);if(c.bg.inkG){const G=c.bg.inkG,b=G.inkBox;G.clear();InkUI.inkRect(G,b.x,b.y,b.w,b.h,{u,fill:on?0x5a2a18:0x241a15,fillAlpha:1,seed:kk.length*31+7,w:on?4.8:3,accent:on?0xf5c542:InkUI.GOLD});}
       this.tweens.add({ targets: c, scale: on ? 1.1 : 1, duration: 180, ease: 'Back.Out' });
     }
     const cx = W * 0.3, cy = H * 0.5;
@@ -188,10 +196,9 @@ class Select extends Phaser.Scene {
     this.splash.clear();
     this.splash.fillStyle(w.color, 0.2).fillCircle(cx, cy, H * 0.3);
     this.splash.fillStyle(0x0a0605, 0.35).fillCircle(cx + 22 * u, cy + 24 * u, H * 0.24);
-    this.splash.lineStyle(7 * u, 0x1a1210, 0.85).strokeCircle(cx, cy, H * 0.3);
-    this.splash.lineStyle(2 * u, 0xf5c542, 0.5).strokeCircle(cx, cy, H * 0.3 - 10 * u);
+    InkUI.inkCircle(this.splash,cx,cy,H*.3,{u,w:6,accent:0xf5c542,seed:99,hatchAlpha:.22,passes:4});
     const I = this.info;
-    I.name.setText(h.name); I.title.setText('称号 · ' + h.title);
+    I.name.setText(h.name);InkUI.feibai(I.name);if(!instant)InkUI.reveal(this,I.name,600); I.title.setText('称号 · ' + h.title);
     I.tags.removeAll(true);
     let tx = 0;
     h.tags.concat(['武器：' + ROLE_LABEL[w.role]]).forEach((t, i) => {
@@ -411,7 +418,7 @@ class Battle extends Phaser.Scene {
     if(h.clock&&!h.clock.done&&h.action==='attack'){const c=h.clock,tm=c.timing,AG=(C.feel.attackGhost||{})[h.attackProfile?.poseStage];const w0=tm.windup*.45,w1=tm.windup+tm.active+.05;
       if(AG&&c.time>w0&&c.time<w1){if(h.ghostN===undefined||h.ghostClock!==c){h.ghostClock=c;h.ghostN=0;}const due=Math.floor((c.time-w0)/((w1-w0)/AG.count))+1;while(h.ghostN<Math.min(AG.count,due)){h.ghostN++;const k=h.ghostN/AG.count;this.ghost(h.spr,{mode:'copy',alpha:AG.alpha*(.6+.4*k),duration:AG.life});this.staffGhost(h,AG.alpha*(.7+.3*k),AG.life);}}
       else if(!AG&&c.time>tm.windup*.5&&c.time<w1&&(h.trailT=(h.trailT||0)-dt)<=0){h.trailT=C.feel.weaponGhostInterval;this.weaponGhost(h);}
-      if(c.time>tm.windup*.7&&c.time<w1)this.staffSweep(h);else h.prevSweep=null;}else h.prevSweep=null;
+      if(c.time>tm.windup*(C.feel.slashInk?.startK??.35)&&c.time<w1)this.slashInkSample(h);if(c.time>tm.windup*.7&&c.time<w1)this.staffSweep(h);else{h.prevSweep=null;this.endSlashInk(h);}}else{h.prevSweep=null;this.endSlashInk(h);}
   }
   /* t100 目标锁定：范围内优先摇杆/朝向锥内的敌人（角度为主、距离为辅），锥内没有才取最近；防止远程/定点技能空放。 */
   lockPick(h,range,dir,cone=Math.PI*.42){let best=null,bs=1e9,near=null,nd=1e9;for(const e of this.enemies){if(e.dead)continue;const d=dist(h,e);if(d>range+e.r)continue;if(d<nd){nd=d;near=e;}if(dir!==undefined){const da=angDiff(ang(h,e),dir);if(da<=cone){const sc=da*260+d;if(sc<bs){bs=sc;best=e;}}}}return best||near;}
@@ -427,6 +434,15 @@ class Battle extends Phaser.Scene {
   staffSweep(h){const w=h.art?.weapon,P=h.art?.staffPts,SS=h.art?.staffState;if(!w||!P||!SS)return;const g0=(SS.gripV||.5),i0=Math.floor(g0*(P.length-1)),cur=P.slice(i0).map(p=>({x:w.x+p.x,y:w.y+p.y})),prev=h.prevSweep;h.prevSweep=cur;if(!prev||prev.length!==cur.length)return;
     const st=h.attackProfile?.step||1,S=C.feel.slash[st-1]||C.feel.slash[0],g=this.add.graphics().setDepth(w.depth+.05);for(let i=1;i<cur.length;i++){const k=i/(cur.length-1);g.fillStyle(i>cur.length*.75?S.color:S.ghost,(.15+.55*k)*(st===3?1:.85));g.fillPoints([prev[i-1],prev[i],cur[i],cur[i-1]],true);}
     this.tweens.add({targets:g,alpha:0,duration:S.life||160,onComplete:()=>g.destroy()});}
+  slashInkSample(h){const w=h.art?.weapon,P=h.art?.staffPts,SS=h.art?.staffState;if(!w||!P||!SS)return;const i0=Math.floor((SS.gripV||.5)*(P.length-1)),cur=P.slice(i0).map(p=>({x:w.x+p.x,y:w.y+p.y}));this.slashInk(h,cur,h.attackProfile?.step||1,w.depth);}
+  /* t124/t125：刀光层上叠加毛笔笔痕游丝（独立 Graphics 图层，颜色/数量/粗细/透明度见 C.feel.slashInk）。笔画自棍梢当前处起笔（顿压）沿挥棍轨迹向尾端出锋变细变淡。 */
+  slashInk(h,cur,st,depth){const K=C.feel.slashInk;if(!K||!window.InkUI)return;let T=h.inkTrail;const SP=K.stages[st-1]||K.stages[0];
+    if(!T){const R=InkUI.rng((this.elapsed*1000|0)+st*7919);T=h.inkTrail={g:this.add.graphics(),seed:(R()*1e9)|0,strands:Array.from({length:SP.count},(_,i)=>({f:K.radial[0]+(K.radial[1]-K.radial[0])*(SP.count>1?i/(SP.count-1):1)*(.85+R()*.15),w:SP.width[0]+(SP.width[1]-SP.width[0])*R()*R()*(i/(SP.count||1)+.4),j:(R()-.5)*K.jitter,pts:[]})),sp:SP};}
+    T.g.setDepth(depth+(K.layerDepth||.06));for(const s of T.strands){const i=Math.min(cur.length-1,Math.round(s.f*(cur.length-1))),p=cur[i];s.pts.push({x:p.x+s.j*Math.sin(s.pts.length*1.7),y:p.y+s.j*Math.cos(s.pts.length*1.3)});}
+    this.drawSlashInk(T);}
+  drawSlashInk(T){const K=C.feel.slashInk,g=T.g;g.clear();T.strands.forEach((s,i)=>{if(s.pts.length<2)return;const P=s.pts.slice().reverse(),pts=[],n=P.length;for(let k=0;k<n-1;k++){const p0=P[Math.max(0,k-1)],p1=P[k],p2=P[k+1],p3=P[Math.min(n-1,k+2)];for(let q=0;q<10;q++){const t=q/10,t2=t*t,t3=t2*t;pts.push({x:.5*(2*p1.x+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),y:.5*(2*p1.y+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)});}}pts.push(P[n-1]);
+      InkUI.brushStroke(g,pts,{seed:T.seed+i*131,width:s.w,color:K.color,alpha:T.sp.alpha,press:K.press,tip:K.tip,dry:K.dry,dryFrom:K.dryFrom,hairs:K.hairs,halo:K.halo});});}
+  endSlashInk(h){const T=h.inkTrail;if(!T)return;h.inkTrail=null;this.tweens.add({targets:T.g,alpha:0,duration:C.feel.slashInk?.fade||220,onComplete:()=>T.g.destroy()});}
   /* 通用纯色剪影：对一个或多个实时贴图（人物/武器/怪物）叠加 tintFill 副本，按形状着色、随原图逐帧同步，淡出。 */
   silhouette(targets,preset,o={}){const P={...(C.feel.silhouette?.[preset]||{color:0xffffff,alpha:.8,dur:.1}),...o};this.silh=this.silh||[];for(const src of [].concat(targets)){if(!src||!src.active)continue;const img=this.add.image(src.x,src.y,src.texture.key).setTintFill(P.color).setBlendMode(Phaser.BlendModes.NORMAL);this.silh.push({src,img,t:0,dur:P.dur,alpha:P.alpha,hold:P.hold??.35});}}
   silhouetteFor(u,preset,o){const t=[u.spr];if(u.art?.weapon?.visible)t.push(u.art.weapon);if(u.art?.hand?.visible)t.push(u.art.hand);this.silhouette(t,preset,o);}
@@ -443,7 +459,7 @@ class Battle extends Phaser.Scene {
       let wx,wy,z;if(s.state==='pop'){const k=Math.min(1,s.t/S.popTime);wx=s.x0+(s.x-s.x0)*k;wy=s.y0+(s.y-s.y0)*k;z=Math.sin(k*Math.PI)*40+(1-k)*20;if(k>=1){s.state='rest';s.t=0;}}
       else if(s.state==='rest'){wx=s.x;wy=s.y;z=4+Math.sin((s.t+s.seed)*9)*3;if(s.t>=S.rest&&!h.dead){s.state='fly';s.t=0;s.fx=s.x;s.fy=s.y;}}
       else{const k=Math.min(1,s.t/S.fly),e=k*k*(3-2*k),tx=h.x,ty=h.y,dx=tx-s.fx,dy=ty-s.fy,L=Math.hypot(dx,dy)||1,cx=(s.fx+tx)/2-dy/L*L*S.curve*s.side,cy=(s.fy+ty)/2+dx/L*L*S.curve*s.side;wx=(1-e)*(1-e)*s.fx+2*(1-e)*e*cx+e*e*tx;wy=(1-e)*(1-e)*s.fy+2*(1-e)*e*cy+e*e*ty;z=4+Math.sin(k*Math.PI)*60+k*h.def.size*.4;
-        if(k>=1){s.done=true;const heal=(S.heal||1)+(this.buildStats?.soulHealAdd||0);if(!h.dead&&h.hp<h.maxHp){const before=h.hp;h.hp=Math.min(h.maxHp,h.hp+heal);this.recordHeal?.(null,h,h.hp-before,'soul');}this.floatText(h.x,h.y,'+'+heal,'#ff9a7a',20,90);AUD.play('pickup');}}
+        if(k>=1){s.done=true;const heal=(S.heal||1)+(this.buildStats?.soulHealAdd||0);if(!h.dead&&h.hp<h.maxHp){const before=h.hp;h.hp=Math.min(h.maxHp,h.hp+heal);this.recordHeal?.(null,h,h.hp-before,'soul');}this.stats.souls=(this.stats.souls||0)+1;this.floatText(h.x,h.y,'+'+heal,'#ff9a7a',20,90);AUD.play('pickup');}}
       const q=this.view.project(wx,wy,z),g0=this.view.project(wx,wy,0);s.img.setTexture('soul11_'+((fr+Math.floor(s.seed))%3)).setPosition(q.x,q.y).setDepth(this.view.depth(wx,wy,30)).setScale(s.sc*(1+.06*Math.sin((this.elapsed+s.seed)*14)),s.sc);s.sh.setPosition(g0.x,g0.y).setDepth(this.view.depth(wx,wy,-1));}
     this.souls=this.souls.filter(s=>{if(s.done){s.img.destroy();s.sh.destroy();return false;}return true;});}
   /* 命中特效：墨金放射笔触+白环+墨点，按段放大。 */
@@ -552,11 +568,11 @@ class Battle extends Phaser.Scene {
       }
       case 'slam': {
         const tgt=target&&!target.dead?target:null,reach=tgt?PM.Clamp(dist(h,tgt),60,S.lockRange||S.reach):S.reach,p={x:h.x+Math.cos(a)*reach,y:h.y+Math.sin(a)*reach};h.faceAng=a;
-        for(const e of this.alive(this.enemies))if(dist(p,e)<S.radius+e.r){this.hurt(e,S.damage,h,{skill:true});if(!e.dead)e.stunT=Math.max(e.stunT||0,e.isBoss?.12:S.stun);}
+        for(const e of this.alive(this.enemies))if(dist(p,e)<S.radius+e.r){this.hurt(e,S.damage,h,{skill:true});if(!e.dead){e.stunT=Math.max(e.stunT||0,e.isBoss?.12:S.stun);e.stunKind='skill';}}
         this.pillarFx(p.x,p.y);this.dustFx(p.x,p.y,S.radius*.8);this.crescentFx(p.x,p.y,a+Math.PI,S.radius*.75,150,{color:0xffffff,thick:.22,life:240,sweep:50,z:20});this.cameras.main.shake(220,.009);break;
       }
       case 'freeze': {
-        for(const e of this.alive(this.enemies))if(dist(h,e)<S.radius+e.r){this.hurt(e,S.damage,h,{skill:true});if(!e.dead){e.stunT=Math.max(e.stunT||0,e.isBoss?S.bossStun:S.stun);e.frozenT=e.stunT;if(C.feel.silhouette?.use?.frozen)this.silhouetteFor(e,C.feel.silhouette?.use.frozen,{dur:Math.min(e.stunT,1.2),alpha:.4,hold:.6});}}if(h.isPlayer&&C.feel.silhouette?.use?.freezeCast)this.silhouetteFor(h,C.feel.silhouette?.use.freezeCast);
+        for(const e of this.alive(this.enemies))if(dist(h,e)<S.radius+e.r){this.hurt(e,S.damage,h,{skill:true});if(!e.dead){e.stunT=Math.max(e.stunT||0,e.isBoss?S.bossStun:S.stun);e.frozenT=e.stunT;e.stunKind='skill';if(C.feel.silhouette?.use?.frozen)this.silhouetteFor(e,C.feel.silhouette?.use.frozen,{dur:Math.min(e.stunT,1.2),alpha:.4,hold:.6});}}if(h.isPlayer&&C.feel.silhouette?.use?.freezeCast)this.silhouetteFor(h,C.feel.silhouette?.use.freezeCast);
         this.sealFx(h.x,h.y,S.radius);break;
       }
       case 'cleave': {
@@ -610,8 +626,10 @@ class Battle extends Phaser.Scene {
     if (t.team === 'hero') { if (this.god && t.isPlayer) amount = 0; if (t.shieldT > 0) amount *= 1 - (t.shieldReduce || 0.5); if (t.dash) amount *= 0.3; }
     amount = Math.max(0, Math.round(amount * (1 - (t.def.armor || 0))));
     const before=t.hp,effective=Math.min(before,amount);t.hp=Math.max(0,before-amount);t.flashT=amount>0?.08:0;
-    if(effective>0){if(src?.team==='hero')this.contactFx(t.x,t.y,t.def.size*.46,src.attackProfile?.finisher?1.45:1);this.recordDamage?.(src,t,effective);const heavy=amount>=C.combatWindows.heavyThreshold;if(!(t.hitGuardT>0)){t.hitGuardT=C.combatWindows.hitGuard;const stun=t.isBoss?(heavy?.045:0):(heavy?C.combatWindows.heavyStun:C.combatWindows.lightStun);if(stun>(t.stunT||0)){t.stunT=stun;if(!t.isBoss)this.cancelAction(t);}if(!t.isBoss&&src){const a=ang(src,t),speed=heavy?160:85;t.kb={vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,t:heavy?.14:.09};}if(heavy)AUD.play('heavy',{ai:!t.isPlayer});else if(t.def.armor>.15)AUD.play('armor',{ai:!t.isPlayer});}}
-    if(effective>0&&src?.isPlayer&&t.team==='enemy'){const HS=C.solo?.hitStun,AP0=src.action==='attack'?src.attackProfile:null;if(HS){let st=opt?.skill?HS.skill:(AP0&&HS[AP0.poseStage])||0;if(t.isBoss)st*=HS.bossMul??.25;if(st>(t.stunT||0)){t.stunT=st;if(!t.isBoss)this.cancelAction(t);}t.hitStunT=Math.max(t.hitStunT||0,Math.min(.3,st));t.hitStunMax=t.hitStunT;}if(C.feel.silhouette?.use?.enemyHit)this.silhouetteFor(t,C.feel.silhouette?.use.enemyHit);this.hitSpark(t,AP0?.poseStage==='heavy'||opt?.skill?1.6:AP0?.poseStage==='normal'?1.2:.9);}
+    if(effective>0){if(src?.team==='hero')this.contactFx(t.x,t.y,t.def.size*.46,src.attackProfile?.finisher?1.45:1);this.recordDamage?.(src,t,effective);const heavy=amount>=C.combatWindows.heavyThreshold;if(!(t.hitGuardT>0)){t.hitGuardT=C.combatWindows.hitGuard;const stun=t.isBoss?(heavy&&!C.solo?.hitStun?.bossSuperArmor?.045:0):(heavy?C.combatWindows.heavyStun:C.combatWindows.lightStun);if(stun>(t.stunT||0)){t.stunT=stun;if(!t.isBoss)this.cancelAction(t);}if(!t.isBoss&&src){const a=ang(src,t),speed=heavy?160:85;t.kb={vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,t:heavy?.14:.09};}if(heavy)AUD.play('heavy',{ai:!t.isPlayer});else if(t.def.armor>.15)AUD.play('armor',{ai:!t.isPlayer});}}
+    if(effective>0&&src?.isPlayer&&t.team==='enemy'){const HS=C.solo?.hitStun,AP0=src.action==='attack'?src.attackProfile:null;if(HS){const stg=opt?.skill?'skill':(AP0?.poseStage||'light');let st=HS[stg]??HS.light??0;if(t.isBoss){if(HS.bossSuperArmor)st=0;else st*=HS.bossMul??.25;}
+          if(st>0){if(!t.isBoss||!HS.bossSuperArmor){t.stunT=HS.refresh?Math.max(t.stunT||0,st):(st>(t.stunT||0)?st:t.stunT);if(!t.isBoss){this.cancelAction(t);t.motionAction=null;t.leap=null;t.interrupts=(t.interrupts||0)+1;t.stunKind='hit';const K=HS.knockback?.[stg];if(K&&src){const a=ang(src,t),sp=K.dist/K.dur;t.kb={vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,t:K.dur};}}}
+            t.hitStunT=Math.max(t.hitStunT||0,Math.min(.3,st));t.hitStunMax=t.hitStunT;}}if(C.feel.silhouette?.use?.enemyHit)this.silhouetteFor(t,C.feel.silhouette?.use.enemyHit);this.hitSpark(t,AP0?.poseStage==='heavy'||opt?.skill?1.6:AP0?.poseStage==='normal'?1.2:.9);}
     if(effective>0&&src?.isPlayer&&t.team==='enemy'){const AP=src.action==='attack'?src.attackProfile:null,fin=AP?.finisher,F=C.feel;this.hitstopT=Math.max(this.hitstopT,opt?.skill?F.hitstopSkill:AP?.hitstop??(fin?F.hitstopFinisher:F.hitstop));this.cameras.main.shake(fin||opt?.skill?110:60,opt?.skill?F.shake*2:F.shake*(AP?.shakeMul??(fin?2:1)));this.pFire.explode(fin?10:5,t.x,t.y,t.def.size*.45);}
     if(effective>0&&t.isPlayer){this.cameras.main.shake(120,.004);if(C.feel.silhouette?.use?.heroHurt)this.silhouetteFor(t,C.feel.silhouette?.use.heroHurt);}
     if (amount > 0) { if (t.isPlayer) AUD.play('hurt'); else if (t.team === 'enemy' && src && src.team === 'hero') AUD.play(src.isPlayer&&(src.attackProfile?.poseStage==='heavy'&&src.action==='attack')?'hitHeavy':'hit', { ai: !src.isPlayer }); }
@@ -652,7 +670,7 @@ class Battle extends Phaser.Scene {
   updateEnemy(e, dt) {
     e.moving = false;
     if(e.dead||e.stunT>0)return;
-    if(e.leap){const L=e.leap;L.t=Math.min(L.duration,L.t+dt);const p=L.t/L.duration;e.x=L.sx+(L.x-L.sx)*p;e.y=L.sy+(L.y-L.sy)*p;if(p>=1){e.leap=null;for(const h of this.alive(this.heroes))if(Math.hypot(h.x-L.x,h.y-L.y)<L.radius+h.r)this.hurt(h,e.def.damage*e.def.pounce.damageMul,e);this.pInk.explode(12,e.x,e.y,0);}return;}
+    if(e.leap){const L=e.leap;L.t=Math.min(L.duration,L.t+dt);const p=L.t/L.duration;e.x=L.sx+(L.x-L.sx)*p;e.y=L.sy+(L.y-L.sy)*p;if(p>=1){e.leap=null;if(e.stunT>0)return;for(const h of this.alive(this.heroes))if(Math.hypot(h.x-L.x,h.y-L.y)<L.radius+h.r)this.hurt(h,e.def.damage*e.def.pounce.damageMul,e);this.pInk.explode(12,e.x,e.y,0);}return;}
     if(e.motionAction||e.clock&&!e.clock.done)return;
     e.pounceCD=Math.max(0,(e.pounceCD||0)-dt);
     e.retargetT -= dt;
@@ -663,12 +681,12 @@ class Battle extends Phaser.Scene {
 
     if (D.type === 'melee') {
       if (d > D.range * 0.6) this.moveUnit(e, t.x - e.x, t.y - e.y, D.speed, dt); else e.faceAng = ang(e, t);
-      if (d <= D.range && e.cd.attack <= 0) { e.cd.attack=D.cooldown;e.faceAng=ang(e,t);this.beginAction(e,'attack',()=>{e.popT=.15;if(!t.dead&&dist(e,t)-e.r-t.r<=D.range+15)this.hurt(t,D.damage,e);}); }
+      if (d <= D.range && e.cd.attack <= 0) { e.cd.attack=D.cooldown;e.faceAng=ang(e,t);this.beginAction(e,'attack',()=>{if(e.dead||e.stunT>0)return;e.popT=.15;if(!t.dead&&dist(e,t)-e.r-t.r<=D.range+15)this.hurt(t,D.damage,e);}); }
     } else {
       if (d < D.keepDistance - 60) this.moveUnit(e, e.x - t.x, e.y - t.y, D.speed, dt);
       else if (d > D.range - 40) this.moveUnit(e, t.x - e.x, t.y - e.y, D.speed, dt);
       else e.faceAng = ang(e, t);
-      if (d <= D.range && e.cd.attack <= 0) { e.cd.attack=D.cooldown;this.beginAction(e,'attack',()=>{e.popT=.15;if(!t.dead)this.fire(e,ang(e,t),'feather',D.projSpeed,D.damage,D.range+100,{});}); }
+      if (d <= D.range && e.cd.attack <= 0) { e.cd.attack=D.cooldown;this.beginAction(e,'attack',()=>{if(e.dead||e.stunT>0)return;e.popT=.15;if(!t.dead)this.fire(e,ang(e,t),'feather',D.projSpeed,D.damage,D.range+100,{});}); }
     }
   }
   /* ---------- Boss：九婴（一阶段：吐息/横扫/撕咬；二阶段：+九首齐啸、召唤、加速） ---------- */
@@ -807,11 +825,11 @@ class Battle extends Phaser.Scene {
       if(!u.spr.active)continue;u.t+=dt;const foot=this.view.project(u.x,u.y);let bob=0,sx=1,sy=1;
       if(!u.dead){if(!u.art&&!u.enemyArt&&u.moving){bob=Math.abs(Math.sin(u.t*12))*(u.isBoss?6:8);sy=1+Math.sin(u.t*24)*.04;sx=1-Math.sin(u.t*24)*.03;}else if(!u.art&&!u.enemyArt){sy=1+Math.sin(u.t*3)*.025;sx=1-Math.sin(u.t*3)*.015;}if(u.popT>0){sx*=1.12;sy*=.92;}
         const d=this.view.vector(Math.cos(u.faceAng),Math.sin(u.faceAng)),flip=d.x<-.15?-1:d.x>.15?1:(u.lastFlip||1);u.lastFlip=flip;u.spr.setScale(u.base*sx*flip*u.native,u.base*sy);
-        if(u.flashT>0){if(u.team==='enemy'&&!u.isBoss)u.spr.setTintFill(0xffffff);else if(u.isBoss)u.spr.setTint(0xffd8c8);else u.spr.setTint(0xff8a7a);}else if(u.stunT>.3&&u.team==='enemy')u.spr.setTint(0xffe08a);else if(u.isBoss&&u.phase===2)u.spr.setTint(0xffb0a0);else if(u.isBoss&&u.def.tint)u.spr.setTint(u.def.tint);else if(u.slowT>0)u.spr.setTint(0xa8c8ff);else u.spr.clearTint();
+        if(u.flashT>0){if(u.team==='enemy'&&!u.isBoss)u.spr.setTintFill(0xffffff);else if(u.isBoss)u.spr.setTint(0xffd8c8);else u.spr.setTint(0xff8a7a);}else if(u.stunT>.3&&u.team==='enemy'&&u.stunKind!=='hit')u.spr.setTint(0xffe08a);else if(u.isBoss&&u.phase===2)u.spr.setTint(0xffb0a0);else if(u.isBoss&&u.def.tint)u.spr.setTint(u.def.tint);else if(u.slowT>0)u.spr.setTint(0xa8c8ff);else u.spr.clearTint();
       }
       u.spr.setPosition(foot.x,foot.y-bob).setDepth(this.view.depth(u.x,u.y));u.shadow.setPosition(foot.x,foot.y);if(u.art)u.art.update(dt);if(u.enemyArt)u.enemyArt.update(dt);if(u.hitStunT>0&&u.team==='enemy'){const k=u.hitStunT/(u.hitStunMax||.2),amp=(C.solo?.hitStun?.shake??6)*k*(u.isBoss?.5:1);u.spr.x+=Math.sin(this.elapsed*90)*amp;u.spr.y-=Math.abs(Math.sin(this.elapsed*45))*amp*.3;}
       if(u.dead){if(u.team==='hero')u.spr.setAngle(80);else if(u.deathT0){const DF=C.feel.death||{},p=Math.min(1,(this.time.now-u.deathT0)/((u.deathEnd-u.deathT0)*.4)),c=Phaser.Display.Color.Interpolate.ColorWithColor(Phaser.Display.Color.ValueToColor(0xffffff),Phaser.Display.Color.ValueToColor(DF.shadow??0x2a2236),100,p*100);u.spr.setTint(Phaser.Display.Color.GetColor(c.r,c.g,c.b));}continue;}
-      if(!u.isBoss){const w=u.team==='hero'?80:Math.max(50,u.def.size*.7),y=foot.y-Math.max(u.def.size*1.02,u.art?.poseTop?u.art.poseTop*u.def.size/512+10:0)-bob;g.fillStyle(0x120c0a,.9).fillRect(foot.x-w/2-3,y-3,w+6,14);g.fillStyle(u.team==='hero'?(u.isPlayer?0x6ad06a:0x4aa3df):0xc0392b).fillRect(foot.x-w/2,y,w*Math.max(0,u.hp/u.maxHp),8);}
+      if(!u.isBoss&&(u.team==='hero'?C.hud?.worldBars?.hero!==false:C.hud?.worldBars?.minion!==false)){const w=u.team==='hero'?80:Math.max(50,u.def.size*.7),y=foot.y-Math.max(u.def.size*1.02,u.art?.poseTop?u.art.poseTop*u.def.size/512+10:0)-bob;g.fillStyle(0x120c0a,.9).fillRect(foot.x-w/2-3,y-3,w+6,14);g.fillStyle(u.team==='hero'?(u.isPlayer?0x6ad06a:0x4aa3df):0xc0392b).fillRect(foot.x-w/2,y,w*Math.max(0,u.hp/u.maxHp),8);}
       if(u.isPlayer){ground.lineStyle(4,0xf5c542,.9);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.4,u.def.size*.22),false,true);}
       if(u.shieldT>0){ground.lineStyle(5,0xc0392b,.6);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.6),false,true);}
     }
@@ -840,7 +858,7 @@ class Battle extends Phaser.Scene {
   slashFx(x,y,a,r,arcDeg,color){const g=this.add.graphics().setDepth(3),draw=()=>{g.clear().fillStyle(color,.55).lineStyle(4,0x171c17,.85);this.view.groundShape(g,this.view.sector(x,y,r,a,PM.DegToRad(arcDeg)));};draw();this.viewFx.push({g,draw});this.tweens.add({targets:g,alpha:0,duration:200,onComplete:()=>g.destroy()});}
   healFieldFx(x,y,r){const g=this.add.graphics().setDepth(3),fade={v:1};const draw=()=>{g.clear().fillStyle(0x8ec7b4,.10*fade.v).lineStyle(3,0xc4efd6,.65*fade.v);this.view.groundShape(g,this.view.circle(x,y,r));for(let i=0;i<8;i++){const a=i*Math.PI/4,p=this.view.project(x+Math.cos(a)*r*.65,y+Math.sin(a)*r*.65);g.fillStyle(0xc4efd6,.6*fade.v).fillCircle(p.x,p.y,3*fade.v);}};draw();this.tweens.add({targets:fade,v:0,duration:1800,onUpdate:draw,onComplete:()=>g.destroy()});}
   ringFx(x,y,r,color){const g=this.add.graphics().setDepth(3),o={v:.3};const draw=()=>{g.clear().fillStyle(color,.18).lineStyle(6,color,.8);this.view.groundShape(g,this.view.circle(x,y,r*o.v));};draw();this.tweens.add({targets:o,v:1,duration:450,ease:'Cubic.Out',onUpdate:draw});this.tweens.add({targets:g,alpha:0,duration:450,onComplete:()=>g.destroy()});}
-  floatText(x,y,value,color,size,z=100,kind='label'){if(this.floats.length>C.presentation.maxNumbers){const old=this.floats.shift();this.tweens.killTweensOf(old);old.destroy();}const style=window.BattlePresentation.numberStyle(kind),q=this.view.project(x,y,z),t=txt(this,q.x,q.y,String(value),style?.size||size||24,style?'#fff':color,{stroke:'#0b0c08',strokeThickness:style?.stroke||5,fontStyle:'bold'}).setOrigin(.5).setDepth(950000).setResolution(2);if(style){t.setTint(style.top,style.top,style.bottom,style.bottom).setAngle(style.angle).setScale(.74);this.tweens.add({targets:t,scaleX:1.14,scaleY:1.14,duration:90,ease:'Back.Out',onComplete:()=>this.tweens.add({targets:t,scaleX:1,scaleY:1,duration:120,ease:'Cubic.Out'})});}t.numberKind=kind;t.floatAnchor={x,y,z,start:this.elapsed,rise:style?C.presentation.numberRise:65};this.floats.push(t);this.tweens.add({targets:t,alpha:0,duration:style?C.presentation.numberLifetime:750,delay:style?100:0,onComplete:()=>{const i=this.floats.indexOf(t);if(i>=0)this.floats.splice(i,1);t.destroy();}});}
+  floatText(x,y,value,color,size,z=100,kind='label'){if(this.floats.length>C.presentation.maxNumbers){const old=this.floats.shift();this.tweens.killTweensOf(old);old.destroy();}const style=window.BattlePresentation.numberStyle(kind),q=this.view.project(x,y,z),t=txt(this,q.x,q.y,String(value),(style?.size||size||24)*1.15,style?'#fff':color,{fontFamily:C.calliFontReadable||FONT,stroke:'#0b0c08',strokeThickness:(style?.stroke||5)+1,shadow:{offsetX:1,offsetY:2,color:'#0a0503',blur:5,fill:true,stroke:true}}).setOrigin(.5).setDepth(950000).setResolution(2);if(style){t.setTint(style.top,style.top,style.bottom,style.bottom).setAngle(style.angle).setScale(.74);this.tweens.add({targets:t,scaleX:1.14,scaleY:1.14,duration:90,ease:'Back.Out',onComplete:()=>this.tweens.add({targets:t,scaleX:1,scaleY:1,duration:120,ease:'Cubic.Out'})});}t.numberKind=kind;t.floatAnchor={x,y,z,start:this.elapsed,rise:style?C.presentation.numberRise:65};this.floats.push(t);this.tweens.add({targets:t,alpha:0,duration:style?C.presentation.numberLifetime:750,delay:style?100:0,onComplete:()=>{const i=this.floats.indexOf(t);if(i>=0)this.floats.splice(i,1);t.destroy();}});}
 
 
 }
@@ -871,10 +889,12 @@ class HUD extends Phaser.Scene {
     this.cameras.main.setSize(W, H);
     this.add.image(W / 2, H / 2, 'vignette').setDisplaySize(W * 1.1, H * 1.2).setAlpha(0.8);
     this.ctrlLayer = this.add.container(0, 0);
-    this.g = this.add.graphics(); this.ctrlLayer.add(this.g);
-    this.joyHome = { x: 180 * u, y: H - 180 * u }; this.joyR = 96 * u;
+    this.gS = this.add.graphics(); this.ctrlLayer.add(this.gS); this.g = this.add.graphics(); this.ctrlLayer.add(this.g);
+    const HC=C.solo&&C.hud,S=HC?.safe||{left:0,top:0,right:0,bottom:0};this.hc=HC;
+    this.joyHome = HC?{x:(S.left+HC.joystick.x)*u,y:H-(S.bottom+HC.joystick.y)*u}:{ x: 180 * u, y: H - 180 * u }; this.joyR = (HC?HC.joystick.r:96) * u;
     if (this.joy.pid === null) { this.joy.cx = this.joyHome.x; this.joy.cy = this.joyHome.y; }
-    this.btnDefs = C.solo ? {
+    const hudBtns=()=>{const A=HC.attack,R=HC.ring,ax=W-(S.right+A.dx)*u,ay=H-(S.bottom+A.dy)*u,o={atk:{x:ax,y:ay,r:A.r*u}};R.order.forEach((k,i)=>{const d=(R.startDeg+(R.endDeg-R.startDeg)*(R.order.length>1?i/(R.order.length-1):0))*Math.PI/180;o[k]={x:ax+Math.cos(d)*R.radius*u,y:ay+Math.sin(d)*R.radius*u,r:R.r*u};});return o;};
+    this.btnDefs = HC ? hudBtns() : C.solo ? {
       atk: { x: W - 150 * u, y: H - 150 * u, r: 84 * u },
       dodge: { x: W - 312 * u, y: H - 78 * u, r: 54 * u },
       s1: { x: W - 336 * u, y: H - 214 * u, r: 50 * u },
@@ -886,7 +906,7 @@ class HUD extends Phaser.Scene {
     };
     this.rescueZone={x:W*.5,y:H-80*u,w:210*u,h:62*u};
     this.rescueButton=this.add.container(this.rescueZone.x,this.rescueZone.y);this.rescueButton.add(this.add.rectangle(0,0,210*u,62*u,0x32534a,.95).setStrokeStyle(4*u,0xbba56b));this.rescueLabel=txt(this,0,0,'按住救助',21*u,'#fff2cf').setOrigin(.5);this.rescueButton.add(this.rescueLabel).setVisible(false);this.ctrlLayer.add(this.rescueButton);
-    this.comboTxt=txt(this,W-150*u,H-36*u,'普攻三式',15*u,'#f2d18b',{stroke:'#10140d',strokeThickness:4*u}).setOrigin(.5);this.ctrlLayer.add(this.comboTxt);
+    this.comboTxt=txt(this,HC?this.btnDefs.atk.x:W-150*u,HC?Math.min(H-8*u,this.btnDefs.atk.y+this.btnDefs.atk.r+16*u):H-36*u,'普攻三式',15*u,'#f2d18b',{stroke:'#10140d',strokeThickness:4*u}).setOrigin(.5);this.ctrlLayer.add(this.comboTxt);
     this.labels = {};
     for (const k in this.btnDefs) {
       const b = this.btnDefs[k];
@@ -894,32 +914,49 @@ class HUD extends Phaser.Scene {
       this.labels[k + 'cd'] = txt(this, b.x, b.y, '', 36 * u, '#ffffff', { stroke: '#000', strokeThickness: 6 * u, fontStyle: 'bold' }).setOrigin(0.5);
       this.ctrlLayer.add([this.labels[k], this.labels[k + 'cd']]);
     }
-    this.ctrlLayer.add(txt(this, this.joyHome.x, H - 36 * u, '拖动移动', 15 * u, '#cbb994').setOrigin(0.5));
+    this.ctrlLayer.add(txt(this, this.joyHome.x, HC?this.joyHome.y+this.joyR+16*u:H - 36 * u, '拖动移动', 15 * u, '#cbb994').setOrigin(0.5));
     if(!C.solo)this.ctrlLayer.add(txt(this, W - 155 * u, H - 52 * u, '按住普攻', 14 * u, '#cbb994').setOrigin(0.5));
     // 左上：队伍
-    this.teamUI = this.B.heroes.map((h, i) => {
+    this.teamUI = HC?[]:this.B.heroes.map((h, i) => {
       const x = 22 * u, y = 20 * u + i * 62 * u;
       this.add.rectangle(x, y, 290 * u, 54 * u, 0x120c0a, 0.7).setOrigin(0).setStrokeStyle(2 * u, h.isPlayer ? 0xf5c542 : 0x3d2f25);
       const im = this.add.image(x + 27 * u, y + 27 * u, 'select_'+h.key); im.setScale((48 * u) / im.height);
       return { h, x, y, im, nm: txt(this, x + 58 * u, y + 5 * u, '', 15 * u, h.isPlayer ? '#f5c542' : '#efe3c8') };
     });
     // 恰三槽。衣鞋显示本局对应祝福强化，不捏造额外装备栏。
-    this.equipmentSlots = ['weapon','clothes','shoes'];
+    if(!HC){this.equipmentSlots = ['weapon','clothes','shoes'];
     this.equipX = W - 222*u; this.equipY = 160*u;
     this.equipIcon = this.add.image(this.equipX, this.equipY, 'v6_'+C.weaponArt[this.B.player.weapon]+'_weapon').setDisplaySize(54*u,54*u);
     this.equipWeapon = txt(this,this.equipX,this.equipY+40*u,'',13*u,'#efe3c8').setOrigin(.5);
     this.clothesLabel=txt(this,this.equipX+76*u,this.equipY+40*u,'衣服',13*u).setOrigin(.5);
     this.shoesLabel=txt(this,this.equipX+152*u,this.equipY+40*u,'鞋',13*u).setOrigin(.5);
-    this.hpHeart = txt(this,this.equipX-104*u,this.equipY,'',15*u,'#ffe1cc',{align:'center',fontStyle:'bold'}).setOrigin(.5);
+    this.hpHeart = txt(this,this.equipX-104*u,this.equipY,'',15*u,'#ffe1cc',{align:'center',fontStyle:'bold'}).setOrigin(.5);}
     this.waveTxt = txt(this, W / 2, 18 * u, '', 25 * u, '#f3e2b0', { stroke: '#120c0a', strokeThickness: 6 * u, fontStyle: 'bold' }).setOrigin(0.5, 0);
     this.subTxt = txt(this, W / 2, 54 * u, '', 16 * u, '#cbb994', { stroke: '#120c0a', strokeThickness: 4 * u }).setOrigin(0.5, 0);
     this.bossTxt = txt(this, W / 2, 80 * u, '', 18 * u, '#ffcf6a', { stroke: '#120c0a', strokeThickness: 5 * u, fontStyle: 'bold' }).setOrigin(0.5, 0);
     this.rotateButtons=C.view25d.fixedCamera?[]:[{x:W-240*u,y:52*u,r:34*u,dir:-1},{x:W-160*u,y:52*u,r:34*u,dir:1}];for(const b of this.rotateButtons){const ct=this.add.container(b.x,b.y);ct.add([this.add.circle(0,0,29*u,0x16211f,.9).setStrokeStyle(3*u,0xcbb994),txt(this,0,0,b.dir<0?'↶':'↷',29*u).setOrigin(.5)]);this.ctrlLayer.add(ct);}
+    if(HC){const T=HC.topRight,r=T.r*u,HB=HC.hpBar,P=HC.stats,I=window.InkUI;this.trBase={y:(S.top+T.r)*u,mx:W-(S.right+T.r)*u,step:(2*T.r+T.gap)*u,r};
+      this.pauseBtn={x:this.trBase.mx,y:this.trBase.y,r:r*1.25};this.helpBtn={x:this.trBase.mx-this.trBase.step,y:this.trBase.y,r:r*1.25};this.trCt=[];
+      for(const [b,s,seed] of [[this.pauseBtn,'≡',41],[this.helpBtn,'?',43]]){const c=this.add.container(b.x,b.y),gg=this.add.graphics();I.inkCircle(gg,0,0,r,{u,fill:P.bg,fillAlpha:.78,w:3.2,accent:I.GOLD,seed});c.add([gg,txt(this,0,-1*u,s,(s==='?'?26:28)*u,'#efe3c8',{fontStyle:'bold',stroke:'#0b0807',strokeThickness:3*u}).setOrigin(.5)]);c.btn=b;this.ctrlLayer.add(c);this.trCt.push(c);}
+      // 左上：悟空细长血条（长度∝最大血量），其下为计时与数值面板（手绘墨框）
+      this.hpX=S.left*u;this.hpY=S.top*u;this.hpLen=null;
+      const x0=S.left*u,y0=this.hpY+(HB.h+P.gap)*u,rows=P.rows;this.statBox={x:x0,y:y0,w:P.w*u,h:(P.timerSize+12+rows.length*P.rowH+6)*u};
+      I.inkRect(this.gS,x0,y0,this.statBox.w,this.statBox.h,{u,fill:P.bg,fillAlpha:P.bgAlpha,seed:77,w:2.6});
+      this.statTimer=txt(this,x0+14*u,y0+5*u,'00:00',P.timerSize*u,'#f3e2b0',{fontFamily:C.calliFontReadable||C.calliFont,stroke:'#3a120b',strokeThickness:4*u,shadow:{offsetX:1,offsetY:2,color:'#050302',blur:6*u,fill:true,stroke:true}});
+      this.statRows=rows.map((k,i)=>{const y=y0+(P.timerSize+12+i*P.rowH+P.rowH/2)*u,ix=x0+(16+P.icon/2)*u;let icon=null;if(k==='soul'&&this.textures.exists('soul11_0')){icon=this.add.image(ix,y,'soul11_0');icon.setScale(P.icon*1.25*u/Math.max(icon.width,icon.height));}
+        return{k,y,ix,icon,t:txt(this,x0+(24+P.icon)*u,y,'',P.font*u,'#efe3c8',{fontStyle:'bold',stroke:'#0b0807',strokeThickness:3*u}).setOrigin(0,.5)};});
+      this.waveTxt=txt(this,W/2,(S.top+HC.title.top-6)*u,'',HC.title.size*u*1.25,'#f3e2b0',{fontFamily:C.calliFont,stroke:'#3a120b',strokeThickness:5*u,shadow:{offsetX:1,offsetY:2,color:'#050302',blur:8*u,fill:true,stroke:true}}).setOrigin(.5,0);
+      this.subTxt=txt(this,W/2,(S.top+HC.title.top+HC.title.size*1.3)*u,'',HC.title.subSize*u,'#cbb994',{stroke:'#120c0a',strokeThickness:3*u}).setOrigin(.5,0);
+      const BB=HC.boss;this.bossTxt=I.calli(this,W/2,H-(S.bottom+BB.bottom+BB.h+3)*u,C.boss.name,BB.nameSize*u,{origin:[.5,1],accent:'#5a160d'}).setVisible(false);this.bossT=0;this.bossPhaseShown=1;
+      // 右下按钮静态墨框
+      for(const k in this.btnDefs){const b=this.btnDefs[k];I.inkCircle(this.gS,b.x,b.y,b.r,{u,fill:k==='atk'?0xa8321e:k==='dodge'?0x34506a:0x2b4542,fillAlpha:.93,w:k==='atk'?5.2:3.6,accent:I.GOLD,seed:b.x|0});if(k==='atk')this.drawAtkFrame(this.gS,b.x,b.y,b.r);}
+      this.helpLayer=null;
+    } else {
     this.pauseBtn = { x: W - 60 * u, y: 52 * u, r: 44 * u };
     const pb = this.add.container(this.pauseBtn.x, this.pauseBtn.y);
     pb.add([this.add.circle(0, 0, 34 * u, 0x120c0a, 0.75).setStrokeStyle(3 * u, 0xcbb994), txt(this, 0, 0, 'Ⅱ', 26 * u, '#efe3c8', { fontStyle: 'bold' }).setOrigin(0.5)]);
-    this.ctrlLayer.add(pb);
-    this.bannerTxt = txt(this, W / 2, H * 0.3, '', 54 * u, '#f3e2b0', { stroke: '#120c0a', strokeThickness: 10 * u, fontStyle: 'bold' }).setOrigin(0.5).setAlpha(0);
+    this.ctrlLayer.add(pb);}
+    this.bannerTxt = txt(this, W / 2, H * 0.3, '', 64 * u, '#f6e6b8', { fontFamily:C.calliFont, stroke: '#5a160d', strokeThickness: 5 * u, shadow:{offsetX:2,offsetY:3,color:'#050302',blur:12*u,fill:true,stroke:true} }).setOrigin(0.5).setAlpha(0);
     this.bannerSub = txt(this, W / 2, H * 0.3 + 54 * u, '', 22 * u, '#efe3c8', { stroke: '#120c0a', strokeThickness: 6 * u }).setOrigin(0.5).setAlpha(0);
     if (this.B.over) this.ctrlLayer.setVisible(false);
     this.refreshLabels();
@@ -933,7 +970,7 @@ class HUD extends Phaser.Scene {
   }
   banner(t, sub) {
     this.tweens.killTweensOf([this.bannerTxt, this.bannerSub]);
-    this.bannerTxt.setText(t).setAlpha(0).setScale(0.6); this.bannerSub.setText(sub || '').setAlpha(0);
+    this.bannerTxt.setText(t).setAlpha(0).setScale(0.6);if(window.InkUI){InkUI.feibai(this.bannerTxt);InkUI.reveal(this,this.bannerTxt,520);} this.bannerSub.setText(sub || '').setAlpha(0);
     this.tweens.add({ targets: this.bannerTxt, alpha: 1, scale: 1, duration: 260, ease: 'Back.Out' });
     this.tweens.add({ targets: this.bannerSub, alpha: 1, duration: 300, delay: 120 });
     this.tweens.add({ targets: [this.bannerTxt, this.bannerSub], alpha: 0, duration: 400, delay: 2100 });
@@ -942,6 +979,7 @@ class HUD extends Phaser.Scene {
   onDown(p) {
     if (this.B.over || this.paused) return;
     if (Math.hypot(p.x - this.pauseBtn.x, p.y - this.pauseBtn.y) < this.pauseBtn.r) { this.togglePause(true); return; }
+    if (this.helpBtn&&Math.hypot(p.x - this.helpBtn.x, p.y - this.helpBtn.y) < this.helpBtn.r) { this.showHelp(); return; }
     for(const b of this.rotateButtons)if(Math.hypot(p.x-b.x,p.y-b.y)<b.r){this.B.rotateCamera(b.dir);return;}
     if(this.rescueButton.visible&&Math.abs(p.x-this.rescueZone.x)<this.rescueZone.w/2&&Math.abs(p.y-this.rescueZone.y)<this.rescueZone.h/2){this.btns.rescue=p.id;this.B.ctrl.rescue=true;return;}
     const k = this.hitBtn(p.x, p.y);
@@ -964,6 +1002,23 @@ class HUD extends Phaser.Scene {
     this.joy.pid = null; this.joy.dx = this.joy.dy = 0; if (this.joyHome) { this.joy.cx = this.joyHome.x; this.joy.cy = this.joyHome.y; }
     this.btns = {}; if (this.B && this.B.ctrl) Object.assign(this.B.ctrl, { mx: 0, my: 0, atk: false, rescue:false });
   }
+  drawHudPanel(g,h){const u=this.u,P=this.hc.stats,B=this.B,bx=this.statBox;const HB=this.hc.hpBar,S=this.hc.safe,W=this.scale.width,full=W-(S.left+S.right)*u,target=Math.max(HB.minLen*u,Math.min(HB.maxLen==='full'?full:HB.maxLen*u,h.maxHp*HB.pxPerHp*u)),dt=Math.min(.1,(this.game.loop.delta||16)/1000);
+    this.hpLen=this.hpLen==null?target:this.hpLen+(target-this.hpLen)*Math.min(1,dt*HB.grow);if(Math.abs(target-this.hpLen)<.5)this.hpLen=target;const fr=Math.max(0,h.hp/h.maxHp);
+    InkUI.inkBar(g,this.hpX,this.hpY,this.hpLen,HB.h*u,fr,{u,color:fr<HB.lowAt?HB.low:HB.color,seed:31});
+    const TB=this.trBase,need=this.hpX+this.hpLen+10*u>TB.mx-TB.step-TB.r*1.2,ty=need?this.hpY+HB.h*u+(this.hc.stats.gap+4)*u+TB.r:TB.y;for(const c of this.trCt){if(Math.abs(c.y-ty)>.5){c.y+=(ty-c.y)*Math.min(1,dt*10);if(Math.abs(c.y-ty)<1)c.y=ty;}c.btn.y=c.y;}
+    const s=Math.floor(B.elapsed||0);this.statTimer.setText(String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'));const ic=P.icon*u;
+    for(const r of this.statRows){const x=r.ix,y=r.y;if(r.k==='hp'){const pts=[];for(let i=0;i<=40;i++){const a=i/40*Math.PI*2;pts.push(new Phaser.Math.Vector2(x+Math.pow(Math.sin(a),3)*ic*.5,y-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))*ic*.034));}g.fillStyle(h.hp/h.maxHp<.25?0xff594f:0xc83f42).fillPoints(pts,true);g.lineStyle(2.5*u,0x170e0d).strokePoints(pts,true);r.t.setText(Math.ceil(Math.max(0,h.hp))+' / '+h.maxHp);}
+      else if(r.k==='soul'){if(!r.icon){g.fillStyle(0xd23a2a).fillCircle(x,y+2*u,ic*.36);}r.t.setText('魂灵 '+(B.stats.souls||0));}
+      else if(r.k==='room'){g.lineStyle(2.5*u,0xcbb994).lineBetween(x-ic*.3,y+ic*.45,x-ic*.3,y-ic*.45);g.fillStyle(0xa8321e).fillTriangle(x-ic*.3,y-ic*.45,x+ic*.45,y-ic*.25,x-ic*.3,y-ic*.02);const tot=B.settings?.loops*(C.waves.length-(B.debugWaveOffset||0));r.t.setText('房间 '+Math.min(tot||1,(B.absoluteWave||0)+(B.phase==='break'?1:0))+' / '+(tot||'?'));}
+      else if(r.k==='foes'){g.lineStyle(2.5*u,0xcbb994);g.strokeCircle(x,y-ic*.08,ic*.32);g.fillStyle(0xcbb994).fillCircle(x-ic*.12,y-ic*.12,ic*.07).fillCircle(x+ic*.12,y-ic*.12,ic*.07);g.lineBetween(x-ic*.22,y+ic*.32,x+ic*.22,y+ic*.32);r.t.setText('妖物 '+(B.alive(B.enemies).length+B.spawnQ.length));}}}
+  drawAtkFrame(g,x,y,r){const u=this.u;g.lineStyle(3*u,0xcbb994,.85).strokeCircle(x,y,r+7*u);for(let i=0;i<8;i++){const a=i/8*Math.PI*2+Math.PI/8,c=Math.cos(a),s=Math.sin(a),R0=r+3*u,R1=r+15*u,w=.09;
+      g.fillStyle(0xf5c542,.9).fillTriangle(x+c*R1,y+s*R1,x+Math.cos(a-w)*R0,y+Math.sin(a-w)*R0,x+Math.cos(a+w)*R0,y+Math.sin(a+w)*R0);g.lineStyle(2*u,0x120c0a).strokeTriangle(x+c*R1,y+s*R1,x+Math.cos(a-w)*R0,y+Math.sin(a-w)*R0,x+Math.cos(a+w)*R0,y+Math.sin(a+w)*R0);}
+    g.lineStyle(1.5*u,0xf5c542,.5);g.beginPath();g.arc(x,y,r*.62,Math.PI*1.1,Math.PI*1.9);g.strokePath();g.beginPath();g.arc(x,y,r*.62,Math.PI*.1,Math.PI*.9);g.strokePath();}
+  showHelp(){const W=this.scale.width,H=this.scale.height,u=this.u;this.releaseAll();this.paused=true;this.scene.pause('Battle');AUD.pause('manual');const L=this.add.container(0,0);
+    L.add(this.add.rectangle(0,0,W,H,0x000000,.62).setOrigin(0).setInteractive());{const pg=this.add.graphics();InkUI.inkRect(pg,W/2-290*u,H/2-170*u,580*u,340*u,{u,fill:0x0b0807,fillAlpha:.92,seed:303,w:3.4});L.add(pg);}
+    L.add(InkUI.calli(this,W/2,H/2-128*u,'操作说明',40*u,{origin:.5,reveal:600}));
+    L.add(txt(this,W/2,H/2-8*u,'左半屏任意处按下拖动：移动\n右下大圆：普攻（轻击→普通击→重击 循环，自动锁定附近妖物）\n弧形小圆：闪避 / 横扫千军 / 擎天一棍 / 定身法\n闪避可随时取消普攻收招；击杀掉落魂灵回血\n小怪受击会后退并僵直，首领霸体不被打断',17*u,'#efe3c8',{align:'center',lineSpacing:8*u}).setOrigin(.5));
+    const c=this.add.container(W/2,H/2+128*u);{const bg=this.add.graphics();InkUI.inkRect(bg,-110*u,-28*u,220*u,56*u,{u,fill:0x6b2a1a,fillAlpha:.95,seed:304,w:3.2});c.add([bg,txt(this,0,0,'返回战斗',26*u,'#fff4d6',{fontFamily:C.calliFontReadable,stroke:'#2a0c06',strokeThickness:4*u}).setOrigin(.5)]);}c.setSize(220*u,56*u).setInteractive();c.on('pointerup',()=>{L.destroy();this.helpLayer=null;this.paused=false;AUD.unlock();AUD.resume('manual');this.scene.resume('Battle');});L.add(c);this.helpLayer=L;}
   togglePause(on) {
     const W = this.scale.width, H = this.scale.height, u = this.u;
     this.releaseAll(); this.paused = on;
@@ -971,8 +1026,9 @@ class HUD extends Phaser.Scene {
     this.scene.pause('Battle'); AUD.pause('manual');
     const L = this.add.container(0, 0);
     L.add(this.add.rectangle(0, 0, W, H, 0x000000, 0.6).setOrigin(0).setInteractive());
-    L.add(txt(this, W / 2, H * 0.27, '暂停', 58 * u, '#f3e2b0', { stroke: '#120c0a', strokeThickness: 8 * u, fontStyle: 'bold' }).setOrigin(0.5));
-    const mk = (y, s, fn) => { const c = this.add.container(W / 2, y); c.add([this.add.rectangle(0, 0, 320 * u, 84 * u, 0x6b2a1a).setStrokeStyle(5 * u, 0x120c0a), txt(this, 0, 0, s, 30 * u, '#fff4d6', { fontStyle: 'bold' }).setOrigin(0.5)]); c.setSize(320 * u, 84 * u).setInteractive(); c.on('pointerup', fn); L.add(c); };
+    {const pg=this.add.graphics();InkUI.inkRect(pg,W/2-230*u,H*.14,460*u,H*.72,{u,fill:0x140f0c,fillAlpha:.92,seed:202,w:3.6});L.add(pg);}
+    L.add(InkUI.calli(this, W / 2, H * 0.24, '暂停', 64 * u, {origin:.5,accent:'#6e1f14',reveal:600}));
+    const mk = (y, s, fn) => { const c = this.add.container(W / 2, y),bg=this.add.graphics();InkUI.inkRect(bg,-160*u,-40*u,320*u,80*u,{u,fill:0x6b2a1a,fillAlpha:.95,seed:(y|0)+3,w:3.4}); c.add([bg, txt(this, 0, 0, s, 30 * u, '#fff4d6', { fontFamily:C.calliFontReadable, stroke:'#2a0c06', strokeThickness:4*u }).setOrigin(0.5)]); c.setSize(320 * u, 84 * u).setInteractive(); c.on('pointerup', fn); L.add(c); };
     mk(H * 0.45, '继续战斗', () => { L.destroy(); this.paused = false; AUD.unlock(); AUD.resume('manual'); this.scene.resume('Battle'); });
     mk(H * 0.58, '重新开始', () => restartBattle(this, this.B.heroKey, this.B.teamKeys));
     mk(H * 0.71, '重选英雄', () => backToSelect(this));
@@ -980,11 +1036,12 @@ class HUD extends Phaser.Scene {
   update() {
     const B = this.B; if (!B || !B.player || !this.g) return;
     const g = this.g, u = this.u, j = this.joy; g.clear();
-    g.fillStyle(0x120c0a, 0.45).fillCircle(j.cx, j.cy, this.joyR); g.lineStyle(5 * u, 0xcbb994, 0.6).strokeCircle(j.cx, j.cy, this.joyR);
-    g.fillStyle(0xe8d9b5, j.pid !== null ? 0.95 : 0.6).fillCircle(j.cx + j.dx, j.cy + j.dy, 42 * u); g.lineStyle(5 * u, 0x120c0a).strokeCircle(j.cx + j.dx, j.cy + j.dy, 42 * u);
+    if(this.hc){InkUI.inkCircle(g,j.cx,j.cy,this.joyR,{u,fill:0x120c0a,fillAlpha:.38,w:3.4,accent:0xcbb994,seed:5,hatchAlpha:.18});InkUI.inkCircle(g,j.cx+j.dx,j.cy+j.dy,(this.hc.joystick.knob||40)*u,{u,fill:0xd9c9a3,fillAlpha:j.pid!==null?.95:.6,w:3.4,seed:6,hatchAlpha:.25});}
+    else{g.fillStyle(0x120c0a, 0.45).fillCircle(j.cx, j.cy, this.joyR); g.lineStyle(5 * u, 0xcbb994, 0.6).strokeCircle(j.cx, j.cy, this.joyR);
+    g.fillStyle(0xe8d9b5, j.pid !== null ? 0.95 : 0.6).fillCircle(j.cx + j.dx, j.cy + j.dy, 42 * u); g.lineStyle(5 * u, 0x120c0a).strokeCircle(j.cx + j.dx, j.cy + j.dy, 42 * u);}
     const h = B.player, w = B.W(h),down=B.nearestDowned(h);this.rescueButton.setVisible(!!down&&!h.dead&&!this.paused&&!B.over);if(down)this.rescueLabel.setText('按住救助 '+Math.floor((down.rescueProgress||0)/C.rescue.seconds*100)+'%');
     if(this.comboTxt){const h=this.B.player,c=h.combo,active=h.clock&&!h.clock.done&&h.action==='attack';this.comboTxt.setText(active?'第'+c.step+'式 · '+h.attackProfile.label:c.step&&this.B.elapsed<c.deadline?'可接第'+(c.step%3+1)+'式':'普攻三式');}
-    const ex=this.equipX,ey=this.equipY;
+    if(!this.hc){const ex=this.equipX,ey=this.equipY;
     const build=B.buildStats;this.clothesLabel.setText('衣服 +'+((build?.stacks.ward||0)+(build?.stacks.vitality||0)));this.shoesLabel.setText('鞋 +'+(build?.stacks.haste||0));
     this.hpHeart.setText(Math.ceil(Math.max(0,h.hp))+'\n/'+h.maxHp);
     const heart=[];for(let i=0;i<=80;i++){const a=i/80*Math.PI*2;heart.push(new Phaser.Math.Vector2(ex-104*u+Math.pow(Math.sin(a),3)*46*u,ey-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))*3*u));}
@@ -994,13 +1051,16 @@ class HUD extends Phaser.Scene {
     // 衣与鞋的原创简笔图标；三个热区不会侵占最大普攻按钮。
     g.lineStyle(3*u,0xc4b18d);g.beginPath();g.moveTo(ex+55*u,ey-18*u);g.lineTo(ex+66*u,ey-25*u);g.lineTo(ex+76*u,ey-16*u);g.lineTo(ex+86*u,ey-25*u);g.lineTo(ex+97*u,ey-18*u);g.lineTo(ex+101*u,ey-4*u);g.lineTo(ex+90*u,ey);g.lineTo(ex+90*u,ey+21*u);g.lineTo(ex+62*u,ey+21*u);g.lineTo(ex+62*u,ey);g.lineTo(ex+51*u,ey-4*u);g.closePath();g.strokePath();
     g.beginPath();g.moveTo(ex+143*u,ey-19*u);g.lineTo(ex+160*u,ey-19*u);g.lineTo(ex+160*u,ey+5*u);g.lineTo(ex+174*u,ey+12*u);g.lineTo(ex+174*u,ey+21*u);g.lineTo(ex+139*u,ey+21*u);g.closePath();g.strokePath();
+    }
+    if(this.hc)this.drawHudPanel(g,h);
     for (const k in this.btnDefs) {
       const b = this.btnDefs[k], pressed = this.btns[k] !== undefined, cdKey = {atk:'attack',s1:'skill1',s2:'skill2',s3:'skill3',dodge:'dodge'}[k];
       const total = k==='dodge'?C.solo.dodge.cooldown:w[cdKey].cooldown, cd = h.cd[cdKey], r = b.r * (pressed ? 0.92 : 1);
+      if(this.hc){if(pressed)g.fillStyle(0xffffff,.16).fillCircle(b.x,b.y,b.r*.94);}else{
       g.fillStyle(0x000000, 0.35).fillCircle(b.x + 4 * u, b.y + 6 * u, b.r);
       g.fillStyle(k === 'atk' ? 0xa8321e : k==='dodge'?0x3d5a78:0x2f4a48, h.dead ? 0.35 : 0.92).fillCircle(b.x, b.y, r);
       if (pressed) g.fillStyle(0xffffff, 0.18).fillCircle(b.x, b.y, r);
-      g.lineStyle(6 * u, 0x120c0a).strokeCircle(b.x, b.y, r); g.lineStyle(2 * u, 0xf5c542, 0.7).strokeCircle(b.x, b.y, r * 0.84);
+      g.lineStyle(6 * u, 0x120c0a).strokeCircle(b.x, b.y, r); g.lineStyle(2 * u, 0xf5c542, 0.7).strokeCircle(b.x, b.y, r * 0.84);}
       if (cd > 0 && k !== 'atk') {
         g.fillStyle(0x000000, 0.62); g.slice(b.x, b.y, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (cd / total), false); g.fillPath();
         this.labels[k + 'cd'].setText(cd >= 1 ? String(Math.ceil(cd)) : cd.toFixed(1)); this.labels[k].setAlpha(0.3);
@@ -1016,13 +1076,23 @@ class HUD extends Phaser.Scene {
     const wi = B.waveIdx, total = C.waves.length;
     const unit=C.solo?'间':'波';if(B.phase==='break'){this.waveTxt.setText(B.absoluteWave?'前往下一间':'准备战斗');this.subTxt.setText('第 '+((B.absoluteWave||0)+1)+' '+unit+' · '+Math.max(0,Math.ceil(B.breakT))+' 秒');}else if(B.encounter){this.waveTxt.setText((B.settings.loops>1?'第'+B.encounter.loopNumber+'轮 · ':'')+B.encounter.name);this.subTxt.setText('进度 '+B.absoluteWave+'/'+(B.settings.loops*(C.waves.length-B.debugWaveOffset))+' '+unit+' · 剩余妖物 '+(B.alive(B.enemies).length+B.spawnQ.length));}
     const bs = B.boss;
+    if(this.hc){const BB=this.hc.boss,S=this.hc.safe,W=this.scale.width,H=this.scale.height;
+      if(bs&&!bs.dead){this.bossT+=Math.min(.1,(this.game.loop.delta||16)/1000);const p=Math.min(1,this.bossT/BB.unfold),e=1-Math.pow(1-p,3),full=W-(S.left+S.right)*u,bw=full*e,x=W/2-bw/2,y=H-(S.bottom+BB.bottom+BB.h)*u;
+        InkUI.inkBar(g,x,y,bw,BB.h*u,bs.hp/bs.maxHp,{u,color:bs.phase===2?BB.phase2:BB.color,seed:57,w:3});if(e>.5){const mx=x+bw*C.boss.phase2At;InkUI.inkLine(g,mx,y-5*u,mx,y+BB.h*u+5*u,{u,w:2.4,color:0xf5c542,passes:2,over:2,jit:.6});}
+        if(!this.bossTxt.visible){this.bossTxt.setVisible(true);InkUI.reveal(this,this.bossTxt,900);}if(bs.phase!==this.bossPhaseShown){this.bossPhaseShown=bs.phase;this.bossTxt.setText(C.boss.name+(bs.phase===2?' · 暴怒':''));InkUI.feibai(this.bossTxt);}
+        if(this.comboTxt)this.comboTxt.setVisible(false);this.waveTxt.setText('');this.subTxt.setText('');}
+      else{this.bossT=0;if(this.bossTxt.visible)this.bossTxt.setVisible(false);if(this.comboTxt)this.comboTxt.setVisible(true);}}
+    else{
+    const bs = B.boss;
     if (bs && !bs.dead) {
-      const bw = 560 * u, x = this.scale.width / 2 - bw / 2, y = 108 * u;
+      const HB=this.hc?.boss,bw = (HB?.w||560) * u, x = this.scale.width / 2 - bw / 2, y = HB?(this.hc.safe.top+HB.top)*u:108 * u;
       this.bossTxt.setText(C.boss.name + (bs.phase === 2 ? ' · 暴怒' : ''));
       g.fillStyle(0x120c0a, 0.9).fillRect(x - 4 * u, y - 4 * u, bw + 8 * u, 26 * u);
-      g.fillStyle(bs.phase === 2 ? 0xe0531f : 0xa8321e).fillRect(x, y, bw * bs.hp / bs.maxHp, 18 * u);
+      g.fillStyle(bs.phase === 2 ? 0xe0531f : 0xa8321e).fillRect(x, y, bw * bs.hp / bs.maxHp, 18 * u);if(HB){g.lineStyle(1.5*u,0xcbb994,.8).strokeRect(x-4*u,y-4*u,bw+8*u,26*u);}
       g.lineStyle(3 * u, 0xf5c542).lineBetween(x + bw * C.boss.phase2At, y - 4 * u, x + bw * C.boss.phase2At, y + 22 * u);
+      if(this.hc){this.waveTxt.setText('');this.subTxt.setText('');}
     } else this.bossTxt.setText('');
+    }
   }
 }
 function restartBattle(scene, hero, team, settings) {

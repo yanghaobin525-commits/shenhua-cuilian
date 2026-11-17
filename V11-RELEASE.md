@@ -36,3 +36,31 @@ v8 没有闪避、没有 hitstop、普攻按住即出（冷却 0.56）。v10/v10
 - 姿势是静态关键帧切换，不是骨骼动画；跑动只有4帧。
 - 只在 headless Chrome(swiftshader) 1024×600 触屏模拟下测试，未在真实 iPad 上测试；音频只做了事件/状态检查，没有人耳试听。
 - MP3 循环有编码器带来的极短间隙。
+
+## v11.1（t116 小怪受击打断 / 首领霸体）
+Release id: `solo-wukong-v11.1-20261117`
+- 小怪每次被悟空命中：沿远离攻击者方向轻微击退（轻10/普16/重30/技能22 px），进入僵直（轻.45/普.72/重.75/技能.5 s）；连续命中刷新僵直，按普攻节奏可连续打断。
+- 受击立即取消小怪前摇/出招/扑击（含已起跳的扑击），其伤害回调在僵直中失效，僵直期间不能伤到悟空。
+- 首领霸体（`solo.hitStun.bossSuperArmor`）：普攻不打断、不击退、无受击僵直，只有受击闪色；定身法等技能控制保留。
+- 参数：`GAME_CONFIG.solo.hitStun`（各段僵直、`knockback`、`refresh`、`bossSuperArmor`）。
+- 自动化测试 `test/v11-interrupt-browser.cjs`：对照组（不攻击时小怪会伤到悟空）→ 前摇中受击被取消且僵直内无伤害 → 真实触屏连按普攻3秒，首次命中后悟空受伤 0 次、每次命中都有僵直+击退 → 击退方向背离攻击者 → 首领三段普攻均不被打断/击退且闪色。
+
+## v11.1 HUD（t118–t121，按 t120 最终方案；布局思路参考动作手游，全部原创绘制，未使用参考图素材）
+- 头顶血条：悟空与小怪不显示（`hud.worldBars`）。
+- 悟空血条：左上角起始的细长横条，长度 = 最大血量 × `hud.hpBar.pxPerHp`（下限 `minLen`，上限 `maxLen:'full'` 即横跨顶边安全区），最大血量提升时以 `grow` 速率动画拉长；过长时右上「?」「≡」按钮自动下移让位。
+- 血条下方：手绘墨框数值面板——计时、血量、魂灵、房间、剩余妖物（`hud.stats`）。
+- 首领血条：进入首领战时从屏幕底部中间向两侧展开（`hud.boss.unfold` 秒，Cubic.Out），最后横跨底边安全区；上方草书首领名（笔划揭示），二阶段标记金线。
+- 右下大圆普攻（原创八角刺纹墨框）+ 弧形排列闪避/三技能小圆，扇形冷却遮罩；左半屏浮动摇杆。安全区 `hud.safe`。右上「?」帮助、「≡」菜单。
+- 全部 HUD 线条为代码生成的手绘游丝：抖线、出头、多丝复描、交叉排线、金色细丝复描（`ink-ui.js`）。
+
+## v11.1 全界面手绘游丝 + 草书（t122/t123）
+- 选角、开局设置、奖励牌、结算、暂停、帮助全部改为墨线框：Phaser 场景里的矩形框经 `inkify()` 替换为代码手绘框；DOM 界面用 `assets/ui-ink/*.png` 9宫格墨框（`tools/gen-ink-frames.py` 纯代码生成，原创）。无白底白边、无圆角矢量框。
+- 草书：Liu Jian Mao Cao（主，标题）+ Ma Shan Zheng（牌名、奖项、伤害数字等需易读处），均 SIL OFL 1.1，按游戏用字子集化为 woff 本地打包于 `assets/fonts/`（附 OFL 文本），选角界面与结算/设置页注明字体协议。
+- 书法效果全部代码加工（不是图片文字）：粗描边（金/暗红）、墨晕阴影、飞白（Canvas destination-out 干笔擦痕 / DOM 飞白遮罩）、出场笔划揭示（裁切 / clip-path 动画）。正文仍用 Noto Sans SC / 苹方，`<html lang="zh-CN">`。
+
+## v11.1 刀光毛笔游丝（t124/t125）
+- 白色月牙刀光层之上独立 Graphics 图层叠加毛笔笔痕：沿棍身多个径向位置采样挥动轨迹（Catmull-Rom 平滑），自当前棍位起笔顿压、中段飞白干笔丝随机断续、向轨迹尾端出锋变尖变淡、外圈墨晕。
+- 条数/粗细范围/透明度逐段增加（轻3条、普5条、重8条最粗），颜色与笔触参数在 `GAME_CONFIG.feel.slashInk`。
+
+## v11.1 截图
+- `screens/v11-ink/`：select.png、reward-cards.png、result.png、pause.png、hud-closeup.png、hp-low-vs-high.png、boss-unfold-sequence.png、slash-3stages.png（脚本 `test/ink-ui-shots.cjs`）。
