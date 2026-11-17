@@ -244,11 +244,15 @@ class Battle extends Phaser.Scene {
     this.boss = null; this.over = false; this.elapsed = 0;
     this.stats = { kills: 0, dmg: 0, heal: 0 };
     this.ctrl = { mx: 0, my: 0, atk: false, s1: false, s2: false };
-    this.add.tileSprite(0, 0, A.width, A.height, 'ground').setOrigin(0).setDepth(0).setTint(0xa89a88);
-    this.drawBorder();
+    this.view = new window.ArenaView(C.view25d, A);
+    this.view.build(this);
     this.teleG = this.add.graphics().setDepth(2);
+    this.footG = this.add.graphics().setDepth(3);
     this.barG = this.add.graphics().setDepth(900000);
-    const P = (tint, extra) => this.add.particles(0, 0, 'spark', Object.assign({ speed: { min: 40, max: 220 }, scale: { start: 1.4, end: 0 }, lifespan: 500, tint, emitting: false }, extra || {})).setDepth(700000);
+    const P = (tint, extra) => {
+      const emitter=this.add.particles(0,0,'spark',Object.assign({speed:{min:40,max:220},scale:{start:1.4,end:0},lifespan:500,tint,emitting:false,emitCallback:p=>{const v=this.view.vector(p.velocityX,p.velocityY);p.velocityX=v.x;p.velocityY=v.y;}},extra||{})).setDepth(700000);
+      const burst=emitter.explode.bind(emitter);emitter.explode=(n,x,y,z=0)=>{const p=this.view.project(x,y,z);burst(n,p.x,p.y);return emitter;};return emitter;
+    };
     this.pInk = P(0x150f0d, { speed: { min: 60, max: 260 } });
     this.pFire = P([0xff5a1f, 0xffb43a, 0xc0392b], { blendMode: 'ADD', lifespan: 450 });
     this.pMoon = P([0xd8e4ff, 0x9fb8ff, 0xffffff], { blendMode: 'ADD', lifespan: 700, speed: { min: 30, max: 160 } });
@@ -259,9 +263,10 @@ class Battle extends Phaser.Scene {
       this.heroes.push(this.makeHero(k, cx + Math.cos(a) * 90, cy + Math.sin(a) * 60, i === 0));
     });
     this.player = this.heroes[0];
-    this.camTarget = this.add.zone(this.player.x, this.player.y, 1, 1);
+    const initialFoot=this.view.project(this.player.x,this.player.y);
+    this.camTarget = this.add.zone(initialFoot.x,initialFoot.y-C.view25d.cameraLift,1,1);
     const cam = this.cameras.main;
-    cam.setBounds(0, 0, A.width, A.height); cam.startFollow(this.camTarget, true, 0.12, 0.12);
+    cam.setBounds(0,0,this.view.width,this.view.height); cam.startFollow(this.camTarget, true, 0.12, 0.12);
     this.fitCam();
     this.scale.on('resize', this.fitCam, this);
     this.events.once('shutdown', () => { this.scale.off('resize', this.fitCam, this); this.bus.removeAllListeners(); this.input.keyboard.removeAllListeners(); });
@@ -277,24 +282,17 @@ class Battle extends Phaser.Scene {
   }
   fitCam() {
     const cam = this.cameras.main; cam.setSize(this.scale.width, this.scale.height);
-    cam.setZoom(this.scale.width / C.arena.viewWidth);
+    cam.setZoom(Math.min(this.scale.width/C.view25d.viewWidth,this.scale.height/C.view25d.viewHeight));
   }
-  drawBorder() {
-    const A = C.arena, g = this.add.graphics().setDepth(1);
-    const rough = (x1, y1, x2, y2, w) => { g.lineStyle(w, 0x120c0a, 0.9); g.beginPath(); g.moveTo(x1, y1); for (let i = 1; i <= 24; i++) { const t = i / 24; g.lineTo(x1 + (x2 - x1) * t + PM.Between(-6, 6), y1 + (y2 - y1) * t + PM.Between(-6, 6)); } g.strokePath(); };
-    g.fillStyle(0x0c0806, 0.55); g.fillRect(0, 0, A.width, 40); g.fillRect(0, A.height - 40, A.width, 40); g.fillRect(0, 0, 40, A.height); g.fillRect(A.width - 40, 0, 40, A.height);
-    rough(40, 40, A.width - 40, 40, 10); rough(A.width - 40, 40, A.width - 40, A.height - 40, 10); rough(A.width - 40, A.height - 40, 40, A.height - 40, 10); rough(40, A.height - 40, 40, 40, 10);
-    for (let i = 0; i < 14; i++) { g.fillStyle(0x0a0605, 0.12 + Math.random() * 0.1); g.fillEllipse(PM.Between(200, A.width - 200), PM.Between(200, A.height - 200), PM.Between(80, 260), PM.Between(40, 120)); }
-    // 剪纸红灯笼
-    const lantern = (x, y) => { g.fillStyle(0x000000, 0.3).fillEllipse(x + 6, y + 40, 50, 16); g.fillStyle(0xb02a1a).fillEllipse(x, y, 46, 56); g.lineStyle(4, 0x120c0a).strokeEllipse(x, y, 46, 56); g.fillStyle(0xd9a521).fillRect(x - 12, y - 32, 24, 7).fillRect(x - 12, y + 26, 24, 7); g.lineStyle(2, 0x120c0a).lineBetween(x, y - 28, x, y + 28); g.lineBetween(x, y + 33, x, y + 50); };
-    [[90, 90], [A.width - 90, 90], [90, A.height - 90], [A.width - 90, A.height - 90], [A.width / 2, 70], [A.width / 2, A.height - 70]].forEach(p => lantern(p[0], p[1]));
-  }
+  screenToWorld(x,y) { const p=this.cameras.main.getWorldPoint(x,y);return this.view.unproject(p.x,p.y); }
+  worldToScreen(x,y,z=0) {const p=this.view.project(x,y,z),c=this.cameras.main;const q=c.matrix.transformPoint(p.x,p.y),co=Math.cos(c.rotation),si=Math.sin(c.rotation);return {x:q.x-(c.scrollX*co-c.scrollY*si)*c.zoomX,y:q.y-(c.scrollX*si+c.scrollY*co)*c.zoomY};}
   /* ---------- 单位 ---------- */
   makeUnit(def, team, x, y) {
     const tex = this.textures.get(def.sprite).getSourceImage();
     const base = def.size / tex.height;
-    const shadow = this.add.ellipse(x, y, def.size * 0.7, def.size * 0.2, 0x000000, 0.35).setDepth(1.5);
-    const spr = this.add.image(x, y, def.sprite).setOrigin(0.5, 0.92).setScale(base);
+    const foot=this.view.project(x,y);
+    const shadow=this.add.graphics().setDepth(1.5).setPosition(foot.x,foot.y);shadow.fillStyle(0x0c1512,.34).fillPoints(this.view.circle(0,0,def.size*.35,def.size*.20).map(p=>({x:p.x-this.view.ox,y:p.y-this.view.oy})),true);
+    const spr = this.add.image(foot.x, foot.y, def.sprite).setOrigin(0.5, 0.92).setScale(base);
     return { def, team, x, y, spr, shadow, base, r: def.size * 0.3, hp: def.hp, maxHp: def.hp, faceAng: 0, native: def.nativeFacing || 1, t: Math.random() * 10,
       moving: false, slowT: 0, slowMul: 1, flashT: 0, popT: 0, dead: false, cd: { attack: 0, skill1: 0, skill2: 0 }, tauntT: 0, tauntBy: null, shieldT: 0, target: null, retargetT: 0, kb: null };
   }
@@ -365,6 +363,7 @@ class Battle extends Phaser.Scene {
     const k = this.keys; let mx = this.ctrl.mx, my = this.ctrl.my;
     if (k.A.isDown || k.LEFT.isDown) mx = -1; if (k.D.isDown || k.RIGHT.isDown) mx = 1;
     if (k.W.isDown || k.UP.isDown) my = -1; if (k.S.isDown || k.DOWN.isDown) my = 1;
+    const input=this.view.input(mx,my);mx=input.x;my=input.y;
     this.ctrl.kx = mx; this.ctrl.ky = my;
     if (h.dash) this.updateDash(h, dt);
     else if (mx || my) this.moveUnit(h, mx, my, h.def.speed, dt);
@@ -431,7 +430,7 @@ class Battle extends Phaser.Scene {
     const w = this.W(h), A = w.attack; h.cd.attack = A.cooldown; h.faceAng = a; h.popT = 0.12;
     if (A.kind === 'melee') {
       for (const e of this.enemies) if (!e.dead && dist(h, e) <= A.range + e.r && angDiff(ang(h, e), a) <= PM.DegToRad(A.arc / 2) + 0.2) this.hurt(e, A.damage, h);
-      this.slashFx(h.x, h.y - 30, a, A.range, A.arc, w.color);
+      this.slashFx(h.x, h.y, a, A.range, A.arc, w.color);
     } else this.fire(h, a, A.tex, A.projSpeed, A.damage, A.range, {});
   }
   doSkill(h, sk, target) {
@@ -453,26 +452,26 @@ class Battle extends Phaser.Scene {
           if (d < S.radius * 1.6) { e.tauntT = S.tauntTime; e.tauntBy = h; e.target = h; }
         }
         h.shieldT = S.shieldTime; h.shieldReduce = S.shieldReduce;
-        this.ringFx(h.x, h.y, S.radius, 0xc0392b); this.floatText(h.x, h.y - 150, S.name + '！', '#ffcf6a', 30);
+        this.ringFx(h.x, h.y, S.radius, 0xc0392b); this.floatText(h.x, h.y, S.name + '！', '#ffcf6a', 30);
         break;
       }
       case 'spin': {
         for (const e of this.alive(this.enemies)) if (dist(h, e) < S.radius + e.r) this.hurt(e, S.damage, h);
-        this.ringFx(h.x, h.y, S.radius, 0xdfe6ea); this.slashFx(h.x, h.y - 30, a, S.radius, 360, 0xdfe6ea); break;
+        this.ringFx(h.x, h.y, S.radius, 0xdfe6ea); this.slashFx(h.x, h.y, a, S.radius, 360, 0xdfe6ea); break;
       }
       case 'cleave': {
         const ca = Math.cos(a), sa = Math.sin(a); h.faceAng = a;
         for (const e of this.alive(this.enemies)) { const dx = e.x - h.x, dy = e.y - h.y, along = dx * ca + dy * sa, side = Math.abs(-dx * sa + dy * ca); if (along > -20 && along < S.length + e.r && side < S.width / 2 + e.r) this.hurt(e, S.damage, h); }
-        const g = this.add.graphics().setDepth(750000); g.fillStyle(0xf5f0e0, 0.75);
-        g.fillPoints([{ x: h.x - sa * S.width / 2, y: h.y + ca * S.width / 2 }, { x: h.x + ca * S.length - sa * 12, y: h.y + sa * S.length + ca * 12 }, { x: h.x + ca * S.length + sa * 12, y: h.y + sa * S.length - ca * 12 }, { x: h.x + sa * S.width / 2, y: h.y - ca * S.width / 2 }], true);
-        g.lineStyle(5, 0x120c0a, 0.9).strokePoints([{ x: h.x - sa * S.width / 2, y: h.y + ca * S.width / 2 }, { x: h.x + ca * S.length, y: h.y + sa * S.length }, { x: h.x + sa * S.width / 2, y: h.y - ca * S.width / 2 }], false);
+        const g = this.add.graphics().setDepth(3); g.fillStyle(0xf5f0e0, 0.75);
+        g.fillPoints([{ x: h.x - sa * S.width / 2, y: h.y + ca * S.width / 2 }, { x: h.x + ca * S.length - sa * 12, y: h.y + sa * S.length + ca * 12 }, { x: h.x + ca * S.length + sa * 12, y: h.y + sa * S.length - ca * 12 }, { x: h.x + sa * S.width / 2, y: h.y - ca * S.width / 2 }].map(p=>this.view.project(p.x,p.y)), true);
+        g.lineStyle(5, 0x120c0a, 0.9).strokePoints([{ x: h.x - sa * S.width / 2, y: h.y + ca * S.width / 2 }, { x: h.x + ca * S.length, y: h.y + sa * S.length }, { x: h.x + sa * S.width / 2, y: h.y - ca * S.width / 2 }].map(p=>this.view.project(p.x,p.y)), false);
         this.tweens.add({ targets: g, alpha: 0, duration: 380, onComplete: () => g.destroy() }); this.cameras.main.shake(150, 0.004); break;
       }
       case 'pierce': this.fire(h, a, 'blade', S.projSpeed, S.damage, S.range, { pierce: true, scale: 1.4, r: 26 }); break;
       case 'volley': for (let i = 0; i < S.arrows; i++) this.fire(h, a + PM.DegToRad(-S.spread / 2 + S.spread * i / (S.arrows - 1)), 'arrow', 820, S.damage, 520, {}); break;
       case 'heal': {
         for (const al of this.alive(this.heroes)) if (dist(al, h) <= S.radius) this.healUnit(al, S.heal * (h.def.healMul || 1), h);
-        this.ringFx(h.x, h.y, S.radius, 0xcfe0ff); this.pMoon.explode(40, h.x, h.y - 40); break;
+        this.ringFx(h.x, h.y, S.radius, 0xcfe0ff); this.pMoon.explode(40,h.x,h.y,40); break;
       }
       case 'frost': {
         const p = aimT && dist(h, aimT) < S.range ? { x: aimT.x, y: aimT.y } : { x: h.x + Math.cos(a) * 220, y: h.y + Math.sin(a) * 220 };
@@ -489,20 +488,18 @@ class Battle extends Phaser.Scene {
     if (D.t <= 0) h.dash = null;
   }
   fire(src, a, tex, speed, dmg, range, o) {
-    const s = this.add.image(src.x, src.y - (src.isBoss ? 120 : 40), tex).setRotation(a).setDepth(600000).setScale(o.scale || 1);
-    this.projs.push({ s, x: s.x, y: s.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, team: src.team, src, dmg, life: range / speed, pierce: !!o.pierce, hit: new Set(), r: o.r || 18 });
+    const z=src.isBoss?120:40,p=this.view.project(src.x,src.y,z),v=this.view.vector(Math.cos(a),Math.sin(a));
+    const s=this.add.image(p.x,p.y,tex).setRotation(Math.atan2(v.y,v.x)).setDepth(this.view.depth(src.y,.3)).setScale(o.scale||1);
+    const ground=this.view.project(src.x,src.y),shadow=this.add.graphics().setPosition(ground.x,ground.y).setDepth(1.7);shadow.fillStyle(0x15201a,.24).fillPoints(this.view.circle(0,0,9,6).map(p=>({x:p.x-this.view.ox,y:p.y-this.view.oy})),true);
+    this.projs.push({s,shadow,x:src.x,y:src.y,z,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,team:src.team,src,dmg,life:range/speed,pierce:!!o.pierce,hit:new Set(),r:o.r||18});
   }
   updateProjs(dt) {
-    for (let i = this.projs.length - 1; i >= 0; i--) {
-      const p = this.projs[i]; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; p.s.setPosition(p.x, p.y);
-      const targets = p.team === 'hero' ? this.enemies : this.heroes;
-      let done = p.life <= 0;
-      for (const t of targets) {
-        if (done || t.dead || p.hit.has(t)) continue;
-        const hy = t.isBoss ? t.y - 100 : t.y - t.def.size * 0.35;
-        if (Math.hypot(t.x - p.x, hy - p.y) < p.r + t.r) { p.hit.add(t); this.hurt(t, p.dmg, p.src); if (!p.pierce) done = true; }
-      }
-      if (done) { p.s.destroy(); this.projs.splice(i, 1); }
+    for(let i=this.projs.length-1;i>=0;i--){
+      const p=this.projs[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;
+      const d=this.view.project(p.x,p.y,p.z),ground=this.view.project(p.x,p.y);p.s.setPosition(d.x,d.y).setDepth(this.view.depth(p.y,.3));p.shadow.setPosition(ground.x,ground.y);
+      const targets=p.team==='hero'?this.enemies:this.heroes;let done=p.life<=0;
+      for(const t of targets){if(done||t.dead||p.hit.has(t))continue;if(Math.hypot(t.x-p.x,t.y-p.y)<p.r+t.r){p.hit.add(t);this.hurt(t,p.dmg,p.src);if(!p.pierce)done=true;}}
+      if(done){p.s.destroy();p.shadow.destroy();this.projs.splice(i,1);}
     }
   }
   hurt(t, amount, src, opt) {
@@ -516,20 +513,20 @@ class Battle extends Phaser.Scene {
     if (src && src.isPlayer) this.stats.dmg += amount;
     if (opt && opt.slow) { t.slowT = opt.slowTime; t.slowMul = opt.slow; }
     if (t.team === 'enemy' && src && src.team === 'hero') t.retargetT = Math.min(t.retargetT, 0.15);
-    this.floatText(t.x + PM.Between(-20, 20), t.y - t.def.size * (t.isBoss ? 0.75 : 1), (crit ? '暴击 ' : '') + amount, t.team === 'hero' ? '#ff6b5a' : (crit ? '#ffd23f' : '#fff4d6'), crit ? 30 : 24);
+    this.floatText(t.x + PM.Between(-20, 20), t.y, (crit ? '暴击 ' : '') + amount, t.team === 'hero' ? '#ff6b5a' : (crit ? '#ffd23f' : '#fff4d6'), crit ? 30 : 24);
     if (t.hp <= 0) this.kill(t, src);
   }
   healUnit(t, amount, src) {
     if (t.dead) return; amount = Math.round(Math.min(amount, t.maxHp - t.hp));
     t.hp += amount; if (src && src.isPlayer) this.stats.heal += amount;
     if (amount > 0) AUD.play('heal', { ai: !(src && src.isPlayer) });
-    if (amount > 0) this.floatText(t.x, t.y - t.def.size, '+' + amount, '#7dff9a', 26);
+    if (amount > 0) this.floatText(t.x, t.y, '+' + amount, '#7dff9a', 26);
   }
   kill(t, src) {
     t.dead = true; t.hp = 0;
     if (t.team === 'enemy') {
       if (src && src.isPlayer) this.stats.kills++;
-      this.pInk.explode(t.isBoss ? 80 : 20, t.x, t.y - t.def.size * 0.4);
+      this.pInk.explode(t.isBoss?80:20,t.x,t.y,t.def.size*.4);
       this.tweens.add({ targets: [t.spr, t.shadow], alpha: 0, duration: t.isBoss ? 1200 : 350, onComplete: () => { t.spr.destroy(); t.shadow.destroy(); } });
       if (t.isBoss) { this.cameras.main.shake(800, 0.012); this.bus.emit('banner', C.boss.name + '伏诛！', ''); }
     } else {
@@ -585,18 +582,18 @@ class Battle extends Phaser.Scene {
         for (const h of this.alive(this.heroes)) if (dist(h, b) < B.sweep.radius + h.r) { this.hurt(h, B.sweep.damage, b); const a = ang(b, h); h.kb = { vx: Math.cos(a) * B.sweep.knockback * 4, vy: Math.sin(a) * B.sweep.knockback * 4, t: 0.25 }; }
         this.ringFx(b.x, b.y, B.sweep.radius, 0x1a1210); this.cameras.main.shake(200, 0.006);
       });
-      this.floatText(b.x, b.y - 330, B.sweep.name, '#ffcf6a', 30);
+      this.floatText(b.x, b.y, B.sweep.name, '#ffcf6a', 30,330);
     } else if (b.cdBreath <= 0 && d < B.breath.length + 120) {
       b.cdBreath = B.breath.cooldown * cdm; b.casting = B.breath.windup;
       const a = ang(b, t), el = b.element; b.element = el === 'fire' ? 'water' : 'fire';
-      const o = { x: b.x, y: b.y - 60 };
+      const o = { x: b.x, y: b.y };
       this.tele({ type: 'cone', x: o.x, y: o.y, a, len: B.breath.length, arc: PM.DegToRad(B.breath.angle), total: B.breath.windup, team: 'enemy', color: el === 'fire' ? 0xe0531f : 0x3b8fd6 }, () => {
         for (const h of this.alive(this.heroes)) if (dist(o, h) < B.breath.length + h.r && angDiff(ang(o, h), a) < PM.DegToRad(B.breath.angle / 2) + 0.1)
           this.hurt(h, B.breath.damage, b, el === 'water' ? { slow: B.breath.waterSlow, slowTime: B.breath.waterSlowTime } : null);
         const pe = el === 'fire' ? this.pFire : this.pWater;
         for (let i = 1; i <= 8; i++) { const r = B.breath.length * i / 8; for (let j = -1; j <= 1; j++) pe.explode(6, o.x + Math.cos(a + j * 0.3) * r, o.y + Math.sin(a + j * 0.3) * r); }
       });
-      this.floatText(b.x, b.y - 330, (el === 'fire' ? '烈火' : '寒水') + '吐息', el === 'fire' ? '#ff9a5a' : '#8ac8ff', 30);
+      this.floatText(b.x, b.y, (el === 'fire' ? '烈火' : '寒水') + '吐息', el === 'fire' ? '#ff9a5a' : '#8ac8ff', 30,330);
     } else if (p2 && b.cdHowl <= 0) {
       b.cdHowl = B.howl.cooldown * cdm; b.casting = B.howl.windup;
       this.tele({ type: 'circle', follow: b, x: b.x, y: b.y, r: 130, total: B.howl.windup, team: 'none', color: 0xf5c542 }, () => {
@@ -604,7 +601,7 @@ class Battle extends Phaser.Scene {
         for (let i = 0; i < B.howl.summonImps; i++) this.makeEnemy('imp', b.x + PM.Between(-240, 240), b.y + PM.Between(80, 240));
         this.cameras.main.shake(300, 0.006);
       });
-      this.floatText(b.x, b.y - 330, B.howl.name, '#ffcf6a', 32);
+      this.floatText(b.x, b.y, B.howl.name, '#ffcf6a', 32,330);
     } else if (d < b.r + t.r + 40 && b.cdBite <= 0) { b.cdBite = B.biteCooldown; b.popT = 0.2; this.hurt(t, B.biteDamage, b); }
   }
   tele(o, fn) { o.t = 0; o.fn = fn; this.teles.push(o); }
@@ -618,8 +615,7 @@ class Battle extends Phaser.Scene {
       const t = this.teles[i]; t.t += dt; const p = Math.min(1, t.t / t.total);
       if (t.follow && !t.follow.dead) { t.x = t.follow.x; t.y = t.follow.y; }
       g.fillStyle(t.color, 0.14); g.lineStyle(5, t.color, 0.85);
-      if (t.type === 'circle') { g.fillCircle(t.x, t.y, t.r); g.strokeCircle(t.x, t.y, t.r); g.fillStyle(t.color, 0.32); g.fillCircle(t.x, t.y, t.r * p); }
-      else { g.slice(t.x, t.y, t.len, t.a - t.arc / 2, t.a + t.arc / 2); g.fillPath(); g.strokePath(); g.fillStyle(t.color, 0.32); g.slice(t.x, t.y, t.len * p, t.a - t.arc / 2, t.a + t.arc / 2); g.fillPath(); }
+      const shape=t.type==='circle'?this.view.circle(t.x,t.y,t.r):this.view.sector(t.x,t.y,t.len,t.a,t.arc);this.view.groundShape(g,shape);g.fillStyle(t.color,.32);this.view.groundShape(g,t.type==='circle'?this.view.circle(t.x,t.y,t.r*p):this.view.sector(t.x,t.y,t.len*p,t.a,t.arc),true,false);t.projected=shape;
       if (p >= 1) { this.teles.splice(i, 1); if (!(this.boss && this.boss.dead)) t.fn(); }
     }
   }
@@ -629,16 +625,18 @@ class Battle extends Phaser.Scene {
       const a = all[i], b = all[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 0.01, min = (a.r + b.r) * 0.8;
       if (d < min) { const push = (min - d) / 2, nx = dx / d, ny = dy / d, wa = a.isBoss ? 0.1 : 1, wb = b.isBoss ? 0.1 : 1; a.x -= nx * push * wa; a.y -= ny * push * wa; b.x += nx * push * wb; b.y += ny * push * wb; }
     }
+    for(const u of all)for(const prop of this.view.props){if(prop.kind==='gate')continue;const r=(prop.kind==='rock'?48:36)+u.r*.75,dx=u.x-prop.x,dy=u.y-prop.y,d=Math.hypot(dx,dy);if(d<r&&d>0.001){u.x+=dx/d*(r-d);u.y+=dy/d*(r-d);}}
     for (const u of all) { u.x = PM.Clamp(u.x, 60 + u.r * 0.5, A.width - 60 - u.r * 0.5); u.y = PM.Clamp(u.y, 80 + u.r * 0.3, A.height - 50); }
   }
   /* ---------- 武器掉落与拾取 ---------- */
   dropWeapon(key, x, y, noPickT) {
     const w = C.weapons[key];
-    const ring = this.add.circle(x, y, 46, w.color, 0.25).setStrokeStyle(4, 0xf5c542).setDepth(1.6);
-    const icon = this.add.image(x, y - 30, 'v6_' + C.weaponArt[key] + '_weapon').setDisplaySize(80,80).setDepth(10 + y);
-    const label = txt(this, x, y - 92, w.name + ' · ' + ROLE_LABEL[w.role], 22, '#ffe7a8', { stroke: '#120c0a', strokeThickness: 5 }).setOrigin(0.5).setDepth(900001).setResolution(2);
-    this.tweens.add({ targets: icon, y: y - 46, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
-    this.tweens.add({ targets: ring, scale: 1.2, alpha: 0.6, duration: 700, yoyo: true, repeat: -1 });
+    const ground=this.view.project(x,y);
+    const ring=this.add.graphics().setDepth(1.6);ring.fillStyle(w.color,.25).lineStyle(4,0xf5c542);this.view.groundShape(ring,this.view.circle(x,y,46));
+    const icon = this.add.image(ground.x, ground.y - 30, 'v6_' + C.weaponArt[key] + '_weapon').setDisplaySize(80,80).setDepth(10 + y);
+    const label = txt(this, ground.x, ground.y - 92, w.name + ' · ' + ROLE_LABEL[w.role], 22, '#ffe7a8', { stroke: '#120c0a', strokeThickness: 5 }).setOrigin(0.5).setDepth(900001).setResolution(2);
+    this.tweens.add({ targets: icon, y: ground.y - 46, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+    this.tweens.add({ targets: ring, alpha: 0.6, duration: 700, yoyo: true, repeat: -1 });
     this.pMoon.explode(20, x, y);
     this.drops.push({ key, x, y, ring, icon, label, noPickT: noPickT || 0 });
   }
@@ -654,7 +652,7 @@ class Battle extends Phaser.Scene {
       const w = C.weapons[d.key];
       this.bus.emit('banner', '拾取 ' + w.name, '定位变为：' + ROLE_LABEL[w.role]);
       this.bus.emit('weapon');
-      this.pMoon.explode(30, h.x, h.y - 40);
+      this.pMoon.explode(30,h.x,h.y,40);
     }
   }
   /* ---------- 波次 ---------- */
@@ -684,7 +682,7 @@ class Battle extends Phaser.Scene {
   clearWave() {
     this.enemies = this.enemies.filter(e => !e.dead);
     for (const h of this.heroes) {
-      if (h.dead) { h.dead = false; h.hp = h.maxHp * C.reviveHpRatio; h.spr.clearTint().setAlpha(1).setAngle(0); this.pMoon.explode(30, h.x, h.y - 40); }
+      if (h.dead) { h.dead = false; h.hp = h.maxHp * C.reviveHpRatio; h.spr.clearTint().setAlpha(1).setAngle(0); this.pMoon.explode(30,h.x,h.y,40); }
       else h.hp = Math.min(h.maxHp, h.hp + h.maxHp * C.waveClearHealRatio);
     }
     if (this.waveIdx >= C.waves.length - 1) { this.finish(true); return; }
@@ -705,52 +703,28 @@ class Battle extends Phaser.Scene {
   }
   /* ---------- 表现：挤压/弹跳/翻转/受击闪白/血条 ---------- */
   syncVisuals(dt) {
-    const g = this.barG; g.clear();
-    for (const u of this.heroes.concat(this.enemies)) {
-      if (!u.spr.active) continue;
-      u.t += dt;
-      let bob = 0, sx = 1, sy = 1;
-      if (!u.dead) {
-        if (u.moving) { bob = Math.abs(Math.sin(u.t * 12)) * (u.isBoss ? 6 : 8); sy = 1 + Math.sin(u.t * 24) * 0.04; sx = 1 - Math.sin(u.t * 24) * 0.03; }
-        else { sy = 1 + Math.sin(u.t * 3) * 0.025; sx = 1 - Math.sin(u.t * 3) * 0.015; }
-        if (u.popT > 0) { sx *= 1.12; sy *= 0.92; }
-        const c = Math.cos(u.faceAng), flip = c < -0.15 ? -1 : c > 0.15 ? 1 : (u.lastFlip || 1); u.lastFlip = flip;
-        u.spr.setScale(u.base * sx * flip * u.native, u.base * sy);
-        if (u.flashT > 0) { if (u.team === 'enemy' && !u.isBoss) u.spr.setTintFill(0xffffff); else u.spr.setTint(0xff9a8a); } else if (u.isBoss && u.phase === 2) u.spr.setTint(0xffb0a0); else if (u.slowT > 0) u.spr.setTint(0xa8c8ff); else u.spr.clearTint();
+    const g=this.barG,ground=this.footG;g.clear();ground.clear();
+    for(const u of this.heroes.concat(this.enemies)){
+      if(!u.spr.active)continue;u.t+=dt;const foot=this.view.project(u.x,u.y);let bob=0,sx=1,sy=1;
+      if(!u.dead){if(u.moving){bob=Math.abs(Math.sin(u.t*12))*(u.isBoss?6:8);sy=1+Math.sin(u.t*24)*.04;sx=1-Math.sin(u.t*24)*.03;}else{sy=1+Math.sin(u.t*3)*.025;sx=1-Math.sin(u.t*3)*.015;}if(u.popT>0){sx*=1.12;sy*=.92;}
+        const d=this.view.vector(Math.cos(u.faceAng),Math.sin(u.faceAng)),flip=d.x<-.15?-1:d.x>.15?1:(u.lastFlip||1);u.lastFlip=flip;u.spr.setScale(u.base*sx*flip*u.native,u.base*sy);
+        if(u.flashT>0){if(u.team==='enemy'&&!u.isBoss)u.spr.setTintFill(0xffffff);else u.spr.setTint(0xff9a8a);}else if(u.isBoss&&u.phase===2)u.spr.setTint(0xffb0a0);else if(u.slowT>0)u.spr.setTint(0xa8c8ff);else u.spr.clearTint();
       }
-      u.spr.setPosition(u.x, u.y - bob).setDepth(10 + u.y);
-      u.shadow.setPosition(u.x, u.y);
-      if(u.art) u.art.update(dt);
-      if (u.dead) { if (u.team === 'hero') u.spr.setAngle(80); continue; }
-      if (!u.isBoss) {
-        const w = u.team === 'hero' ? 80 : Math.max(50, u.def.size * 0.7), y = u.y - u.def.size * 1.02 - bob;
-        g.fillStyle(0x120c0a, 0.9).fillRect(u.x - w / 2 - 3, y - 3, w + 6, 14);
-        g.fillStyle(u.team === 'hero' ? (u.isPlayer ? 0x6ad06a : 0x4aa3df) : 0xc0392b).fillRect(u.x - w / 2, y, w * Math.max(0, u.hp / u.maxHp), 8);
-      }
-      if (u.isPlayer) g.lineStyle(4, 0xf5c542, 0.9).strokeEllipse(u.x, u.y, u.def.size * 0.8, u.def.size * 0.26);
-      if (u.shieldT > 0) g.lineStyle(5, 0xc0392b, 0.6).strokeCircle(u.x, u.y - u.def.size * 0.45, u.def.size * 0.6);
+      u.spr.setPosition(foot.x,foot.y-bob).setDepth(this.view.depth(u.y));u.shadow.setPosition(foot.x,foot.y);if(u.art)u.art.update(dt);
+      if(u.dead){if(u.team==='hero')u.spr.setAngle(80);continue;}
+      if(!u.isBoss){const w=u.team==='hero'?80:Math.max(50,u.def.size*.7),y=foot.y-u.def.size*1.02-bob;g.fillStyle(0x120c0a,.9).fillRect(foot.x-w/2-3,y-3,w+6,14);g.fillStyle(u.team==='hero'?(u.isPlayer?0x6ad06a:0x4aa3df):0xc0392b).fillRect(foot.x-w/2,y,w*Math.max(0,u.hp/u.maxHp),8);}
+      if(u.isPlayer){ground.lineStyle(4,0xf5c542,.9);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.4,u.def.size*.22),false,true);}
+      if(u.shieldT>0){ground.lineStyle(5,0xc0392b,.6);this.view.groundShape(ground,this.view.circle(u.x,u.y,u.def.size*.6),false,true);}
     }
-    // Boss 遮挡英雄时半透明
-    if (this.boss && !this.boss.dead) { const b = this.boss, cover = this.heroes.some(h => !h.dead && h.y < b.y && Math.abs(h.x - b.x) < C.boss.size * 0.5 && b.y - h.y < C.boss.size * 0.85); b.spr.setAlpha(cover ? 0.55 : 1); }
-    const f = this.player.dead ? (this.alive(this.heroes)[0] || this.player) : this.player;
-    this.camTarget.setPosition(f.x, f.y - 40);
+    // World foot-Y orders both props and units. Tall covers fade only to retain player visibility.
+    if(this.boss&&!this.boss.dead){const b=this.boss,cover=this.heroes.some(h=>!h.dead&&h.y<b.y&&Math.abs(h.x-b.x)<C.boss.size*.5&&b.y-h.y<C.boss.size*.85);b.spr.setAlpha(cover?.65:1);}
+    const f=this.player.dead?(this.alive(this.heroes)[0]||this.player):this.player,p=this.view.project(f.x,f.y);this.camTarget.setPosition(p.x,p.y-C.view25d.cameraLift);
+    for(const prop of this.view.props){const q=this.view.project(prop.x,prop.y);prop.image.setAlpha(prop.y>f.y&&Math.abs(q.x-p.x)<90&&q.y-p.y<prop.height?.55:1);}
   }
-  slashFx(x, y, a, r, arcDeg, color) {
-    const g = this.add.graphics().setDepth(750000), arc = PM.DegToRad(arcDeg);
-    g.fillStyle(color, 0.55); g.slice(x, y, r, a - arc / 2, a + arc / 2); g.fillPath();
-    g.lineStyle(6, 0x120c0a, 0.9); g.beginPath(); g.arc(x, y, r, a - arc / 2, a + arc / 2); g.strokePath();
-    this.tweens.add({ targets: g, alpha: 0, duration: 200, onComplete: () => g.destroy() });
-  }
-  ringFx(x, y, r, color) {
-    const c = this.add.circle(x, y, r, color, 0.25).setStrokeStyle(8, color, 0.9).setDepth(3).setScale(0.3);
-    this.tweens.add({ targets: c, scale: 1, alpha: 0, duration: 450, ease: 'Cubic.Out', onComplete: () => c.destroy() });
-  }
-  floatText(x, y, s, color, size) {
-    if (this.floats.length > 40) { const o = this.floats.shift(); this.tweens.killTweensOf(o); o.destroy(); }
-    const t = txt(this, x, y, String(s), size || 24, color, { stroke: '#120c0a', strokeThickness: 5, fontStyle: 'bold' }).setOrigin(0.5).setDepth(950000).setResolution(2);
-    this.floats.push(t);
-    this.tweens.add({ targets: t, y: y - 50, alpha: 0, duration: 750, ease: 'Cubic.Out', onComplete: () => { const i = this.floats.indexOf(t); if (i >= 0) this.floats.splice(i, 1); t.destroy(); } });
-  }
+  slashFx(x,y,a,r,arcDeg,color){const g=this.add.graphics().setDepth(3);g.fillStyle(color,.55).lineStyle(4,0x171c17,.85);this.view.groundShape(g,this.view.sector(x,y,r,a,PM.DegToRad(arcDeg)));this.tweens.add({targets:g,alpha:0,duration:200,onComplete:()=>g.destroy()});}
+  ringFx(x,y,r,color){const g=this.add.graphics().setDepth(3),o={v:.3};const draw=()=>{g.clear().fillStyle(color,.18).lineStyle(6,color,.8);this.view.groundShape(g,this.view.circle(x,y,r*o.v));};draw();this.tweens.add({targets:o,v:1,duration:450,ease:'Cubic.Out',onUpdate:draw});this.tweens.add({targets:g,alpha:0,duration:450,onComplete:()=>g.destroy()});}
+  floatText(x,y,s,color,size,z=100){if(this.floats.length>40){const o=this.floats.shift();this.tweens.killTweensOf(o);o.destroy();}const p=this.view.project(x,y,z),t=txt(this,p.x,p.y,String(s),size||24,color,{stroke:'#120c0a',strokeThickness:5,fontStyle:'bold'}).setOrigin(.5).setDepth(950000).setResolution(2);this.floats.push(t);this.tweens.add({targets:t,y:p.y-50,alpha:0,duration:750,ease:'Cubic.Out',onComplete:()=>{const i=this.floats.indexOf(t);if(i>=0)this.floats.splice(i,1);t.destroy();}});}
+
 }
 
 /* ======================= HUD：虚拟摇杆 + 按钮（多点触控） ======================= */
@@ -842,6 +816,7 @@ class HUD extends Phaser.Scene {
     if (Math.hypot(p.x - this.pauseBtn.x, p.y - this.pauseBtn.y) < this.pauseBtn.r) { this.togglePause(true); return; }
     const k = this.hitBtn(p.x, p.y);
     if (k) { this.btns[k] = p.id; if (k === 'atk') this.B.ctrl.atk = true; else this.B.ctrl[k] = true; return; }
+    if(p.x>=this.scale.width*.5){this.B.pointerWorld=this.B.screenToWorld(p.x,p.y);return;}
     if (p.x < this.scale.width * 0.5 && this.joy.pid === null) { this.joy.pid = p.id; this.joy.cx = p.x; this.joy.cy = p.y; this.updJoy(p); }
   }
   onMove(p) { if (p.id === this.joy.pid) this.updJoy(p); }

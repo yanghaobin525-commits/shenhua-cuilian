@@ -24,11 +24,12 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'approved-v6-20261116',
+  releaseId: 'courtyard-25d-20261117',
   artVersion: 'approved-v6',
   combatArt: { canvasSize: 512, footY: 0.92, fps: 24, attackDuration: 0.36, castDuration: 0.65, handRadius: 0.043 },
   maxPixelRatio: 2,             // 渲染清晰度上限（视网膜屏=2 最清晰；老设备卡顿可改 1.5 或 1）
 
+  view25d: { yScale: 0.55, shear: 0.28, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 210, viewWidth: 1650, viewHeight: 1150 },
   arena: {
     width: 2000,                 // 竞技场宽
     height: 1400,                // 竞技场高

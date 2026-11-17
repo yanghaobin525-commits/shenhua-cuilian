@@ -8,8 +8,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/audio-system.test.cjs && node test/combat-art.test.cjs",
-    "test:v6": "python3 tools/validate-v6.py && node test/v6-browser.cjs"
+    "test": "node test/audio-system.test.cjs && node test/combat-art.test.cjs && node test/projection.test.cjs",
+    "test:v6": "python3 tools/validate-v6.py && node test/v6-browser.cjs",
+    "test:v7": "python3 tools/validate-v6.py && node test/projection-browser.cjs && node test/v7-browser.cjs"
   },
   "keywords": [],
   "author": "",

@@ -31,10 +31,10 @@ function triangle(ctx,img,s,d) {
 class CombatArt {
   static preload(scene) {
     for (const key of Object.keys(C.heroes)) {
-      const dir='assets/approved-v6/'+key+'/';
-      for(const v of ['front','back','side','weapon'])scene.load.image('v6_'+key+'_'+v,dir+v+'.png');
-      scene.load.json('v6_meta_'+key,dir+'manifest.json');
-      scene.load.image('select_'+key,'assets/selection-v6/'+key+'.png');
+      const dir='assets/approved-v6/'+key+'/',revision='?v='+encodeURIComponent(C.releaseId||C.artVersion);
+      for(const v of ['front','back','side','weapon'])scene.load.image('v6_'+key+'_'+v,dir+v+'.png'+revision);
+      scene.load.json('v6_meta_'+key,dir+'manifest.json'+revision);
+      scene.load.image('select_'+key,'assets/selection-v6/'+key+'.png'+revision);
     }
   }
   static validate(scene) {
@@ -59,13 +59,14 @@ class CombatArt {
   update(dt) {
     const h=this.h, s=this.scene;
     if(h.dead){this.weapon.setVisible(false);this.hand.setVisible(false);return;}
-    const co=Math.cos(h.faceAng),si=Math.sin(h.faceAng);
+    const direction=s.view?s.view.vector(Math.cos(h.faceAng),Math.sin(h.faceAng)):{x:Math.cos(h.faceAng),y:Math.sin(h.faceAng)},len=Math.hypot(direction.x,direction.y);
+    const co=direction.x/len,si=direction.y/len,foot=s.view?s.view.project(h.x,h.y):{x:h.x,y:h.y};
     this.view=Math.abs(co)>.64?'side':si<0?'back':'front';
     this.mode=h.actionT>0?h.action:h.moving?'walk':'idle';
     const m=metadata(s,h.key,this.view); if(!m.hand)return;
     const flip=this.view==='side' ? ((co<0?-1:1)*(m.sideFaces==='left'?-1:1)) : 1;
     h.spr.setScale(h.base*flip,h.base).setAngle(0).setOrigin(.5,m.foot);
-    h.spr.setPosition(h.x,h.y).setDepth(10+h.y);
+    h.spr.setPosition(foot.x,foot.y).setDepth(10+h.y);
     const unitScale=h.def.size/512;
     const t=h.t, cfg=C.combatArt, p=h.actionT>0?1-h.actionT/h.actionDuration:0;
     const swing=h.actionT>0?Math.sin(Math.PI*p):0;
@@ -77,7 +78,7 @@ class CombatArt {
       const leg=Math.max(0,(y/512-.70)/.22),side=x<256?1:-1;
       return {x:x+handDelta.x*weight+(h.moving?Math.sin(t*12)*7*leg*side:0), y:y+handDelta.y*weight+(h.moving?Math.cos(t*12)*9*leg*side:Math.sin(t*3)*2*(1-y/512))};
     };
-    const hp=deform(m.hand.x*512,m.hand.y*512), handX=h.x+(hp.x-256)*unitScale*flip, handY=h.y+(hp.y-m.foot*512)*unitScale;
+    const hp=deform(m.hand.x*512,m.hand.y*512), handX=foot.x+(hp.x-256)*unitScale*flip, handY=foot.y+(hp.y-m.foot*512)*unitScale;
     const wk=C.weaponArt[h.weapon], wm=metadata(s,wk,this.view), grip=wm.grip;
     if(!grip)return;
     const weaponScale=unitScale*((C.weaponVisualScale||{})[h.weapon]||1);
