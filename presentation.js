@@ -1,0 +1,3 @@
+/* Single original presentation entry. Values are effective HP changes supplied by
+ * Battle, never multiplied here to exaggerate the statistics. */
+(function(root){'use strict';const styles={damage:{size:25,top:0xfff0bd,bottom:0xe9a65c,stroke:5,angle:5},critical:{size:37,top:0xfff5a8,bottom:0xe57c22,stroke:7,angle:-7},heavy:{size:33,top:0xffdb8b,bottom:0xc4512b,stroke:6,angle:6},heal:{size:29,top:0xe8ffd1,bottom:0x58ba80,stroke:5,angle:-3}};root.BattlePresentation={numberStyle:kind=>styles[kind]||null,format:n=>Number(Number(n).toFixed(1)).toString()};if(typeof module!=='undefined'&&module.exports)module.exports=root.BattlePresentation;})(typeof window!=='undefined'?window:globalThis);

@@ -24,18 +24,21 @@ window.GAME_CONFIG = {
     lookAhead: 0.14, timerMs: 25 // 音频时钟预排，不跟随帧率、不堆叠多条 BGM
   },
 
-  releaseId: 'mountain-orbit-v8-20261117',
+  releaseId: 'solo-wukong-v10-20261117',
   artVersion: 'approved-v6',
+  presentation:{maxNumbers:24,numberRise:90,numberLifetime:700,trailInterval:.035},
+  motion: { stride:84, startSmooth:.12, stopSmooth:.10, maxFootTravel:14, footLift:9, bodyBounce:1.8, torsoSway:8, attackTwist:.11 },
+  attackMotion: { spear:{kind:"thrust",windup:.18,active:.08,recovery:.24,reach:62,arc:.20}, blade:{kind:"slash",windup:.22,active:.09,recovery:.25,reach:44,arc:1.4}, fan:{kind:"ranged",windup:.18,active:.07,recovery:.23,reach:28,arc:.28}, monkstaff:{kind:"ranged",windup:.22,active:.08,recovery:.28,reach:32,arc:.35}, cudgel:{kind:"overhead",windup:.22,active:.08,recovery:.25,reach:48,arc:1.5}, rake:{kind:"overhead",windup:.24,active:.10,recovery:.30,reach:42,arc:1.25}, crescent:{kind:"slash",windup:.22,active:.09,recovery:.26,reach:46,arc:1.35}, sword:{kind:"slash",windup:.16,active:.07,recovery:.22,reach:44,arc:1.5} },
   combatArt: { canvasSize: 512, footY: 0.92, fps: 24, attackDuration: 0.36, castDuration: 0.65, handRadius: 0.043 },
   maxPixelRatio: 2,             // 渲染清晰度上限（视网膜屏=2 最清晰；老设备卡顿可改 1.5 或 1）
 
   runDefaults: { enemyHpMultiplier: 1, difficulty: 1, loops: 1, endless: false },
   combatWindows: { attack: {windup:.14,active:.08,recovery:.20,moveScale:.12}, cast: {windup:.28,active:.12,recovery:.28,moveScale:.05}, lightStun:.10, heavyStun:.23, hitGuard:.32, heavyThreshold:90 },
   rescue: { radius:125, seconds:2.4, bleedOut:24, hpRatio:.35 },
-  view25d: { zoomScale:1.55, parallax:{far:.025,mid:.08,near:.13,farYaw:.03,midYaw:.08,nearYaw:.12,farOverscan:1.3,midOverscan:1.45,cloudDrift:32,cloudSpeed:.09,nearAlpha:.22}, rotateStep:Math.PI/4, rotateSmooth:.14, cliffHeight:180, yScale: 0.55, shear: 0.28, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 140, viewWidth: 1650, viewHeight: 1150 },
+  view25d: { zoomScale:2.75, fixedCamera:true,inkWash:true, propScale:.48, islandRadius:710, parallax:{far:.025,mid:.08,near:.13,farYaw:.03,midYaw:.08,nearYaw:.12,farOverscan:1.3,midOverscan:1.45,cloudDrift:32,cloudSpeed:.09,nearAlpha:.22}, rotateStep:Math.PI/4, rotateSmooth:.14, cliffHeight:95, yScale: 0.42, shear: 0, marginX: 220, marginY: 300, bottomMargin: 220, cameraLift: 75, viewWidth: 1650, viewHeight: 1150 },
   arena: {
     width: 1400,                 // 竞技场宽
-    height: 1000,                // 竞技场高
+    height: 1400, radius:620,                // 竞技场高
     viewWidth: 1250,             // 屏幕上大约能看到的世界宽度（越小镜头越近）
   },
 
@@ -44,7 +47,7 @@ window.GAME_CONFIG = {
    * allowDuplicateHeroes：英雄池不够时是否允许重复英雄补位；false 时多出的槽位显示「虚位以待」。
    * 以后新增英雄只需在下面 heroes 里加一项（并放一张 assets/sprites/xxx.png）。
    */
-  teamSize: 5,
+  teamSize: 1,   // v10：单人 Roguelike（五人模式代码保留但不开放）
   allowDuplicateHeroes: false,
 
   /* ---------------- 英雄（只带被动天赋，不带攻击方式） ----------------
@@ -141,12 +144,21 @@ window.GAME_CONFIG = {
   /* ---------------- 小怪（取材山海经，原创造型） ---------------- */
   enemies: {
     imp:    { name: '九婴小妖', sprite: 'mob_imp',    size: 64, hp: 95,  speed: 150, damage: 12, range: 48, cooldown: 1.0, type: 'melee', nativeFacing: -1 },
-    zheng:  { name: '狰',       sprite: 'mob_zheng',  size: 92, hp: 250, speed: 185, damage: 22, range: 62, cooldown: 1.1, type: 'melee' },
+    zheng:  { nativeFacing:-1, pounce:{range:330,distance:210,radius:72,windup:.48,flight:.30,recovery:.40,cooldown:5.5,damageMul:1.3,height:28}, name: '狰',       sprite: 'mob_zheng',  size: 92, hp: 250, speed: 185, damage: 22, range: 62, cooldown: 1.1, type: 'melee' },
     gudiao: { name: '蛊雕',     sprite: 'mob_gudiao', size: 96, hp: 175, speed: 150, damage: 18, range: 380, keepDistance: 300, cooldown: 1.6, projSpeed: 430, type: 'ranged' },
   },
 
   /* ---------------- Boss：九婴（两阶段） ---------------- */
+  /* v10 Boss：白啸狰王（原创，复用本作狰的原创图做放大+局部网格动作；动作节奏参考父会话转述的狼王可见姿态，数值为原创） */
   boss: {
+    name: '白啸狰王', sprite: 'mob_zheng', nativeFacing: -1, tint: 0xe2ebff,
+    size: 230, hp: 2600, speed: 165, armor: 0, phase2At: 0.5, phase2SpeedMul: 1.25, phase2CooldownMul: 0.7,
+    claw:  { name: '裂爪', damage: 24, radius: 150, arc: 120, windup: 0.40, gap: 0.24, recovery: 0.45, cooldown: 1.9 },
+    lunge: { name: '伏身扑咬', damage: 38, length: 380, width: 86, windup: 0.66, dash: 0.24, recovery: 0.6, cooldown: 4.4 },
+    leap:  { name: '跃扑', damage: 46, radius: 125, windup: 0.55, flight: 0.46, height: 95, recovery: 0.72, cooldown: 6.4, maxRange: 560 },
+    howl:  { name: '啸月', windup: 0.8, recovery: 0.45, summonImps: 2 },
+  },
+  bossJiuying: {
     name: '九婴', sprite: 'boss_jiuying',
     size: 300, hp: 6500, speed: 85, armor: 0,
     biteWindup:.24,biteRadius:75,biteDamage: 45, biteCooldown: 1.6,          // 近身撕咬
@@ -159,14 +171,15 @@ window.GAME_CONFIG = {
   },
 
   /* ---------------- 波次 ---------------- */
-  waves: [
-    { name: '第一波 · 小妖出洞', spawn: { imp: 6, zheng: 2 } },
-    { name: '第二波 · 狰群夜袭', spawn: { imp: 4, zheng: 4, gudiao: 2 } },
-    { name: '第三波 · 蛊雕盘旋', spawn: { imp: 6, zheng: 4, gudiao: 4 } },
-    { name: '最终波 · 九婴现身', boss: true, spawn: { imp: 4 } },
+  waves: [   // v10：房间。每间清怪 → 三选一祝福 → 下一间；末间 Boss
+    { name: '第一间 · 断崖哨口', spawn: { imp: 4, zheng: 1 } },
+    { name: '第二间 · 云栈石桥', spawn: { imp: 3, zheng: 2, gudiao: 1 } },
+    { name: '第三间 · 枯松祭坛', spawn: { imp: 4, zheng: 2, gudiao: 2 } },
+    { name: '第四间 · 墨云峰顶', spawn: { imp: 3, zheng: 3, gudiao: 2 } },
+    { name: '首领间 · 白啸狰王', boss: true, spawn: { imp: 0 } },
   ],
   firstWaveDelay: 2.5,           // 开局多少秒后出第一波
-  waveBreak: 4,                  // 波次之间休息秒数
+  waveBreak: 2.2,                  // 波次之间休息秒数
   spawnInterval: 0.35,           // 同一波内每只怪的出场间隔
   reviveHpRatio: 0.5,            // 波次结束时阵亡英雄以多少比例血量复活
   waveClearHealRatio: 0.2,       // 波次结束时存活英雄回复最大生命的比例
@@ -185,7 +198,7 @@ window.GAME_CONFIG = {
 Object.assign(window.GAME_CONFIG.weapons, {
   fan: { name:'桂月团扇', role:'healer', color:0x86b7b1, attack:{kind:'projectile',damage:26,range:420,cooldown:0.7,projSpeed:620,tex:'moon'}, skill1:{kind:'heal',name:'月光',heal:230,radius:340,cooldown:8} },
   monkstaff: { name:'九环锡杖',role:'healer',color:0xd2aa50,attack:{kind:'projectile',damage:30,range:400,cooldown:0.75,projSpeed:600,tex:'moon'},skill1:{kind:'heal',name:'佛光',heal:210,radius:320,cooldown:8} },
-  cudgel: {name:'金箍棒',role:'melee',color:0xdcae43,attack:{kind:'melee',damage:50,range:118,arc:135,cooldown:0.56},skill1:{kind:'spin',name:'横扫千军',damage:115,radius:180,cooldown:6}},
+  cudgel: {name:'金箍棒',role:'melee',color:0xdcae43,attack:{kind:'melee',damage:50,range:118,arc:135,cooldown:0.32},skill1:{kind:'spin',name:'横扫千军',damage:115,radius:180,cooldown:6}},
   rake: {name:'九齿钉耙',role:'tank',color:0x83a5a3,attack:{kind:'melee',damage:48,range:120,arc:125,cooldown:0.68},skill1:{kind:'taunt',name:'天蓬怒吼',damage:50,radius:210,tauntTime:4,shieldTime:4,shieldReduce:0.5,cooldown:10}},
   crescent: {name:'降妖宝杖',role:'tank',color:0xa7b5c2,attack:{kind:'melee',damage:52,range:120,arc:130,cooldown:0.65},skill1:{kind:'spin',name:'流沙旋斩',damage:110,radius:175,cooldown:7}},
   sword: {name:'龙纹剑',role:'melee',color:0xa9daee,attack:{kind:'melee',damage:44,range:110,arc:105,cooldown:0.48},skill1:{kind:'cleave',name:'破浪',damage:175,length:330,width:100,cooldown:8}}
@@ -193,3 +206,27 @@ Object.assign(window.GAME_CONFIG.weapons, {
 window.GAME_CONFIG.weaponArt = {spear:'nezha',blade:'erlang',fan:'change',monkstaff:'tangseng',cudgel:'wukong',rake:'bajie',crescent:'shaseng',sword:'bailong'};
 window.GAME_CONFIG.dropWeapons = Object.keys(window.GAME_CONFIG.weaponArt);
 window.GAME_CONFIG.weaponVisualScale = { fan: 0.62 }; // 团扇小于头部；只调外观不改范围/伤害
+
+// Original three-stage trajectories. Damage stays at the equipped basic-attack value.
+window.GAME_CONFIG.combo={buffer:.24,chainWindow:.45,profiles:{
+ spear:[{label:'探海刺',kind:'thrust',reach:58,windup:.18,active:.08,recovery:.22},{label:'挑云',kind:'rise',reach:40,raise:52,windup:.20,active:.08,recovery:.24},{label:'破阵重刺',kind:'thrust',reach:82,twistMul:1.3,windup:.25,active:.10,recovery:.32}],
+ blade:[{label:'横断',kind:'slash',sweepSign:1,windup:.20,active:.08,recovery:.23},{label:'回锋',kind:'slash',sweepSign:-1,twistMul:-1,windup:.17,active:.08,recovery:.24},{label:'劈山收势',kind:'overhead',reach:62,windup:.28,active:.10,recovery:.34}],
+ cudgel:[{label:'轻击·快戳',kind:'thrust',poseStage:'light',reach:58,arc:.2,windup:.09,active:.06,recovery:.16,damageMul:.8,rangeMul:1.05,arcDeg:60,hitstop:.035,shakeMul:.6},{label:'普通击·挥扫',kind:'slash',poseStage:'normal',sweepSign:1,windup:.15,active:.09,recovery:.22,damageMul:1,rangeMul:1.12,arcDeg:150,hitstop:.055,shakeMul:1},{label:'重击·跃起下砸',kind:'overhead',poseStage:'heavy',jump:true,reach:66,windup:.30,active:.10,recovery:.36,damageMul:1.7,rangeMul:1.3,arcDeg:130,hitstop:.10,shakeMul:2.6}],
+ rake:[{label:'探锋',kind:'thrust',reach:54,windup:.23,active:.10,recovery:.26},{label:'倒卷',kind:'rise',reach:32,raise:42,twistMul:-1,windup:.22,active:.09,recovery:.26},{label:'震地落耙',kind:'overhead',reach:58,windup:.30,active:.12,recovery:.35}],
+ crescent:[{label:'斜月',kind:'slash',sweepSign:1,windup:.20,active:.08,recovery:.23},{label:'回月',kind:'slash',sweepSign:-1,twistMul:-1,windup:.18,active:.08,recovery:.23},{label:'断潮',kind:'rise',reach:68,raise:37,windup:.27,active:.10,recovery:.33}],
+ sword:[{label:'斜斩',kind:'slash',sweepSign:1,windup:.16,active:.07,recovery:.20},{label:'反斩',kind:'slash',sweepSign:-1,twistMul:-1,windup:.15,active:.07,recovery:.20},{label:'贯浪突刺',kind:'thrust',reach:76,windup:.23,active:.09,recovery:.31}],
+ fan:[{label:'拂月',kind:'ranged',sweepSign:1,reach:28,raise:8,windup:.18,active:.07,recovery:.21},{label:'反手摘星',kind:'ranged',sweepSign:-1,twistMul:-1,reach:18,raise:38,windup:.17,active:.07,recovery:.23},{label:'双袖送月',kind:'ranged',reach:49,raise:18,twistMul:1.3,windup:.24,active:.09,recovery:.32}],
+ monkstaff:[{label:'点金',kind:'ranged',reach:27,windup:.20,active:.08,recovery:.24},{label:'举莲',kind:'ranged',reach:12,raise:62,twistMul:-.6,windup:.22,active:.08,recovery:.25},{label:'镇心推杖',kind:'ranged',reach:51,raise:22,twistMul:1.3,windup:.27,active:.10,recovery:.34}]
+}};
+
+// v10 单人孙悟空：闪避与三技能（原创数值，可调）
+window.GAME_CONFIG.solo={hero:'wukong',roster:['wukong'],dodge:{distance:200,duration:.2,iframes:.30,cooldown:.55,afterimages:4}};
+Object.assign(window.GAME_CONFIG.weapons.cudgel,{
+  skill2:{kind:'slam',name:'擎天一棍',damage:150,radius:145,reach:135,lockRange:360,stun:.55,cooldown:8},
+  skill3:{kind:'freeze',name:'定身法',damage:30,radius:270,stun:2.0,bossStun:.7,cooldown:15}
+});
+window.GAME_CONFIG.dropsPerWave=0;
+window.GAME_CONFIG.feel={hitstop:.05,hitstopFinisher:.09,hitstopSkill:.07,shake:.0025,weaponGhostInterval:.028,
+  slash:[{color:0xffffff,ghost:0xfff4cf,reach:.95,arcMul:1.0,thick:.22,sweep:55,life:140},{color:0xfff3d0,ghost:0xffd27a,reach:1.12,arcMul:1.1,thick:.36,sweep:65,life:200},{color:0xffe6a0,ghost:0xffb15a,reach:1.4,arcMul:1.0,thick:.56,sweep:85,life:300}]};
+window.GAME_CONFIG.solo.lock={range:420,meleeAssist:60,meleeCone:55,meleeSnap:.75};
+window.GAME_CONFIG.poseArt={wukong:{dir:'assets/wukong-poses-v10/',stages:['light','normal','heavy'],views:['front','back','side'],holdUntil:.7}};

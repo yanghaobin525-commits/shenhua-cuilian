@@ -2,9 +2,10 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
 const sandbox={window:{},console};vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync('config.js','utf8'),sandbox);
+vm.runInContext(fs.readFileSync('motion-pose.js','utf8'),sandbox);
 vm.runInContext(fs.readFileSync('combat-art.js','utf8'),sandbox);
 const C=sandbox.window.GAME_CONFIG,Art=sandbox.window.CombatArt;
-assert.equal(Object.keys(C.heroes).length,8);assert.equal(C.teamSize,5);
+assert.equal(Object.keys(C.heroes).length,8);assert.equal(C.teamSize,1);assert.equal(C.solo.hero,"wukong");
 assert.deepEqual(Object.keys(C.weaponArt).sort(),Array.from(C.dropWeapons).sort());
 for(const h of Object.values(C.heroes)){assert(C.weaponArt[h.weapon]);assert(C.weapons[h.weapon].skill1);}
 let draws=0;

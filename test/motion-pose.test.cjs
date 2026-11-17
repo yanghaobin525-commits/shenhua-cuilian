@@ -1,0 +1,8 @@
+const assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm'),M=require('../motion-pose.js');const env={window:{}};vm.runInNewContext(fs.readFileSync('config.js','utf8'),env);const C=env.window.GAME_CONFIG,View=require('../arena-view.js');
+for(const yaw of [0,Math.PI/4,Math.PI/2,Math.PI]){
+ const v=new View(C.view25d,C.arena);v.angle=yaw;const g=new M.ContactGait(),h={x:700,y:700,def:{speed:235}},rest=[{x:225,y:470},{x:285,y:470}];let locks=0,last=[];
+ for(let i=0;i<180;i++){h.x+=235/60;const p=g.update(h,1/60,v,C.motion,rest,112/512,1);for(let j=0;j<2;j++){const f=p.feet[j];if(i>70&&f.stance&&last[j]?.stance&&last[j].anchor===f.anchor){/* references checked below using copied coordinates */}if(i>70&&f.stance){const q=v.project(f.lockWorld.x,f.lockWorld.y);assert(Math.hypot(q.x-f.screen.x,q.y-f.screen.y)<.015);locks++;}}last=p.feet.map(f=>({stance:f.stance,anchor:f.lockWorld}));}
+ assert(locks>30);const phase=g.phase;for(let i=0;i<60;i++)g.update(h,1/60,v,C.motion,rest,112/512,1);assert.equal(g.phase,phase);assert(g.blend<.001);const p=g.phase;g.update(h,0,v,C.motion,rest,112/512,1);assert.equal(g.phase,p);
+}
+const phases=[];for(const [weapon,p]of Object.entries(C.attackMotion)){const h={action:'attack',actionT:1,clock:{done:false,time:p.windup,timing:p}};let a=M.attackPose(h,p);assert.equal(a.stage,'contact');assert(Math.abs(a.strike-1)<1e-9);if(p.kind!=='ranged')assert(Math.abs(a.angle)<1e-9);h.clock.time=p.windup+p.active+p.recovery-.00001;a=M.attackPose(h,p);assert(a.weight<.001);phases.push(p.kind);}assert(new Set(phases).size===4);
+console.log('PASS: distance-only gait phase, planted-foot world locks at 4 yaws, idle settling/no double release step, 8 contact-synchronized weapon profiles and eased recovery');

@@ -1,0 +1,270 @@
+{
+ "id": "wukong-attack-poses-v10",
+ "frameSize": {
+  "width": 512,
+  "height": 640
+ },
+ "foot": {
+  "x": 0.5,
+  "y": 0.9359375
+ },
+ "footLineY": 599,
+ "sideFaces": "right",
+ "headScaleRef": "approved-v6 eye-white height 40px @512",
+ "stages": {
+  "light": {
+   "front": {
+    "file": "light-front.png",
+    "fists": [
+     {
+      "x": 0.4281,
+      "y": 0.6529
+     },
+     {
+      "x": 0.5502,
+      "y": 0.6324
+     }
+    ],
+    "grip": {
+     "x": 0.4892,
+     "y": 0.6426
+    },
+    "liftPx": 0,
+    "scale": 1.5094,
+    "source": "source-9grid-r3.jpg",
+    "clipped": false,
+    "bbox": [
+     135,
+     141,
+     285,
+     460
+    ]
+   },
+   "back": {
+    "file": "light-back.png",
+    "fists": [
+     {
+      "x": 0.2782,
+      "y": 0.5989
+     },
+     {
+      "x": 0.7137,
+      "y": 0.5977
+     }
+    ],
+    "grip": {
+     "x": 0.496,
+     "y": 0.5983
+    },
+    "liftPx": 0,
+    "scale": 1.5094,
+    "source": "source-9grid-r3.jpg",
+    "clipped": false,
+    "bbox": [
+     91,
+     141,
+     294,
+     460
+    ]
+   },
+   "side": {
+    "file": "light-side.png",
+    "fists": [
+     {
+      "x": 0.6859,
+      "y": 0.6306
+     },
+     {
+      "x": 0.7341,
+      "y": 0.6195
+     }
+    ],
+    "grip": {
+     "x": 0.71,
+     "y": 0.6251
+    },
+    "liftPx": 0,
+    "scale": 1.5094,
+    "source": "source-9grid-r3.jpg",
+    "clipped": false,
+    "bbox": [
+     103,
+     141,
+     294,
+     460
+    ]
+   }
+  },
+  "normal": {
+   "front": {
+    "file": "normal-front.png",
+    "fists": [
+     {
+      "x": 0.473,
+      "y": 0.6264
+     },
+     {
+      "x": 0.8992,
+      "y": 0.512
+     }
+    ],
+    "grip": {
+     "x": 0.6861,
+     "y": 0.5692
+    },
+    "liftPx": 0,
+    "scale": 1.5094,
+    "source": "source-9grid-r3.jpg",
+    "clipped": false,
+    "bbox": [
+     154,
+     137,
+     323,
+     464
+    ]
+   },
+   "back": {
+    "file": "normal-back.png",
+    "fists": [
+     {
+      "x": 0.1968,
+      "y": 0.5969
+     },
+     {
+      "x": 0.8367,
+      "y": 0.58
+     }
+    ],
+    "grip": {
+     "x": 0.5168,
+     "y": 0.5884
+    },
+    "liftPx": 0,
+    "scale": 1.5094,
+    "source": "source-9grid-r3.jpg",
+    "clipped": false,
+    "bbox": [
+     89,
+     154,
+     382,
+     447
+    ]
+   },
+   "side": {
+    "file": "normal-side.png",
+    "fists": [
+     {
+      "x": 0.5038,
+      "y": 0.669
+     },
+     {
+      "x": 0.6709,
+      "y": 0.6413
+     }
+    ],
+    "grip": {
+     "x": 0.5874,
+     "y": 0.6552
+    },
+    "liftPx": 0,
+    "scale": 1.5094,
+    "source": "source-9grid-r3.jpg",
+    "clipped": false,
+    "bbox": [
+     73,
+     140,
+     293,
+     462
+    ]
+   }
+  },
+  "heavy": {
+   "front": {
+    "file": "heavy-front.png",
+    "fists": [
+     {
+      "x": 0.4326,
+      "y": 0.1527
+     },
+     {
+      "x": 0.5745,
+      "y": 0.1529
+     }
+    ],
+    "grip": {
+     "x": 0.5035,
+     "y": 0.1528
+    },
+    "liftPx": 126,
+    "scale": 1.1679,
+    "source": "source-heavy-strip-r2.jpg",
+    "clipped": false,
+    "bbox": [
+     130,
+     63,
+     316,
+     538
+    ]
+   },
+   "back": {
+    "file": "heavy-back.png",
+    "fists": [
+     {
+      "x": 0.4286,
+      "y": 0.152
+     },
+     {
+      "x": 0.5652,
+      "y": 0.1521
+     }
+    ],
+    "grip": {
+     "x": 0.4969,
+     "y": 0.1521
+    },
+    "liftPx": 117,
+    "scale": 1.1679,
+    "source": "source-heavy-strip-r2.jpg",
+    "clipped": false,
+    "bbox": [
+     140,
+     62,
+     310,
+     538
+    ]
+   },
+   "side": {
+    "file": "heavy-side.png",
+    "fists": [
+     {
+      "x": 0.4666,
+      "y": 0.1008
+     },
+     {
+      "x": 0.6049,
+      "y": 0.1201
+     }
+    ],
+    "grip": {
+     "x": 0.5357,
+     "y": 0.1104
+    },
+    "liftPx": 102,
+    "scale": 1.1679,
+    "source": "source-heavy-strip-r2.jpg",
+    "clipped": false,
+    "bbox": [
+     55,
+     31,
+     308,
+     570
+    ]
+   }
+  }
+ },
+ "notes": [
+  "Generated original art from approved-v6 Wukong refs; static key poses (not skeletal).",
+  "Grip dots removed by inpainting; fists[] are the dot centres in frame UV.",
+  "heavy row from separate generation, normalized by eye-white height to rows 1-2; liftPx is baked shadow gap, applied in code as jump height."
+ ]
+}
